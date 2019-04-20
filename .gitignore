@@ -134,3 +134,4 @@ srv_gen
 *Goal.msg
 *Result.msg
 venv
+.vscode/ipch
