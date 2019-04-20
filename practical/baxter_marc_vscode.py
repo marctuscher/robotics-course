@@ -19,27 +19,11 @@ def reset(robot, model):
 
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter.g')
-
-
-#%%
-robot = reset(robot, 'rai-robotModels/baxter/baxter.g')
-
+robot =  RaiRobot('', 'rai-robotModels/pr2/pr2.g')
+robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
 
 #%%
-robot.moveToPosition([0, 4, 1], 'pr2L')
-
+robot.moveToPosition([0, 4, 1], 'baxterL')
 
 #%%
 robot.IK.getReport()
-
-
-
-
-
-
-
-
-
-
-#%%
