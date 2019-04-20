@@ -18,8 +18,7 @@ class RaiRobot():
         self.B.sync(self.C)
         self.real = False
         self.B.sendToReal(self.real)
-        self.IK = self.C.komo_IK()
-        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.1], pos=[.8,.8,1.5], color=[1,1,0])
+        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.1], pos=[.7,.7,1.], color=[1,1,0])
     
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
@@ -31,12 +30,19 @@ class RaiRobot():
         self.inverseKinematics([align(frameNames)])
     
     def inverseKinematics(self, objectives:list):
-        self.IK.clearObjectives()
+        """
+        Calculate inverse kinematics by solving a constraint optimization problem, 
+        given by objectives. 
+
+        Using a new IK object, to ensure that all frames that have been added to 
+        the configuration are also added to the computational graph of the solver.
+        """
+        IK = self.C.komo_IK()
         for obj in objectives:
-            self.IK.addObjective(**obj)
-        self.IK.optimize()
-        self.C.setFrameState(self.IK.getConfiguration(0))
-        self.B.move([self.C.getJointState()], [10.], False)
+            IK.addObjective(**obj)
+        IK.optimize()
+        self.C.setFrameState(IK.getConfiguration(0))
+        self.move([self.C.getJointState()])
     
     def goHome(self):
         self.B.move([self.q_home], [10.0], False)
@@ -44,3 +50,19 @@ class RaiRobot():
     def sendToReal(self, val:bool):
         self.real = val
         self.B.sendToReal(val)
+
+    def setGripper(self, val:float, gripperIndex:int):
+        """
+        Directly set a value to the gripper joints.
+        PR2:
+         - leftGripper: -3
+         - rightGripper: -4 
+        """
+        q = self.C.getJointState()
+        q[gripperIndex] = val
+        self.C.setJointState(q)
+        self.move([q])
+
+    
+    def move(self, q:list):
+        self.B.move(q, [10.0], False)
