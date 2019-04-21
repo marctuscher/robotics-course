@@ -10,7 +10,7 @@ sys.path.append('../')
 
 #%%
 from practical.raiRobot import RaiRobot
-from practical.objectives import moveToPosition, align, distance
+from practical.objectives import moveToPosition, align, distance, gazeAt
 #%%
 def reset(robot, model):
     robot.C = 0
@@ -27,7 +27,7 @@ robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
 
 #%%
 robot.inverseKinematics([
-    *align(['l_gripper_frame', 'ball']), 
+    gazeAt(['l_gripper_frame', 'ball']), 
     distance(['l_gripper_frame', 'ball'], 0)
     ])
 

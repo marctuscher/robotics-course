@@ -14,22 +14,28 @@ def moveToPosition(pos:list, frame:str):
         'target': pos,
     }
 
+def gazeAt(frames:list):
+    """
+    Gaze at a frame
+    """
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.gazeAt, 
+        'frames': frames,
+        'target': [1, 1],
+    }
+
 def align(frames:list):
     """
     Align two frames. The scalar product of two of the axes of those frames is
     equal to 1, if aligned.
     """
-    return [{
+    return {
         'type': ry.OT.eq,
         'feature': ry.FS.scalarProductXY,
         'frames': frames,
         'target': [1.]
-    }, {
-        'type': ry.OT.eq,
-        'feature': ry.FS.scalarProductZZ,
-        'frames': frames,
-        'target': [1.]
-    }]
+    }
 
 def distance(frames:list, target:float):
     """
