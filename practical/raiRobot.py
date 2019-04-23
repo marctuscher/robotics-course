@@ -1,4 +1,4 @@
-pipimport sys
+import sys
 sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
