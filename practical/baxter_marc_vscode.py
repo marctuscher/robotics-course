@@ -12,6 +12,7 @@ sys.path.append('../')
 #%%
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, align, distance, gazeAt
+
 #%%
 def reset(robot, model):
     robot.C = 0
@@ -53,11 +54,11 @@ cameraView.selectSensor('kinect')
 I = cameraView.computeImageAndDepth()
 depth = I[1]
 rgb = I[0]
-if(False):
-    print('rgb', rgb)
-    print('d', depth)
-    plt.imshow(rgb)
-    plt.show()
+
+print('rgb', rgb)
+print('d', depth)
+plt.imshow(rgb)
+plt.show()
 
 #%% 
 print('gray scale image')
@@ -125,3 +126,4 @@ cameraView = robot.C.cameraView()
 
 #%%
 robot.setGripper(0, -4)
+

@@ -14,6 +14,17 @@ def moveToPosition(pos:list, frame:str):
         'target': pos,
     }
 
+def moveToPose(pos:list, frame:str):
+    """
+    Move frame to a given position
+    """
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.pose, 
+        'frames': [frame],
+        'target': pos,
+    }
+
 def gazeAt(frames:list):
     """
     Gaze at a frame
