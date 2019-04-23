@@ -35,19 +35,26 @@ robot.inverseKinematics([
 robot.getFrameNames()
 
 
-
+#%%
+cameraView = robot.C.cameraView()
+cameraView.addSensor(name='kinect', frameAttached='endeffKinect',  width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
 
 #%%
-camView = robot.addCamera(name='camera', parent='head_tilt_link', args='Q:<d(-90 1 0 0) d(180 0 0 1)> focalLength:.3', view=True, width=80, height=80)
+import matplotlib.pyplot as plt
+cameraView.selectSensor('kinect')
+I = cameraView.computeImageAndDepth()
+depth = I[1]
+rgb = I[0]
+print('rgb', rgb)
+print('d', depth)
+plt.imshow(rgb)
+plt.show()
 
-#%%
-camView.computeImageAndDepth()
 #%%
 robot.deleteFrame('camera')
 
 #%%
 cameraView = robot.C.cameraView()
 
-
 #%%
-robot.setGripper(0, -3)
+robot.setGripper(0, -4)
