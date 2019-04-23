@@ -3,7 +3,8 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
 from pdb import set_trace
-from practical.objectives import moveToPosition, align
+from practical.objectives import gazeAt, distance
+import time 
 
 class RaiRobot():
     
@@ -19,18 +20,13 @@ class RaiRobot():
         self.B.sync(self.C)
         self.real = False
         self.B.sendToReal(self.real)
+        self.C.makeObjectsConvex()
         self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.01], pos=[.4,.4,1.], color=[1.,1.,0.])
         self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[.75,.0,1.2], color=[1.,0.,0.])
     
 
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
-    
-    def moveToPosition(self, pos:np.ndarray, frameName:str):
-        self.inverseKinematics([moveToPosition(pos, frameName)])
-        
-    def align(self, frameNames:list):
-        self.inverseKinematics([align(frameNames)])
     
     def inverseKinematics(self, objectives:list):
         """
@@ -101,3 +97,14 @@ class RaiRobot():
     def getPose(self, frame_name):
         pose = self.C.getFrameState(frame_name)
         return pose
+        
+    def grasp_ball(self, gripperFrame:str, targetFrame:str, gripperIndex:int):
+        self.setGripper(0.04, gripperIndex)
+        self.inverseKinematics(
+            [
+            gazeAt(['baxterL', 'ball']), 
+            distance(['baxterL', 'ball'], 0.1)
+            ]
+        )
+        time.sleep(3)
+        self.setGripper(0, gripperIndex)

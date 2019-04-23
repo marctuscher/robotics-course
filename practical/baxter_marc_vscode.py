@@ -22,20 +22,19 @@ def reset(robot, model):
 
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/pr2/pr2.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter.g')
 
 #%%
-robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
+robot = reset(robot, 'rai-robotModels/baxter/baxter.g')
 
 #%%
-robot.inverseKinematics([
-    gazeAt(['l_wrist_roll_link_1', 'ball']), 
-    distance(['l_wrist_roll_link_1', 'ball'], 1)
-    ])
+robot.grasp_ball('baxterL', 'ball', -1)
 
 #%%
 robot.getFrameNames()
 
+#%%
+robot.setGripper(0.04, -1)
 
 #%%
 cameraView = robot.C.cameraView()

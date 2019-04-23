@@ -33,7 +33,7 @@ def gazeAt(frames:list):
         'type': ry.OT.eq,
         'feature': ry.FS.gazeAt, 
         'frames': frames,
-        'target': [1, 1],
+        'target': [0, 0],
     }
 
 def align(frames:list):
