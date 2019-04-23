@@ -27,8 +27,8 @@ robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
 
 #%%
 robot.inverseKinematics([
-    gazeAt(['l_gripper_frame', 'ball']), 
-    distance(['l_gripper_frame', 'ball'], 0)
+    gazeAt(['l_wrist_roll_link_1', 'ball']), 
+    distance(['l_wrist_roll_link_1', 'ball'], 1)
     ])
 
 #%%
@@ -38,3 +38,4 @@ robot.getFrameNames()
 
 
 #%%
+robot.addCamera(name='camera', parent='head_tilt_link', args='Q:<d(-90 1 0 0) d(180 0 0 1)> focalLength:.3', True)

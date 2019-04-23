@@ -9,7 +9,8 @@ class RaiRobot():
     
     def __init__(self, nodeName:str, fileName:str):
         self.C = ry.Config()
-        self.D = self.C.view()
+        self.views = {}
+        self.views['default'] = self.C.view()
         self.C.clear()
         self.C.addFile(fileName)
         self.q_home = self.C.getJointState()
@@ -66,3 +67,24 @@ class RaiRobot():
     
     def move(self, q:list):
         self.B.move(q, [10.0], False)
+
+    def addCamera(self, name:str, parent:str, args:str, view:bool=False):
+        self.C.addFrame(name=name, parent=parent, args=args)
+        if view:
+            self.addView(name)
+
+    def addView(self, frameName:str):
+        self.views[frameName] = self.C.view(frameName)
+
+    
+    def deleteFrame(self, frameName:str):
+        assert(frameName in self.getFrameNames())
+        if self.views[frameName]:
+            self.views[frameName] = 0
+            del self.views[frameName]
+        self.C.delFrame(frameName)
+
+    def deleteView(self, frameName:str):
+        assert(self.views[frameName])
+        self.views[frameName] = 0
+        del self.views[frameName]

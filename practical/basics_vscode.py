@@ -18,7 +18,7 @@ D = K.view()
 
 
 #%%
-K.addFile('../rai-robotModels/baxter/baxter-clean.g');
+K.addFile('rai-robotModels/pr2/pr2.g');
 
 #%% [markdown]
 # Note that the view was updated automatically. (Internally, the view 'subscribes' to updates of the shared memory of Config).
@@ -226,7 +226,7 @@ C = K.view(frame='camera')
 # When we move the robot, that view moves with it:
 
 #%%
-K.setJointState(q=asarray([1.]), joints=['head_pan_joint'])
+K.setJointState(q=asarray([3.]), joints=['head_pan_joint'])
 
 #%% [markdown]
 # To close a view (or destroy a handle to a computational module), we reassign it to zero. We can also remove a frame from the configuration.
