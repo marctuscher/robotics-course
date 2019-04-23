@@ -97,3 +97,7 @@ class RaiRobot():
         self.views[frameName] = 0
         del self.views[frameName]
     
+
+    def getPose(frame_name):
+        pose = robot.C.getFrameState(frame_name)
+        return pose
