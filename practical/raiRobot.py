@@ -68,11 +68,15 @@ class RaiRobot():
     def move(self, q:list):
         self.B.move(q, [10.0], False)
 
-    def addCamera(self, name:str, parent:str, args:str, view:bool=False):
+    def addCamera(self, name:str, parent:str, args:str, width:int, height:int, view:bool=False):
         self.C.addFrame(name=name, parent=parent, args=args)
+        camView = self.C.cameraView()
+        camView.addSensor(name=name + 'Sensor', frameAttached=name, width=width, height=height)
         if view:
             self.addView(name)
+        return camView
 
+        
     def addView(self, frameName:str):
         self.views[frameName] = self.C.view(frameName)
 
@@ -88,3 +92,4 @@ class RaiRobot():
         assert(self.views[frameName])
         self.views[frameName] = 0
         del self.views[frameName]
+    

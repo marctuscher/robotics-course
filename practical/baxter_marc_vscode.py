@@ -38,4 +38,15 @@ robot.getFrameNames()
 
 
 #%%
-robot.addCamera(name='camera', parent='head_tilt_link', args='Q:<d(-90 1 0 0) d(180 0 0 1)> focalLength:.3', True)
+camView = robot.addCamera(name='camera', parent='head_tilt_link', args='Q:<d(-90 1 0 0) d(180 0 0 1)> focalLength:.3', view=True, width=80, height=80)
+
+#%%
+camView.computeImageAndDepth()
+#%%
+robot.deleteFrame('camera')
+
+#%%
+cameraView = robot.C.cameraView()
+
+
+#%%
