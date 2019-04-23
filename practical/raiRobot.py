@@ -3,7 +3,7 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
 from pdb import set_trace
-from practical.objectives import gazeAt, distance
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ
 import time 
 
 class RaiRobot():
@@ -21,8 +21,8 @@ class RaiRobot():
         self.real = False
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
-        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.01], pos=[.4,.4,1.], color=[1.,1.,0.])
-        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[.75,.0,1.2], color=[1.,0.,0.])
+        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
+        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[1.,0.,0.])
     
 
     def getFrameNames(self)-> list:
@@ -42,9 +42,11 @@ class RaiRobot():
         IK.optimize()
         self.C.setFrameState(IK.getConfiguration(0))
         self.move([self.C.getJointState()])
+        self.B.wait()
     
     def goHome(self):
         self.B.move([self.q_home], [10.0], False)
+        self.B.wait()
     
     def sendToReal(self, val:bool):
         self.real = val
@@ -102,9 +104,11 @@ class RaiRobot():
         self.setGripper(0.04, gripperIndex)
         self.inverseKinematics(
             [
-            gazeAt(['baxterL', 'ball']), 
-            distance(['baxterL', 'ball'], 0.1)
+            gazeAt([gripperFrame, targetFrame]), 
+            scalarProductXZ([gripperFrame, targetFrame]), 
+            scalarProductZZ([gripperFrame, targetFrame]), 
+            distance([gripperFrame, targetFrame], 0.1)
             ]
         )
-        time.sleep(3)
+        time.sleep(5)
         self.setGripper(0, gripperIndex)

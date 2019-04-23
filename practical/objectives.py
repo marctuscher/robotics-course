@@ -36,16 +36,28 @@ def gazeAt(frames:list):
         'target': [0, 0],
     }
 
-def align(frames:list):
+def scalarProductXZ(frames:list):
     """
     Align two frames. The scalar product of two of the axes of those frames is
     equal to 1, if aligned.
     """
     return {
         'type': ry.OT.eq,
-        'feature': ry.FS.scalarProductXY,
+        'feature': ry.FS.scalarProductXZ,
         'frames': frames,
-        'target': [1.]
+        'target': [0.]
+    }
+
+def scalarProductZZ(frames:list):
+    """
+    Align two frames. The scalar product of two of the axes of those frames is
+    equal to 1, if aligned.
+    """
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.scalarProductZZ,
+        'frames': frames,
+        'target': [0.]
     }
 
 def distance(frames:list, target:float):

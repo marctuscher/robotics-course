@@ -11,7 +11,7 @@ sys.path.append('../')
 
 #%%
 from practical.raiRobot import RaiRobot
-from practical.objectives import moveToPosition, align, distance, gazeAt
+from practical.objectives import moveToPosition, gazeAt
 
 #%%
 def reset(robot, model):
@@ -28,8 +28,8 @@ robot =  RaiRobot('', 'rai-robotModels/baxter/baxter.g')
 robot = reset(robot, 'rai-robotModels/baxter/baxter.g')
 
 #%%
-robot.grasp_ball('baxterL', 'ball', -1)
-
+robot.grasp_ball('baxterL', 'ball2', -1)
+robot.goHome()
 #%%
 robot.getFrameNames()
 
