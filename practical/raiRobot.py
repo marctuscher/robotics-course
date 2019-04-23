@@ -19,8 +19,10 @@ class RaiRobot():
         self.B.sync(self.C)
         self.real = False
         self.B.sendToReal(self.real)
-        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.01], pos=[.4,.4,1.], color=[1,1,0])
+        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.01], pos=[.4,.4,1.], color=[1.,1.,0.])
+        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[.75,.0,1.2], color=[1.,0.,0.])
     
+
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
     
