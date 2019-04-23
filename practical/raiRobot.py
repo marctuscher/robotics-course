@@ -1,4 +1,4 @@
-import sys
+pipimport sys
 sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
@@ -56,6 +56,8 @@ class RaiRobot():
         """
         Directly set a value to the gripper joints.
         PR2:
+        - val [0,1]
+        - gripperIndex:
          - leftGripper: -3
          - rightGripper: -4 
         """

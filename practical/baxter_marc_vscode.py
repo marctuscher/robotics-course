@@ -50,3 +50,4 @@ cameraView = robot.C.cameraView()
 
 
 #%%
+robot.setGripper(0, -3)
