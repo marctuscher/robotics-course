@@ -55,7 +55,7 @@ class RaiRobot():
     def setGripper(self, val:float, gripperIndex:int):
         """
         Directly set a value to the gripper joints.
-        PR2:
+        PR2: 
         - val [0,1]
         - gripperIndex:
          - leftGripper: -3
