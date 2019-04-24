@@ -21,7 +21,7 @@ class RaiRobot():
         self.real = False
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
-        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
+        #self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
         self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[1.,0.,0.])
     
 
