@@ -105,8 +105,8 @@ class RaiRobot():
         self.inverseKinematics(
             [
             gazeAt([gripperFrame, targetFrame]), 
-            scalarProductXZ([gripperFrame, targetFrame]), 
-            scalarProductZZ([gripperFrame, targetFrame]), 
+            scalarProductXZ([gripperFrame, targetFrame], 0), 
+            scalarProductZZ([gripperFrame, targetFrame], 0), 
             distance([gripperFrame, targetFrame], 0.1)
             ]
         )
