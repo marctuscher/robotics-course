@@ -45,8 +45,7 @@ class RaiRobot():
         self.B.wait()
     
     def goHome(self):
-        self.B.move([self.q_home], [10.0], False)
-        self.B.wait()
+        self.move([self.q_home])
     
     def sendToReal(self, val:bool):
         self.real = val
@@ -69,19 +68,18 @@ class RaiRobot():
     
     def move(self, q:list):
         self.B.move(q, [10.0], False)
+        self.B.wait()
 
-    def addCamera(self, name:str, parent:str, args:str, width:int, height:int, view:bool=False):
-        self.C.addFrame(name=name, parent=parent, args=args)
-        camView = self.C.cameraView()
-        camView.addSensor(name=name + 'Sensor', frameAttached=name, width=width, height=height)
+    def getCamView(self, view:bool, **kwargs):
         if view:
-            self.addView(name)
+            self.addView(kwargs['frameAttached'])
+        camView = self.C.cameraView()
+        camView.addSensor(**kwargs)
+        camView.selectSensor(kwargs['name'])
         return camView
-
         
     def addView(self, frameName:str):
         self.views[frameName] = self.C.view(frameName)
-
     
     def deleteFrame(self, frameName:str):
         assert(frameName in self.getFrameNames())
@@ -94,13 +92,12 @@ class RaiRobot():
         assert(self.views[frameName])
         self.views[frameName] = 0
         del self.views[frameName]
-    
 
     def getPose(self, frame_name):
         pose = self.C.getFrameState(frame_name)
         return pose
         
-    def grasp_ball(self, gripperFrame:str, targetFrame:str, gripperIndex:int):
+    def grasp(self, gripperFrame:str, targetFrame:str, gripperIndex:int):
         self.setGripper(0.04, gripperIndex)
         self.inverseKinematics(
             [
@@ -110,5 +107,6 @@ class RaiRobot():
             distance([gripperFrame, targetFrame], 0.1)
             ]
         )
-        time.sleep(5)
         self.setGripper(0, gripperIndex)
+    
+
