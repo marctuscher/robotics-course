@@ -18,7 +18,7 @@ from practical.vision import computeHoughsTransform
 #%%
 os.getcwd()
 #%%
-img = cv2.imread('practical/ball3.jpg')
+img = cv2.imread('practical/cvtest.jpg')
 
 #%%
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
@@ -37,7 +37,7 @@ plt.imshow(mask, cmap='gray', vmin=0, vmax=1)
 
 
 #%%
-circles = circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT,1,45, param1=150,param2=13,minRadius=3,maxRadius=50)
+circles = circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT, 1,mask.shape[0]/8, param1=150,param2=13,minRadius=3,maxRadius=50)
 #(mask, None)
 
 #%%
