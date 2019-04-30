@@ -37,30 +37,36 @@ After loading the pr2 and the kitchen (running first 3 cells in the notebook), t
 
 ```
 git submodule update
-make -C rai dependAll
+make dependAll
 make -j4
 ```
 
 
 ## Tutorials
-[Basics:](docs/1-basics.ipynb) Configurations, Features & Jacobians
+
+1. [Basics:](docs/1-basics.ipynb) Configurations, Features & Jacobians
+1. [Features:](docs/2-features.ipynb) Learn about the language to define and query features and their Jacobians. Including querying collision features (whether and which objects are in collision).
 
 
-
-# Practical Robotics information
+# Practical Robotics Information
 
 ## (Not So) Quick Start
 
-* Install ROS Kinetic following http://wiki.ros.org/kinetic/Installation/Ubuntu
-* Install `pip install wstools catkin_pkg --user`
-* Source `source /opt/ros/kinetic/setup.bash`
-* generally, clone all git repos into $HOME/git
+* Install [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu)
+* Source and install
+```
+pip install wstools catkin_pkg --user
+source /opt/ros/kinetic/setup.bash
+```
+* The following assumes all git repos are cloned into $HOME/git
 * clone
 ```
 mkdir -p ~/git
 cd ~/git
 git clone https://github.com/MarcToussaint/robotics-course.git
 cd robotics-course
+git submodule init
+git submodule update
 ```
 * change `ROS = 0` to `#ROS = 0` in `config.mk` 
 * install also baxter sources using
@@ -68,11 +74,15 @@ cd robotics-course
 cd external
 ./installBaxterSources.sh
 ```
-* then compile as described above (starting with `git submodule init...`)
-* if using c++, install `qtcreator` as described here: https://github.com/MarcToussaint/rai-maintenance/blob/master/help/qtcreator.md
+* compile
+```
+make -j1 installUbuntuAll  # calls sudo apt-get install; you can always interrupt
+make -j4                   # builds libs and tests
+```
+* if using c++, install `qtcreator` as described [here](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/qtcreator.md)
 * when in the lab, connect to the wifi mlr-robolab (password: mlr-robolab)
 * call `source bin/baxterwlansetup.sh` from ~/git/robotics-course
-* source ROS and your workspace 
+* source ROS and the baxter sources
 ```
 source /opt/ros/kinetic/setup.bash
 source external/devel/setup.bash
@@ -93,7 +103,31 @@ jupyter-notebook p1-motion.ipynb
 * Before turning off baxter, run `rosrun baxter_tools tuck_arms.py -t`
 
 
-## Details
+# Documentation & Installation Pointers
+
+## Installation
+
+* [ROS kinectic](http://wiki.ros.org/kinetic/Installation/Ubuntu) (for Ubuntu 16.04) or [ROS melodic](http://wiki.ros.org/melodic/Installation/Ubuntu) (for Ubuntu 18.04)
+* [OpenCV](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/localSourceInstalls.md) (4.0.1, from source)
+* [qtcreator](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/qtcreator.md) (4.6.1 or ubuntu, setting up projects, pretty printers, source parsing)
+
+## rai code
+
+* [rai::Array and arr](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/arr.md) (tensors, arrays, std::vector)
+* [Features and Objectives for KOMO](https://github.com/MarcToussaint/rai-python/blob/master/docs/2-features.ipynb)
+* [Graph and `.g` files](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/graph.md) (Python dictionaries, any-type container, file format, logic)
+* [Editing robot model/configuration files](https://github.com/MarcToussaint/rai-maintenance/blob/master/help/kinEdit.md)  (URDF, transformations, frame tree)
+* [docker](https://github.com/MarcToussaint/rai-maintenance/tree/master/docker) (testing rai within docker, also Ubuntu 18.04)
+
+## rai examples
+
+* [Python examples](https://github.com/MarcToussaint/rai-python/tree/master/docs)
+* [Python robotics exercises](https://github.com/MarcToussaint/robotics-course/tree/master/py)
+* [Cpp robotics exercises](https://github.com/MarcToussaint/robotics-course/tree/master/cpp)
+
+
+
+# More details on handling baxter
 
 ### Booting
 
@@ -149,6 +183,14 @@ sudo shutdown -h now
 
 
 ### Troubles
+
+* To launch the camera, ssh to snuffleupagus, source ros and baxterwlansetup.sh, and
+```
+ssh snuffleupagus
+source /opt/ros/kinetic/setup.bash 
+source ~yoojinoh/git/robotics-course/bin/baxterwlansetup.sh
+roslaunch openni2_launch openni2.launch
+```
 
 * One some machines, OpenGL with the glfw seems broke. You'll have to change back to an older version which uses freeglut. For this, in `rai/Gui/Makefile` switch the 0/1 for `FREEGLUT` and `GLFW`
 
