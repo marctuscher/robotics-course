@@ -28,7 +28,7 @@ robot =  RaiRobot('', 'rai-robotModels/baxter/baxter.g')
 robot = reset(robot, 'rai-robotModels/baxter/baxter.g')
 
 #%%
-robot.grasp_ball('baxterL', 'ball2', -1)
+robot.grasp('baxterL', 'ball2', -1)
 robot.goHome()
 #%%
 robot.getFrameNames()
@@ -48,7 +48,6 @@ try:
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 except ValueError:
     pass  # do nothing!
-
 import cv2
 
 cameraView.selectSensor('kinect')

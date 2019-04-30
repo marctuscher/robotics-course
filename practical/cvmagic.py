@@ -16,23 +16,14 @@ import os
 from practical.vision import houghsTransformFromBGR, plotCircles
 
 #%%
-def reset(robot, model):
-    robot.C = 0
-    robot.D = 0
-    robot.B = 0
-    return RaiRobot('', model)
-
-#%%
 img = cv2.imread('practical/ball3.jpg')
 
 #%%
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 #%%
-circles=houghsTransformFromBGR(img)
+circles = houghsTransformFromBGR(img)
 
-#%%
-#(mask, None)
 
 #%%
 plotCircles(img, circles)
@@ -40,7 +31,6 @@ plotCircles(img, circles)
 
 # now use depht pixel and also do a spatial filtering to account the 
 # neighborhood 
-
 range_x = [-1,0,1]
 range_y = [-1,0,1]
 cumulated_depth = 0

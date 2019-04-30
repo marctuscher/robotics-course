@@ -15,6 +15,7 @@ def houghsTransformFromBGR(img_bgr, dp=1, minDist=45, param1=150, param2=13, min
     mask1 = cv2.inRange(img_hsv, (0, 70, 70), (10, 255, 255))
     mask2 = cv2.inRange(img_hsv, (170, 70, 70), (180, 255, 255))
     mask = mask1 | mask2
+    plt.imshow(mask)
     circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT,dp,minDist, param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
     return circles
 
