@@ -13,26 +13,14 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from practical.vision import computeHoughsTransform
+from practical.vision import houghsTransformFromBGR, plotCircles
 
 #%%
-os.getcwd()
-
-#%%
-robot.C.addFrame(name='endeffKinect', parent='endeffHead', args='Q:<t(0 0 -0.01) d(-19 1 0 0)>')
-#C = K.view(frame='camera')
-cameraView = robot.C.cameraView()
-S =cameraView.addSensor(name='kinect', frameAttached='endeffKinect',  width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
-
-
-#%%
-cameraView.selectSensor('kinect')
-I = cameraView.computeImageAndDepth()
-depth = I[1]
-rgb = I[0]
-PC = cameraView.computePointCloud(depth, globalCoordinates=True)
-#cameraView.watch_PCL(PC)
-print(PC)
+def reset(robot, model):
+    robot.C = 0
+    robot.D = 0
+    robot.B = 0
+    return RaiRobot('', model)
 
 #%%
 img = cv2.imread('practical/ball3.jpg')
@@ -41,45 +29,13 @@ img = cv2.imread('practical/ball3.jpg')
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 #%%
-img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+circles=houghsTransformFromBGR(img)
 
 #%%
-mask1 = cv2.inRange(img_hsv, (0, 70, 70), (10, 255, 255))
-mask2 = cv2.inRange(img_hsv, (170, 70, 70), (180, 255, 255))
-
-mask = mask1 | mask2
-
-#%%
-plt.imshow(mask, cmap='gray', vmin=0, vmax=1)
-
-
-#%%
-circles = circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT,1,45, param1=150,param2=13,minRadius=3,maxRadius=50)
 #(mask, None)
 
 #%%
-circles = np.uint16(np.around(circles))
-img_ = img
-'''
-for i in [circles[0,:]]:
-    # draw the outer circle
-    cv2.circle(img,(i[0],i[1]),i[2],(0,255,0),2)
-    # draw the center of the circle
-    cv2.circle(img,(i[0],i[1]),2,(0,0,255),3)
-'''
-u = circles[0,0,0]
-v = circles[0,0,1]
-r = circles[0,0,2]
-# draw the outer circle
-cv2.circle(img_,(u,v),r,(0,255,0),2)
-# draw the center of the circle
-cv2.circle(img_,(u,v),2,(0,0,255),3)
-
-print('show detected circles')
-plt.imshow(img_, cmap='gray', vmin=0, vmax=255)
-
-
-
+plotCircles(img, circles)
 #%%
 
 # now use depht pixel and also do a spatial filtering to account the 
