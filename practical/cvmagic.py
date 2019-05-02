@@ -1,8 +1,4 @@
 #%%
-%reload_ext autoreload
-%autoreload 2
-%matplotlib inline
-#%%
 import sys
 sys.path.append('../')
 try:
@@ -14,13 +10,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from practical.vision import houghsTransformFromBGR, plotCircles
+import ry.libry as ry
+#%%
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
 
 #%%
-img = cv2.imread('practical/ball3.jpg')
-
+cam = ry.Camera()
 #%%
-plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+while(True):
+    # Capture frame-by-frame
+    frame = cam.getRgb()
+    depth = cam.getDepth()
 
+    # Display the resulting frame
+    circles, mask = houghsTransformFromBGR(frame, minRadius=20, maxRadius=100)
+    if circles is not None:
+        frame = plotCircles(frame, circles)
+    cv2.imshow("frame", frame)
+    cv2.imshow('mask', mask)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 #%%
 circles = houghsTransformFromBGR(img)
 

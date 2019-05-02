@@ -10,14 +10,13 @@ import matplotlib.pyplot as plt
 
 
 
-def houghsTransformFromBGR(img_bgr, dp=1, minDist=45, param1=150, param2=13, minRadius=3, maxRadius=50):
-    img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
-    mask1 = cv2.inRange(img_hsv, (0, 70, 70), (10, 255, 255))
+def houghsTransformFromBGR(img_rgb, dp=1, minDist=45, param1=150, param2=13, minRadius=3, maxRadius=50):
+    img_hsv = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2HSV)
+    mask1 = cv2.inRange(img_hsv, (0, 70, 50), (10, 255, 255))
     mask2 = cv2.inRange(img_hsv, (170, 70, 70), (180, 255, 255))
     mask = mask1 | mask2
-    plt.imshow(mask)
     circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT,dp,minDist, param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
-    return circles
+    return circles, mask
 
 
 def plotCircles(img_rgb, circles):
@@ -30,4 +29,4 @@ def plotCircles(img_rgb, circles):
     # draw the center of the circle
     cv2.circle(img_rgb,(u,v),2,(0,0,255),3)
 
-    plt.imshow(img_rgb, cmap='gray', vmin=0, vmax=255)
+    return img_rgb
