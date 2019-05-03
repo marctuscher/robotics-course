@@ -10,23 +10,26 @@ import matplotlib.pyplot as plt
 
 
 
-def houghsTransformFromBGR(img_rgb, dp=1, minDist=45, param1=150, param2=13, minRadius=3, maxRadius=50):
-    img_hsv = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2HSV)
-    mask1 = cv2.inRange(img_hsv, (0, 70, 50), (10, 255, 255))
-    mask2 = cv2.inRange(img_hsv, (170, 70, 70), (180, 255, 255))
-    mask = mask1 | mask2
-    circles = cv2.HoughCircles(mask,cv2.HOUGH_GRADIENT,dp,minDist, param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
-    return circles, mask
-
+def findContoursInMask(mask):
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+		cv2.CHAIN_APPROX_SIMPLE)
+    return cnts
 
 def plotCircles(img_rgb, circles):
     circles = np.uint16(np.around(circles))
-    u = circles[0,0,0]
-    v = circles[0,0,1]
-    r = circles[0,0,2]
-    # draw the outer circle
-    cv2.circle(img_rgb,(u,v),r,(0,255,0),2)
-    # draw the center of the circle
-    cv2.circle(img_rgb,(u,v),2,(0,0,255),3)
+    for i in range(len(circles)):
 
+        u = circles[i,0,0]
+        v = circles[i,0,1]
+        r = circles[i,0,2]
+        # draw the outer circle
+        cv2.circle(img_rgb,(u,v),r,(0,255,0),2)
+        # draw the center of the circle
+        cv2.circle(img_rgb,(u,v),2,(0,0,255),3)
     return img_rgb
+
+def redMask(img_bgr):
+    img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    mask1 = cv2.inRange(img_hsv, (0, 100, 100), (5, 255, 255))
+    mask2 = cv2.inRange(img_hsv, (160, 100, 100), (179, 255, 255))
+    return mask1 | mask2

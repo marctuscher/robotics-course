@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from practical.vision import houghsTransformFromBGR, plotCircles
+from practical.vision import redMask
 import ry.libry as ry
 #%%
 %reload_ext autoreload
@@ -25,19 +25,15 @@ while(True):
     depth = cam.getDepth()
 
     # Display the resulting frame
-    circles, mask = houghsTransformFromBGR(frame, minRadius=20, maxRadius=100)
-    if circles is not None:
-        frame = plotCircles(frame, circles)
+    mask = redMask(frame)
+    cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+		cv2.CHAIN_APPROX_SIMPLE)
+    for ct in cnts:
+        cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
     cv2.imshow("frame", frame)
     cv2.imshow('mask', mask)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-#%%
-circles = houghsTransformFromBGR(img)
-
-
-#%%
-plotCircles(img, circles)
 #%%
 
 # now use depht pixel and also do a spatial filtering to account the 
