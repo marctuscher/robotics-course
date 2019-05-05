@@ -74,12 +74,23 @@ blurred = cv2.GaussianBlur(graying,(3,3), 0)
 plt.imshow(blurred, cmap='gray', vmin=0, vmax=255)
 
 #%%
-blurred = cv2.GaussianBlur(graying,(3,3), 0)
-med = np.median(blurred)
+img_hsv = cv2.cvtColor(rgb, cv2.COLOR_BGR2HSV)
+print('hsv img')
+plt.imshow(img_hsv)
+mask1 = cv2.inRange(img_hsv, (0, 100, 100), (5, 255, 255))
+mask2 = cv2.inRange(img_hsv, (160, 100, 100), (179, 255, 255))
+red_img =  mask1 | mask2
+
+print('redish img')
+plt.imshow(red_img)
+
+#%%
+#blurred = cv2.GaussianBlur(graying,(3,3), 0)
+med = np.median(red_img)
 lower = int(max(0,(1.0 - 0.33) * med))
 upper = int(max(0,(1.0 + 0.33) * med))
 print('lower: ', lower, 'upper: ', upper)
-circles = cv2.HoughCircles(blurred,cv2.HOUGH_GRADIENT,1,45, param1=100,param2=10,minRadius=0,maxRadius=0)
+circles = cv2.HoughCircles(red_img,cv2.HOUGH_GRADIENT,1,45, param1=100,param2=10,minRadius=0,maxRadius=0)
 #print('circles: ', circles)
 print('circles: ', circles.shape)
 
