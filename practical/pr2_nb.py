@@ -16,7 +16,7 @@ sys.path.append('../')
 
 #%%
 from practical.raiRobot import RaiRobot
-from practical.objectives import moveToPosition, gazeAt
+from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 
 #%%
 def reset(robot, model):
@@ -49,9 +49,11 @@ pos = calcBallPos(i, r, c)
 while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
     robot.trackAndGraspTarget(pos, 'ball2', 'pr2L', -3, 1)
     i += 1
+    time.sleep(1)
     pos = calcBallPos(i, r, c)
 
-
+#%%
+import time
 
 #%%
 robot.getFrameNames()
@@ -87,4 +89,37 @@ img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 #%%
 pc = findBallPosition(img, d, {'fx': 1, 'fy': 1, 'px': 1, 'py': 1})
 pw = robot.computeCartesianPos(pc, 'endeffKinect')
+
+
+#%%
+gripperFrame = 'pr2L'
+targetFrame = 'ball2'
+
+path = robot.path(
+                [
+                    gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductXZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
+                    distance([gripperFrame, targetFrame], -0.1)
+                ]
+)
+
+
+
+#%%
+c = path.getConfiguration(10)
+
+#%%
+robot.C.setFrameState(c)
+
+#%%
+path.getReport()
+
+
+#%%
+path.getPathTau()
+
+#%%
+path.view()
+
 #%%
