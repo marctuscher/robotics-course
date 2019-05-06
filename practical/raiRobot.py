@@ -41,8 +41,7 @@ class RaiRobot():
             IK.addObjective(**obj)
         IK.optimize()
         self.C.setFrameState(IK.getConfiguration(0))
-        self.move([self.C.getJointState()])
-        self.B.wait()
+        return self.C.getJointState()
     
     def goHome(self):
         self.move([self.q_home])
@@ -99,7 +98,7 @@ class RaiRobot():
         
     def grasp(self, gripperFrame:str, targetFrame:str, gripperIndex:int):
         self.setGripper(0.04, gripperIndex)
-        self.inverseKinematics(
+        q = self.inverseKinematics(
             [
             gazeAt([gripperFrame, targetFrame]), 
             scalarProductXZ([gripperFrame, targetFrame], 0), 
@@ -107,6 +106,7 @@ class RaiRobot():
             distance([gripperFrame, targetFrame], 0.1)
             ]
         )
+        self.B.move([q])
         self.setGripper(0, gripperIndex)
     
 
