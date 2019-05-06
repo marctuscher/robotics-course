@@ -16,7 +16,7 @@ sys.path.append('../')
 
 #%%
 from practical.raiRobot import RaiRobot
-from practical.objectives import moveToPosition, gazeAt
+from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 
 #%%
 def reset(robot, model):
@@ -49,9 +49,11 @@ pos = calcBallPos(i, r, c)
 while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
     robot.trackAndGraspTarget(pos, 'ball2', 'pr2L', -3, 1)
     i += 1
+    time.sleep(1)
     pos = calcBallPos(i, r, c)
 
-
+#%%
+import time
 
 #%%
 robot.getFrameNames()
@@ -94,6 +96,7 @@ data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
 intr = (data1 + data2) * .5
 pc = findBallPosition(img, d, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
 pw = robot.computeCartesianPos(pc, 'endeffKinect')
+<<<<<<< HEAD
 print('pw: ', pw)
 
 
@@ -105,5 +108,39 @@ print(rot)
 
 #%%
 
+=======
+
+
+#%%
+gripperFrame = 'pr2L'
+targetFrame = 'ball2'
+
+path = robot.path(
+                [
+                    gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductXZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
+                    distance([gripperFrame, targetFrame], -0.1)
+                ]
+)
+
+
+
+#%%
+c = path.getConfiguration(10)
+
+#%%
+robot.C.setFrameState(c)
+
+#%%
+path.getReport()
+
+
+#%%
+path.getPathTau()
+
+#%%
+path.view()
+>>>>>>> fbb6f7cb17e8b7e247ebfe4e402852ecd0a3938f
 
 #%%

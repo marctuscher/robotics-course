@@ -44,6 +44,15 @@ class RaiRobot():
         self.C.setFrameState(IK.getConfiguration(0))
         return self.C.getJointState()
 
+
+    def path(self, objectives):
+        path = self.C.komo_path(1, 100, 5)
+        for obj in objectives:
+            path.addObjective(**obj)
+        path.optimize()
+        self.C.setFrameState(path.getConfiguration(0))
+        return self.C.getJointState()
+
     def goHome(self):
         self.move([self.q_home])
     
@@ -67,8 +76,8 @@ class RaiRobot():
 
     
     def move(self, q:list):
-        self.B.move(q, [10.0], False)
-        self.B.wait()
+        self.B.move(q, [2.0], False)
+        #self.B.wait()
 
     def getCamView(self, view:bool, **kwargs):
         if view:
@@ -116,7 +125,7 @@ class RaiRobot():
         #self.setGripper(gripperOpenVal, gripperIndex)
         if targetPos:
             target.setPosition(targetPos)
-            q = self.inverseKinematics(
+            q = self.path(
                 [
                     gazeAt([gripperFrame, targetFrame]), 
                     scalarProductXZ([gripperFrame, targetFrame], 0), 
