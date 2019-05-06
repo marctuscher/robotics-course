@@ -27,8 +27,6 @@ def greenMask(img_bgr):
     return mask
 
 
-
-
 def findBallPosition(img_bgr, d, intr):
     x, y = findBallInImage(img_bgr)
     dp = d[int(x)][int(y)]

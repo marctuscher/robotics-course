@@ -84,7 +84,26 @@ plt.imshow(img)
 from practical.vision import findBallPosition
 #%%
 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
+
 #%%
-pc = findBallPosition(img, d, {'fx': 1, 'fy': 1, 'px': 1, 'py': 1})
+# Two standard intrinsics found in the internet:
+# https://github.com/CentroEPiaggio/calibration/blob/master/config/intrinsics/depth_asus2.yaml
+# data: [f_x, 0, p_x, 0, f_y, c_y, 0, 0, 1]
+data1 = np.array([591.0404980862523, 0, 333.5494021499902, 0, 592.6290897776142, 227.510834953816, 0, 0, 1])
+data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
+intr = (data1 + data2) * .5
+pc = findBallPosition(img, d, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
 pw = robot.computeCartesianPos(pc, 'endeffKinect')
+print('pw: ', pw)
+
+
+
+
+print(rot)
+#%%
+
+
+#%%
+
+
 #%%
