@@ -96,7 +96,6 @@ data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
 intr = (data1 + data2) * .5
 pc = findBallPosition(img, d, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
 pw = robot.computeCartesianPos(pc, 'endeffKinect')
-<<<<<<< HEAD
 print('pw: ', pw)
 
 
@@ -108,7 +107,6 @@ print(rot)
 
 #%%
 
-=======
 
 
 #%%
@@ -141,6 +139,5 @@ path.getPathTau()
 
 #%%
 path.view()
->>>>>>> fbb6f7cb17e8b7e247ebfe4e402852ecd0a3938f
 
 #%%
