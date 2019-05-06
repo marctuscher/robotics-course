@@ -1,0 +1,76 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fourier,erewhon}
+\usepackage{amssymb, amsbsy}
+\usepackage{array, booktabs, longtable}
+\usepackage{graphicx}
+\usepackage[x11names, table]{xcolor}
+\usepackage{caption}
+\DeclareCaptionFont{blue}{\color{LightSteelBlue3}}
+
+\newcommand{\foo}{\color{LightSteelBlue3}\makebox[0pt]{\tiny\textbullet}\hskip-0.5pt\vrule width 1pt\hspace{\labelsep}}
+\newcommand{\bfoo}{\raisebox{2.1ex}[0pt]{\makebox[\dimexpr2\tabcolsep]%
+{\color{LightSteelBlue3}\tiny\textbullet}}}%
+\newcommand{\tfoo}{\makebox[\dimexpr2\tabcolsep]%
+{\color{LightSteelBlue3}$\boldsymbol \uparrow $}}%
+
+
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{url}
+
+\title{Practical course robotics \\ project proposal}
+\author{Marc Tuscher, Ralf Gulde}
+\date{\today}
+\begin{document}
+\maketitle
+
+\subsection*{Goal}
+Robust grasping of various objects. 
+\subsection*{Problems and methods}
+\begin{itemize}
+    \item Problems:\\
+    \begin{itemize}
+        \item Localization of objects.
+        \item Localization of robust grasp points.
+    \end{itemize}
+    \item Methods:\\
+    \begin{itemize}
+        \item Robot control using \textit{rai} framework
+        \item Sampling of grasp candidates using a grasping policy (e.g. \textit{CrossEntropyRobustGraspingPolicy}\footnote{\url{https://github.com/BerkeleyAutomation/gqcnn/blob/a0930e9d2fef3c930c41dd91cde902d261348fbe/gqcnn/grasping/policy/policy.py#L627}}) 
+        \item evaluation of grasp candidates with pretrained \textit{GQCNN}\footnote{\url{https://github.com/BerkeleyAutomation/gqcnn}}
+        \item localization of objects using bounding boxes (if necessary)
+    \end{itemize}
+\end{itemize}
+\subsection*{Milestones}
+
+
+
+
+\renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
+\begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm}}
+ \caption{Timeline} \\[-1.5ex]
+\toprule
+\addlinespace[1.5ex] 
+ \multicolumn{1}{c!{\tfoo}}{}& \\[-2.3ex]
+16.05.19 & Basic setup, process RGBD images from Baxter/PR2 with GQCNN\\
+23.05.19 & Grasp object with default grasping policy\\
+06.06.19 & Tune control, recalculate online if object moves\\
+13.06.19 & Experiment with different grasping policies\\
+ \multicolumn{1}{c!{\bfoo}}{}&
+\end{longtable}
+\subsection*{Requirements}
+\begin{itemize}
+    \item Baxter
+    \item PR2
+    \item Optional: machine with GPU for further training. We can also bring our own desktop pc.
+    \item Details about camera intrinsics
+    \item RAI framework running on machines with nvidia graphics card (but this problem might be related to the newest nvidia-driver.)
+\end{itemize}
+\end{document}
