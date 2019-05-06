@@ -42,7 +42,7 @@ class RaiRobot():
         IK.optimize()
         self.C.setFrameState(IK.getConfiguration(0))
         return self.C.getJointState()
-    
+
     def goHome(self):
         self.move([self.q_home])
     
@@ -106,7 +106,22 @@ class RaiRobot():
             distance([gripperFrame, targetFrame], 0.1)
             ]
         )
-        self.B.move([q])
+        self.move([q])
         self.setGripper(0, gripperIndex)
     
+    def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, gripperIndex, gripperOpenVal):
+        target = self.C.frame(targetFrame)
+        #self.setGripper(gripperOpenVal, gripperIndex)
+        if targetPos:
+            target.setPosition(targetPos)
+            q = self.inverseKinematics(
+                [
+                    gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductXZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
+                    distance([gripperFrame, targetFrame], 0.1)
+                ]
+            )
+            self.move([ q])
+
 
