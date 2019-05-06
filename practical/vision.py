@@ -28,8 +28,19 @@ def greenMask(img_bgr):
 
 
 
-def findBallPosition(img_bgr):
+
+def findBallPosition(img_bgr, d, intr):
+    x, y = findBallInImage(img_bgr)
+    dp = d[int(x)][int(y)]
+    xc = dp * (x - intr['px'])/intr['fx']
+    yc = -dp * (y-intr['py'])/intr['fy']
+    zc = -dp
+    return [xc, yc, zc]
+
+
+def findBallInImage(img_bgr):
     mask = greenMask(img_bgr)
+    plt.imshow(mask)
     cnts = findContoursInMask(mask)
     center = None
     if cnts:
@@ -39,8 +50,7 @@ def findBallPosition(img_bgr):
         center=(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"]))
         cv2.circle(img_bgr, (int(x), int(y)), int(r),(0, 255, 255), 2)
         cv2.circle(img_bgr, center, 5, (0, 0, 255), -1)
-        plt.imshow(img_bgr)
-    
+        return (x,y)
 
 def plotCircles(img_rgb, circles):
     circles = np.uint16(np.around(circles))

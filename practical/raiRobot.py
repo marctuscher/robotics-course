@@ -5,6 +5,7 @@ import numpy as np
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
 import time 
+from scipy.spatial.transform import Rotation as R
 
 class RaiRobot():
     
@@ -125,3 +126,9 @@ class RaiRobot():
             self.move([q])
 
 
+    def computeCartesianPos(self, framePos, frameName):
+        frame = self.C.frame(frameName)
+        pos = frame.getPosition()
+        #rot = R.from_quat(frame.getQuaternion())
+        rot = frame.getQuaternion()
+        return pos + rot @ framePos

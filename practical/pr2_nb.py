@@ -85,6 +85,6 @@ from practical.vision import findBallPosition
 #%%
 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
 #%%
-findBallPosition(img)
-
+pc = findBallPosition(img, d, {'fx': 1, 'fy': 1, 'px': 1, 'py': 1})
+pw = robot.computeCartesianPos(pc, 'endeffKinect')
 #%%
