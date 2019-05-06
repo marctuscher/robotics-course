@@ -7,13 +7,40 @@ except ValueError:
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
+import imutils
 
 
 def findContoursInMask(mask):
-    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+    cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
     return cnts
+
+
+def greenMask(img_bgr):
+    greenLower = (29, 86, 6)
+    greenUpper = (64, 255, 255)
+    img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(img_hsv, greenLower, greenUpper)
+    mask = cv2.erode(mask, None, iterations=2)
+    mask = cv2.dilate(mask, None, iterations=2)
+    return mask
+
+
+
+def findBallPosition(img_bgr):
+    mask = greenMask(img_bgr)
+    cnts = findContoursInMask(mask)
+    center = None
+    if cnts:
+        c = max(cnts, key=cv2.contourArea)
+        ((x,y), r) = cv2.minEnclosingCircle(c)
+        M = cv2.moments(c)
+        center=(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"]))
+        cv2.circle(img_bgr, (int(x), int(y)), int(r),(0, 255, 255), 2)
+        cv2.circle(img_bgr, center, 5, (0, 0, 255), -1)
+        plt.imshow(img_bgr)
+    
 
 def plotCircles(img_rgb, circles):
     circles = np.uint16(np.around(circles))

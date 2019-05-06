@@ -3,7 +3,7 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
 import time 
 
 class RaiRobot():
@@ -22,7 +22,7 @@ class RaiRobot():
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
         #self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
-        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[1.,0.,0.])
+        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
     
 
     def getFrameNames(self)-> list:
@@ -119,9 +119,9 @@ class RaiRobot():
                     gazeAt([gripperFrame, targetFrame]), 
                     scalarProductXZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 0), 
-                    distance([gripperFrame, targetFrame], 0.1)
+                    distance([gripperFrame, targetFrame], -0.1)
                 ]
             )
-            self.move([ q])
+            self.move([q])
 
 

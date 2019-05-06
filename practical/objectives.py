@@ -8,7 +8,7 @@ def moveToPosition(pos:list, frame:str):
     Move frame to a given position
     """
     return {
-        'type': ry.OT.none,
+        'type': ry.OT.eq,
         'feature': ry.FS.position, 
         'frames': [frame],
         'target': pos,

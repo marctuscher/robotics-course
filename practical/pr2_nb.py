@@ -1,8 +1,13 @@
 #%%
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
+try:
+    sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+except ValueError:
+    pass  # do nothing!
+import cv2
 sys.path.append('../')
-
 
 #%%
 %reload_ext autoreload
@@ -40,9 +45,46 @@ gripperFrame = 'pr2L'
 gripper = robot.C.frame('pr2L')
 i = 0
 r = 0.1
-while np.linalg.norm(pos - gripper.getPosition()) > 0.05:
-    print(i)
-    pos = calcBallPos(i, r, c)
+pos = calcBallPos(i, r, c)
+while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
     robot.trackAndGraspTarget(pos, 'ball2', 'pr2L', -3, 1)
     i += 1
+    pos = calcBallPos(i, r, c)
 
+
+
+#%%
+robot.getFrameNames()
+
+#%%
+robot.C.addFrame(name='endeffKinect', parent='endeffHead', args='Q:<t(0 0 -0.01) d(-19 1 0 0)>')
+C = robot.C.view(frame='endeffKinect')
+cameraView = robot.C.cameraView()
+cameraView.addSensor(name='kinect', frameAttached='endeffKinect',  width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
+cameraView.selectSensor('kinect')
+
+#%%
+ball = robot.C.frame('ball2')
+
+#%%
+ball.setPosition([2, 0, 0.7])
+
+#%%
+img, d = cameraView.computeImageAndDepth()
+
+
+
+#%%
+cv2.imshow("img", img)
+
+#%%
+plt.imshow(img)
+
+#%%
+from practical.vision import findBallPosition
+#%%
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
+#%%
+findBallPosition(img)
+
+#%%
