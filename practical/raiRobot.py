@@ -136,24 +136,6 @@ class RaiRobot():
             self.move([q])
 
 
-    def computeCartesianPos(self, framePos, frameName):
-
-        # get the pose of the desired frame in respect to world coordinates
-        pose = robot.C.getFrameState(frameName)
-        pos = pose[0:3]
-        rot = pose[3:7]
-
-        # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
-        # p_ = q * v * q'
-        v = np.concatenate((np.array([0.]), framePos), axis=0)
-        v_ = robot.quat_multiply(robot.quat_multiply(rot,v), robot.quat_conj(rot))
-        v_ = v_[1:4]
-
-        return v_ + pos
-
-
-
-
     def quat_multiply(self, quat0, quat1):
         # as numpy lacks a proper quaternion multiplication method, we provide it here
         w0, x0, y0, z0 = quat0
@@ -167,3 +149,18 @@ class RaiRobot():
         w0, x0, y0, z0 = quat0
         return np.array([w0, -x0, -y0, -z0], dtype=np.float64)
     
+
+    def computeCartesianPos(self, framePos, frameName):
+
+        # get the pose of the desired frame in respect to world coordinates
+        pose = self.C.getFrameState(frameName)
+        pos = pose[0:3]
+        rot = pose[3:7]
+
+        # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
+        # p_ = q * v * q'
+        v = np.concatenate((np.array([0.]), framePos), axis=0)
+        v_ = self.quat_multiply(self.quat_multiply(rot,v), self.quat_conj(rot))
+        v_ = v_[1:4]
+
+        return v_ + pos
