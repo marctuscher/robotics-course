@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import imutils
 
 
-f = 1./np.tan(0.5*60.8*np.pi/180.)
+f = 1./np.tan(0.5 * 60.8 * np.pi/180.)
 f = f * 320.
 intrinsics= {'fx': f, 'fy': f, 'px': 320, 'py': 240}
 baxterCamIntrinsics = {'fx': f, 'fy': f, 'px': 320, 'py': 240}
@@ -22,14 +22,6 @@ def findContoursInMask(mask):
     return cnts
 
 
-def greenMask(img_bgr):
-    greenLower = (40, 86, 6)
-    greenUpper = (64, 255, 255)
-    img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(img_hsv, greenLower, greenUpper)
-    mask = cv2.erode(mask, None, iterations=2)
-    mask = cv2.dilate(mask, None, iterations=2)
-    return mask
 
 
 def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
@@ -65,8 +57,19 @@ def plotCircles(img_rgb, circles):
         cv2.circle(img_rgb,(u,v),2,(0,0,255),3)
     return img_rgb
 
+
 def redMask(img_bgr):
     img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
     mask1 = cv2.inRange(img_hsv, (0, 100, 100), (5, 255, 255))
     mask2 = cv2.inRange(img_hsv, (160, 100, 100), (179, 255, 255))
     return mask1 | mask2
+
+
+def greenMask(img_bgr):
+    greenLower = (40, 86, 6)
+    greenUpper = (64, 255, 255)
+    img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(img_hsv, greenLower, greenUpper)
+    mask = cv2.erode(mask, None, iterations=2)
+    mask = cv2.dilate(mask, None, iterations=2)
+    return mask
