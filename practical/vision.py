@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 import imutils
 
 
+f = 1./np.tan(0.5*60.8*np.pi/180.)
+f = f * 320.
+intrinsics= {'fx': f, 'fy': f, 'px': 320, 'py': 240}
+baxterCamIntrinsics = {'fx': f, 'fy': f, 'px': 320, 'py': 240}
+
 def findContoursInMask(mask):
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
@@ -27,18 +32,17 @@ def greenMask(img_bgr):
     return mask
 
 
-def findBallPosition(img_bgr, d, intr):
+def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
     x, y = findBallInImage(img_bgr)
     dp = d[int(x)][int(y)]
-    xc = dp * (x - intr['px'])/intr['fx']
-    yc = -dp * (y-intr['py'])/intr['fy']
+    xc = dp * (x - intrinsics['px'])/intrinsics['fx']
+    yc = -dp * (y-intrinsics['py'])/intrinsics['fy']
     zc = -dp
     return [xc, yc, zc]
 
 
 def findBallInImage(img_bgr):
     mask = greenMask(img_bgr)
-    cv2.imshow('mask', mask)
     cnts = findContoursInMask(mask)
     center = None
     if cnts:

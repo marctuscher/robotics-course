@@ -22,12 +22,13 @@ class RaiRobot():
         self.real = False
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
-        #self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
         self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
+        # add camera on baxter head -> pcl is the camera frame
         self.pcl = self.C.addFrame('pcl', 'head')
         self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
+        if nodeName:
+            self.cam = ry.Camera(nodeName, "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
-    
 
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
@@ -168,9 +169,6 @@ class RaiRobot():
 
         return v_ + pos
 
-    def computeWithScipy(self, framePos, frameName):
-        frame = self.C.frame(frameName)
-        pos = frame.getPosition()
-        rot = frame.getQuaternion()
-        return pos + rot @ np.array(framePos)
-        
+    def imgAndDepth(self):
+        assert self.cam
+        return self.cam.getRgb(), self.cam.getDepth()
