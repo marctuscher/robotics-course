@@ -17,19 +17,23 @@ sys.path.append('../')
 #%%
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
-
+from practical.vision import findBallPosition, findBallInImage
+import libry as ry
 #%%
 def reset(robot, model):
     robot.C = 0
     robot.D = 0
     robot.B = 0
-    return RaiRobot('', model)
+    return RaiRobot('awesomeNode', model)
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/pr2/pr2.g')
+robot =  RaiRobot('awesomeNode', 'rai-robotModels/baxter/baxter_new.g')
 
 #%%
-robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
+robot = reset(robot, 'rai-robotModels/baxter/baxter_new.g')
+
+#%%
+cam = ry.Camera("awesomeNode", "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
 #%%
 def calcBallPos(i, r, c):
@@ -45,7 +49,7 @@ gripperFrame = 'pr2L'
 gripper = robot.C.frame('pr2L')
 i = 0
 r = 0.1
-pos = calcBallPos(i, r, c)
+pc = 
 while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
     robot.trackAndGraspTarget(pos, 'ball2', 'pr2L', -3, 1)
     i += 1
@@ -53,7 +57,61 @@ while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
     pos = calcBallPos(i, r, c)
 
 #%%
-import time
+data1 = np.array([591.0404980862523, 0, 333.5494021499902, 0, 592.6290897776142, 227.510834953816, 0, 0, 1])
+data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
+intr = (data1 + data2) * .5
+c = [0.7, 0, 1.2]
+gripperFrame = 'baxterR'
+gripper = robot.C.frame('baxterR')
+i = 0
+r = 0.1
+img = cam.getRgb()
+depth = cam.getDepth()
+posc = findBallPosition(img, depth, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
+pos = robot.computeCartesianPos(posc, 'pcl')
+while True: #np.linalg.norm(pos - gripper.getPosition()) > 0.05:
+    robot.trackAndGraspTarget(pos, 'ball2', 'baxterR', -2, 1)
+    i += 1
+    time.sleep(1)
+    img = cam.getRgb()
+    depth = cam.getDepth()
+    posc = findBallPosition(img, depth, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
+    pos = robot.computeCartesianPos(posc, 'pcl')
+#%%
+img = cam.getRgb()
+depth = cam.getDepth()
+img_rgb = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+
+#%%
+
+data1 = np.array([591.0404980862523, 0, 333.5494021499902, 0, 592.6290897776142, 227.510834953816, 0, 0, 1])
+data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
+intr = (data1 + data2) * .5
+pc = findBallPosition(img, depth, {'fx': intr[0], 'fy': intr[4], 'px': intr[2], 'py': intr[5]})
+
+#%%
+robot.computeWithScipy(pc, 'pcl')
+pos = robot.computeCartesianPos(pc, 'pcl')
+#%%
+f = 1./np.tan(0.5*60.8*np.pi/180.)
+f = f * 320.
+#%%
+while True:
+    img = cam.getRgb()
+    depth = cam.getDepth()
+    data1 = np.array([591.0404980862523, 0, 333.5494021499902, 0, 592.6290897776142, 227.510834953816, 0, 0, 1])
+    data2 = np.array([576.975967, 0, 316.29332, 0, 578.05708, 223.353287, 0, 0, 1])
+    intr = (data1 + data2) * .5
+    pc = findBallPosition(img, depth, {'fx': f, 'fy': f, 'px': 320, 'py': 240})
+    pos = robot.computeCartesianPos(pc, 'pcl')
+    ball.setPosition(pos)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+#%%
+ball = robot.C.frame('ball2')
+#%%
+ball.setPosition(pos)
 
 #%%
 robot.getFrameNames()

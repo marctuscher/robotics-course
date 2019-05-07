@@ -24,6 +24,9 @@ class RaiRobot():
         self.C.makeObjectsConvex()
         #self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.55,.0,1.], color=[1.,1.,0.])
         self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
+        self.pcl = self.C.addFrame('pcl', 'head')
+        self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
+
     
 
     def getFrameNames(self)-> list:
@@ -160,7 +163,14 @@ class RaiRobot():
         # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
         # p_ = q * v * q'
         v = np.concatenate((np.array([0.]), framePos), axis=0)
-        v_ = self.quat_multiply(self.quat_multiply(rot,v), self.quat_conj(rot))
+        v_ = self.quat_multiply(self.quat_multiply(self.quat_conj(rot),v),rot)
         v_ = v_[1:4]
 
         return v_ + pos
+
+    def computeWithScipy(self, framePos, frameName):
+        frame = self.C.frame(frameName)
+        pos = frame.getPosition()
+        rot = frame.getQuaternion()
+        return pos + rot @ np.array(framePos)
+        

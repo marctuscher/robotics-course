@@ -18,7 +18,7 @@ def findContoursInMask(mask):
 
 
 def greenMask(img_bgr):
-    greenLower = (29, 86, 6)
+    greenLower = (40, 86, 6)
     greenUpper = (64, 255, 255)
     img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(img_hsv, greenLower, greenUpper)
@@ -38,7 +38,7 @@ def findBallPosition(img_bgr, d, intr):
 
 def findBallInImage(img_bgr):
     mask = greenMask(img_bgr)
-    plt.imshow(mask)
+    cv2.imshow('mask', mask)
     cnts = findContoursInMask(mask)
     center = None
     if cnts:
@@ -46,8 +46,6 @@ def findBallInImage(img_bgr):
         ((x,y), r) = cv2.minEnclosingCircle(c)
         M = cv2.moments(c)
         center=(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"]))
-        cv2.circle(img_bgr, (int(x), int(y)), int(r),(0, 255, 255), 2)
-        cv2.circle(img_bgr, center, 5, (0, 0, 255), -1)
         return (x,y)
 
 def plotCircles(img_rgb, circles):
