@@ -12,7 +12,6 @@ import imutils
 
 f = 1./np.tan(0.5 * 60.8 * np.pi/180.)
 f = f * 320.
-intrinsics= {'fx': f, 'fy': f, 'px': 320, 'py': 240}
 baxterCamIntrinsics = {'fx': f, 'fy': f, 'px': 320, 'py': 240}
 
 def findContoursInMask(mask):
