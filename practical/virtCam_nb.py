@@ -13,7 +13,6 @@ except ValueError:
 import cv2
 sys.path.append('../')
 
-
 #%%
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
@@ -21,19 +20,36 @@ from practical.vision import findBallPosition, findBallInImage
 import libry as ry
 
 #%%
+def reset(robot, model):
+    """
+    reset robot model
+    only works when not connected to rosnode
+    """
+    robot.C = 0
+    robot.D = 0
+    robot.B = 0
+    return RaiRobot('', model)
+
+#%%
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
-
+#%%
+# for resetting when running without rosnode
+robot = reset(robot, 'rai-robotModels/baxter/baxter_new.g')
 
 #%%
 ball = robot.C.frame('ball2')
 #%%
+img, d = robot.virtImgAndDepth()
 
-while True:
-    img, depth = robot.imgAndDepth()
-    pc = findBallPosition(img, depth)
-    pos = robot.computeCartesianPos(pc, 'pcl')
-    ball.setPosition(pos)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+#%%
+plt.imshow(img)
 
+#%%
+ball.setPosition([5, 0, 1])
+
+
+
+
+
+#%%

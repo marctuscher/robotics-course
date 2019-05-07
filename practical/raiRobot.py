@@ -26,6 +26,7 @@ class RaiRobot():
         # add camera on baxter head -> pcl is the camera frame
         self.pcl = self.C.addFrame('pcl', 'head')
         self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
+        self.camView = self.getCamView(True, frameAttached='pcl', name='headCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         if nodeName:
             self.cam = ry.Camera(nodeName, "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
@@ -151,9 +152,12 @@ class RaiRobot():
         v = np.concatenate((np.array([0.]), framePos), axis=0)
         v_ = quatMultiply(quatMultiply(quatConj(rot),v),rot)
         v_ = v_[1:4]
-
         return v_ + pos
 
     def imgAndDepth(self):
         assert self.cam
         return self.cam.getRgb(), self.cam.getDepth()
+
+    def virtImgAndDepth(self):
+        self.camView.updateConfig(self.C)
+        return self.camView.computeImageAndDepth()
