@@ -4,8 +4,8 @@ import libry as ry
 import numpy as np
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
+from practical.utils import quatConj, quatMultiply
 import time 
-from scipy.spatial.transform import Rotation as R
 
 class RaiRobot():
     
@@ -140,22 +140,7 @@ class RaiRobot():
             self.move([q])
 
 
-    def quat_multiply(self, quat0, quat1):
-        # as numpy lacks a proper quaternion multiplication method, we provide it here
-        w0, x0, y0, z0 = quat0
-        w1, x1, y1, z1 = quat1
-        return np.array([-x1 * x0 - y1 * y0 - z1 * z0 + w1 * w0,
-                        x1 * w0 + y1 * z0 - z1 * y0 + w1 * x0, 
-                        -x1 * z0 + y1 * w0 + z1 * x0 + w1 * y0,
-                        x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=np.float64)
-
-    def quat_conj(self, quat0):
-        w0, x0, y0, z0 = quat0
-        return np.array([w0, -x0, -y0, -z0], dtype=np.float64)
-    
-
     def computeCartesianPos(self, framePos, frameName):
-
         # get the pose of the desired frame in respect to world coordinates
         pose = self.C.getFrameState(frameName)
         pos = pose[0:3]
@@ -164,7 +149,7 @@ class RaiRobot():
         # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
         # p_ = q * v * q'
         v = np.concatenate((np.array([0.]), framePos), axis=0)
-        v_ = self.quat_multiply(self.quat_multiply(self.quat_conj(rot),v),rot)
+        v_ = quatMultiply(quatMultiply(quatConj(rot),v),rot)
         v_ = v_[1:4]
 
         return v_ + pos
