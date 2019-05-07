@@ -7,7 +7,7 @@
         "*.tpp": "cpp"
     },
     "python.autoComplete.extraPaths": [
-        "${workspaceRoot}/ry/"
+        "${workspaceFolder}/ry/"
     ],
     "python.jediEnabled": true
 }
