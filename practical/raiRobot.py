@@ -2,6 +2,7 @@ import sys
 sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
+import quaternion
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
 from practical.utils import quatConj, quatMultiply
@@ -164,8 +165,14 @@ class RaiRobot():
 
     def computeCartesianTwist(self, desPose, actPose):
         # actPose and des Pose must be in the same reference frame!
-        
 
+        # Rotatory component in world frame
+        # q_err = q_soll * (q_ist)^-1
+
+        # Compute rotational error in quaternions
+        r_err_7d(4:7) = quatmultiply(r_des_7d(4:7), quatinv(r_act_7d(4:7)));
+
+        r_err_7d(4:7) = quatnormalize(r_err_7d(4:7));
 
         return 0
 
@@ -177,5 +184,5 @@ class RaiRobot():
         angular twist
         '''
 
-        act_pose = getPose(frameName)
+        #act_pose = getPose(frameName)
         return 0
