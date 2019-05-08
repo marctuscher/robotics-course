@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 import imutils
 
 
-f = 1./np.tan(0.5 * 60.8 * np.pi/180.)
-f = f * 320.
+f = 320./np.tan(0.5 * 60.8 * np.pi/180.)
+fVirt = 1./np.tan(0.5 * 90 * np.pi/180.)
 baxterCamIntrinsics = {'fx': f, 'fy': f, 'px': 320, 'py': 240}
+virtCamIntrinsics = {'fx': 640 * fVirt, 'fy': 480 * fVirt, 'px': 320, 'py': 240}
+
 
 def findContoursInMask(mask):
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
