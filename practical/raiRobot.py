@@ -161,3 +161,21 @@ class RaiRobot():
     def virtImgAndDepth(self):
         self.camView.updateConfig(self.C)
         return self.camView.computeImageAndDepth()
+
+    def computeCartesianTwist(self, desPose, actPose):
+        # actPose and des Pose must be in the same reference frame!
+        
+
+
+        return 0
+
+
+    def sendCartesianTwist(self, twist, frameName):
+        '''
+        This methods sends cartesian twists in respect to a given frame
+        to the robot. A twist is a 6D vector containing a linear and an 
+        angular twist
+        '''
+
+        act_pose = getPose(frameName)
+        return 0
