@@ -76,8 +76,8 @@ def rotm2quat(rotm):
     q = quaternion.from_rotation_matrix(rotm)
     return quaternion.as_float_array(q)
 
+def rotm2eulZYX(rotm):
 
-#%%
-
-
-#%%
+    r = R.from_dcm(rotm)
+    zyx = r.as_euler('zyx', degrees=False)
+    return zyx

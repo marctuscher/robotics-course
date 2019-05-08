@@ -18,12 +18,11 @@ sys.path.append('../')
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 from practical.vision import findBallPosition, findBallInImage
-from practical.utils import *
+from practical import utils
 import libry as ry
 
 #%%
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
-
 
 
 #%%
@@ -41,20 +40,25 @@ while True:
 
 
 #%%
-p = robot.getPose('base')
-print(p)
-h_p = pose7d2homTF(p)
-print(h_p)
+p_act = robot.getPose('baxterL')
+print('p_act: ', p_act)
 
-p_7d = homTF2pose7d(h_p)
-print(p_7d)
+p_target = p_act + np.array([0, 0, .1, 0, 0, 0, 0])
+print('p_tar: ', p_target)
 
-h = P[3:7]
-cdg = quat2
+#t = robot.computeCartesianTwist(p_act, p_target, gain=.001)
+print('twist: ', t)
 
+target = p_act + t
 
+#q = robot.inverseKinematics([moveToPosition(target, 'baxterL')])
+#robot.move([q])
 
 #%%
-l = np.array([1,0,0,0])
-q = quaternion.as_quat_array(l)
-print(q)
+from practical.objectives import moveToPose
+q = robot.inverseKinematics(
+    [
+    objectives.moveToPose(target, 'baxterL')
+    ]
+)
+robot.move([q])

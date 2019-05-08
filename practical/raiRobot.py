@@ -3,9 +3,9 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 import numpy as np
 import quaternion
+from practical import utils
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
-from practical.utils import quatConj, quatMultiply
 import time 
 
 class RaiRobot():
@@ -143,17 +143,22 @@ class RaiRobot():
 
 
     def computeCartesianPos(self, framePos, frameName):
+
         # get the pose of the desired frame in respect to world coordinates
         pose = self.C.getFrameState(frameName)
         pos = pose[0:3]
         rot = pose[3:7]
+        q = utils.arr2quat(rot)
 
         # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
         # p_ = q * v * q'
         v = np.concatenate((np.array([0.]), framePos), axis=0)
-        v_ = quatMultiply(quatMultiply(quatConj(rot),v),rot)
+        v = utils.arr2quat(v)
+        #v_ = quatMultiply(quatMultiply(quatConj(rot),v),rot)
+        v_ = q * v * np.invert(q)
         v_ = v_[1:4]
         return v_ + pos
+ 
 
     def imgAndDepth(self):
         assert self.cam
@@ -163,20 +168,39 @@ class RaiRobot():
         self.camView.updateConfig(self.C)
         return self.camView.computeImageAndDepth()
 
-    def computeCartesianTwist(self, desPose, actPose):
-        # actPose and des Pose must be in the same reference frame!
+    def computeCartesianTwist(self, actPose, desPose, gain):
+        # actPose and des Pose must be in the same reference frame!     
 
-        # Rotatory component in world frame
-        # q_err = q_soll * (q_ist)^-1
+        t_err = desPose[0:3] - actPose[0:3]
+
+        q_act = utils.arr2quat(actPose[3:7])
+        q_act_inv = np.invert(q_act)
+        q_des = utils.arr2quat(desPose[3:7])
 
         # Compute rotational error in quaternions
-        
-        '''
-        r_err_7d(4:7) = quatmultiply(r_des_7d(4:7), quatinv(r_act_7d(4:7)));
+        # q_err = q_soll * (q_ist)^-1
+        q_err = q_des * q_act_inv
+        q_err = utils.quat2arr(q_err)
 
-        r_err_7d(4:7) = quatnormalize(r_err_7d(4:7));
+        ''' twist with angular euluer twist
+        # numpy quaternion uses a zyx-euler convention
+        R = quaternion.as_rotation_matrix(q_err)
+        zyx = utils.rotm2eulZYX(R)
+
+        twist = np.array([t_err[0], t_err[1], t_err[2], zyx[2], zyx[1], zyx[0]])
         '''
-        return 0
+
+        twist = np.array([t_err[0], t_err[1], t_err[2], q_err[0], q_err[1], q_err[2], q_err[3]])
+
+        # calculate the error in euler angles as this represents the angular rotatory twists
+        # TODO: tune this value 
+        #gain = 1
+
+        twist = twist * gain     
+
+        print(twist)
+
+        return twist
 
 
     def sendCartesianTwist(self, twist, frameName):
