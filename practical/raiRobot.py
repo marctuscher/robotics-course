@@ -43,7 +43,7 @@ class RaiRobot():
         Using a new IK object, to ensure that all frames that have been added to 
         the configuration are also added to the computational graph of the solver.
         """
-        IK = self.C.komo_IK()
+        IK = self.C.komo_IK(False)
         for obj in objectives:
             IK.addObjective(**obj)
         IK.optimize()

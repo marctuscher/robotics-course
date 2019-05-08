@@ -48,10 +48,10 @@ print('p_act: ', p_act)
 p_target = p_act + np.array([0, 0, -.1, 0, 0, 0, 0])
 print('p_tar: ', p_target)
 
-
+q = robot.C.getJointState()
 for i in range(0, 100):
     p_act = robot.getPose('baxterL')
-    t = robot.computeCartesianTwist(p_act, p_target, gain=.01)
+    t = robot.computeCartesianTwist(p_act, p_target, gain=0.01)
     print('twist: ', t)
 
     target = p_act + t
@@ -61,7 +61,7 @@ for i in range(0, 100):
     q = robot.inverseKinematics(
         [
         moveToPose(target, 'baxterL'),
-        qItself()
+        qItself(q, 1.)
         ]
     )
     robot.move([q])
