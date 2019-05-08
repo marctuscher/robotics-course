@@ -5,7 +5,7 @@ import numpy as np
 import quaternion
 from practical import utils
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose
 import time 
 
 class RaiRobot():
@@ -194,7 +194,6 @@ class RaiRobot():
 
         # calculate the error in euler angles as this represents the angular rotatory twists
         # TODO: tune this value 
-        #gain = 1
 
         twist = twist * gain     
 

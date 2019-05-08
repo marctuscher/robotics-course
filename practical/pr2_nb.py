@@ -40,25 +40,36 @@ while True:
 
 
 #%%
+from practical.objectives import moveToPose
+#%%
 p_act = robot.getPose('baxterL')
 print('p_act: ', p_act)
 
 p_target = p_act + np.array([0, 0, .1, 0, 0, 0, 0])
 print('p_tar: ', p_target)
 
-#t = robot.computeCartesianTwist(p_act, p_target, gain=.001)
+t = robot.computeCartesianTwist(p_act, p_target, gain=1)
 print('twist: ', t)
 
-target = p_act + t
+#target = p_act + t
+target = p_target
 
-#q = robot.inverseKinematics([moveToPosition(target, 'baxterL')])
-#robot.move([q])
-
-#%%
-from practical.objectives import moveToPose
 q = robot.inverseKinematics(
     [
-    objectives.moveToPose(target, 'baxterL')
+    moveToPose(target, 'baxterL'),
+    distance(['baxterL', 'baxterL'], 0)
     ]
 )
 robot.move([q])
+
+
+#%%
+
+
+#%%
+
+
+#%%
+
+
+#%%
