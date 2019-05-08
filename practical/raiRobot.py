@@ -170,10 +170,12 @@ class RaiRobot():
         # q_err = q_soll * (q_ist)^-1
 
         # Compute rotational error in quaternions
+        
+        '''
         r_err_7d(4:7) = quatmultiply(r_des_7d(4:7), quatinv(r_act_7d(4:7)));
 
         r_err_7d(4:7) = quatnormalize(r_err_7d(4:7));
-
+        '''
         return 0
 
 
