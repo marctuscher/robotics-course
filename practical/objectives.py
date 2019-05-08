@@ -76,3 +76,17 @@ def distance(frames:list, target:float):
         'frames': frames,
         'target': [target]    
         }
+
+def qItself():
+    """
+    Minimize zhe configuration joint vector.
+
+    Parameters:
+     - 
+    """
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.qItself,
+        'target': [0],   
+        }
+

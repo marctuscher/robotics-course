@@ -40,7 +40,7 @@ while True:
 
 
 #%%
-from practical.objectives import moveToPose
+from practical.objectives import moveToPose, qItself
 #%%
 p_act = robot.getPose('baxterL')
 print('p_act: ', p_act)
@@ -60,7 +60,8 @@ for i in range(0, 100):
 
     q = robot.inverseKinematics(
         [
-        moveToPose(target, 'baxterL')
+        moveToPose(target, 'baxterL'),
+        qItself()
         ]
     )
     robot.move([q])
