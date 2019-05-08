@@ -87,6 +87,7 @@ def qItself():
     return {
         'type': ry.OT.eq,
         'feature': ry.FS.qItself,
+        'frames': [],
         'target': [0],   
         }
 
