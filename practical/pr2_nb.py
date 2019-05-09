@@ -45,6 +45,8 @@ def addNewPoint(pos, t_arr):
 ball = robot.C.frame('ball2')
 f = 1./np.tan(0.5*60.8*np.pi/180.)
 f = f * 320.
+boxMax = np.array([2., 2., 2.])
+boxMin = -boxMax
 while True:
     img, depth = robot.imgAndDepth()
     pc, x, y = findBallPosition(img, depth)
@@ -55,7 +57,8 @@ while True:
         pos = robot.computeCartesianPos2(pc, 'pcl')
         t_arr = addNewPoint(pos, t_arr)
         p = timeFilter(t_arr)
-        ball.setPosition(pos)
+        if utils.isPointInsideBox(boxMin, boxMax, pos):
+            ball.setPosition(pos)
     robot.addPointCloud()
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

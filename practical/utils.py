@@ -81,3 +81,9 @@ def rotm2eulZYX(rotm):
     r = R.from_dcm(rotm)
     zyx = r.as_euler('zyx', degrees=False)
     return zyx
+
+def isPointInsideBox(boxMin, boxMax, pos):
+    for i in range(len(pos)):
+        if boxMin[i] > pos[i] or boxMax[i] < pos[i]:
+            return False
+    return True
