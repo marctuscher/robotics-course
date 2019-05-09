@@ -92,3 +92,10 @@ def qItself(q, scale):
         'scale': [scale]   
         }
 
+def accumulatedCollisions():
+    return {
+        'type': ry.OT.ineq,
+        'feature': ry.FS.accumulatedCollisions,
+        'frames': [],
+        'target': [0]
+    }
