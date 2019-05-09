@@ -83,6 +83,7 @@ def rotm2eulZYX(rotm):
     return zyx
 
 def isPointInsideBox(boxMin, boxMax, pos):
+    assert len(boxMin) == len(boxMax) == len(pos)
     for i in range(len(pos)):
         if boxMin[i] > pos[i] or boxMax[i] < pos[i]:
             return False
