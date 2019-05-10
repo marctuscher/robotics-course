@@ -51,7 +51,7 @@ class RaiRobot():
         Using a new IK object, to ensure that all frames that have been added to 
         the configuration are also added to the computational graph of the solver.
         """
-        IK = self.C.komo_IK(False)
+        IK = self.C.komo_IK(True)
         for obj in objectives:
             IK.addObjective(**obj)
         IK.optimize()
@@ -153,35 +153,6 @@ class RaiRobot():
         # get the pose of the desired frame in respect to world coordinates
         pose = self.C.getFrameState(frameName)
         pos = pose[0:3]
-<<<<<<< HEAD
-        rot = pose[3:7]
-        q = utils.arr2quat(rot)
-
-        homTF_pose = utils.pose7d2homTF(pose)
-        homTF_framePose = utils.pose7d2homTF(np.concatenate(framePos, np.array([1, 0, 0, 0]), axis=0))
-        homTF_res = homTF_pose @ homTF_framePose
-        t = np.transpose(homTF_res[0:3, 3])
-
-        return t
-
-        # we transform a vector v using a normalized quaternion q, where q' is the complex conjugated quaternion
-        # p_ = q * v * q'
-        v = np.concatenate((np.array([0.]), framePos), axis=0)
-        v = utils.arr2quat(v)
-        #v_ = quatMultiply(quatMultiply(quatConj(rot),v),rot)
-        v_ = q * v * np.invert(q)
-        v_ = v_[1:4]
-        return v_ + pos
- 
-
-    def imgAndDepth(self):
-        assert self.cam
-        return self.cam.getRgb(), self.cam.getDepth()
-
-    def virtImgAndDepth(self):
-        self.camView.updateConfig(self.C)
-        return self.camView.computeImageAndDepth()
-=======
         R = utils.quat2rotm(pose[3:7])
         return pos + R @ np.array(framePos)
 
@@ -196,7 +167,6 @@ class RaiRobot():
             img, d = self.cam.getRgb(), self.cam.getDepth()
         return img, d
 
->>>>>>> 7b27d97226242288115b38923ffabb0a0b051cd7
 
     def computeCartesianTwist(self, actPose, desPose, gain):
         # actPose and des Pose must be in the same reference frame!     
