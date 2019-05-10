@@ -1,9 +1,15 @@
 import sys
 sys.path.append("rai/rai/ry")
+try:
+    sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+except ValueError:
+    pass  # do nothing!
+import cv2
 import libry as ry
 import numpy as np
 import quaternion
 from practical import utils
+from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose
 import time 
@@ -24,10 +30,12 @@ class RaiRobot():
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
         self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
+        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,0.,1.])
         # add camera on baxter head -> pcl is the camera frame
         self.pcl = self.C.addFrame('pcl', 'head')
         self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
-        self.camView = self.getCamView(True, frameAttached='pcl', name='headCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
+        self.camView = self.getCamView(False, frameAttached='pcl', name='headCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
+        self.cam = None
         if nodeName:
             self.cam = ry.Camera(nodeName, "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
@@ -126,20 +134,18 @@ class RaiRobot():
         self.move([q])
         self.setGripper(0, gripperIndex)
     
-    def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, gripperIndex, gripperOpenVal):
+    def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame):
         target = self.C.frame(targetFrame)
-        #self.setGripper(gripperOpenVal, gripperIndex)
-        if targetPos:
-            target.setPosition(targetPos)
-            q = self.path(
-                [
-                    gazeAt([gripperFrame, targetFrame]), 
-                    scalarProductXZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 0), 
-                    distance([gripperFrame, targetFrame], -0.1)
-                ]
-            )
-            self.move([q])
+        target.setPosition(targetPos)
+        q = self.inverseKinematics(
+            [
+                gazeAt([gripperFrame, targetFrame]), 
+                scalarProductXZ([gripperFrame, targetFrame], 0), 
+                scalarProductZZ([gripperFrame, targetFrame], 0), 
+                distance([gripperFrame, targetFrame], -0.1)
+            ]
+        )
+        self.move([q])
 
 
     def computeCartesianPos(self, framePos, frameName):
@@ -147,6 +153,7 @@ class RaiRobot():
         # get the pose of the desired frame in respect to world coordinates
         pose = self.C.getFrameState(frameName)
         pos = pose[0:3]
+<<<<<<< HEAD
         rot = pose[3:7]
         q = utils.arr2quat(rot)
 
@@ -174,6 +181,22 @@ class RaiRobot():
     def virtImgAndDepth(self):
         self.camView.updateConfig(self.C)
         return self.camView.computeImageAndDepth()
+=======
+        R = utils.quat2rotm(pose[3:7])
+        return pos + R @ np.array(framePos)
+
+
+
+    def imgAndDepth(self, virtual=False):
+        if not self.cam or virtual:
+            self.camView.updateConfig(self.C)
+            img, d = self.camView.computeImageAndDepth()
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        else:
+            img, d = self.cam.getRgb(), self.cam.getDepth()
+        return img, d
+
+>>>>>>> 7b27d97226242288115b38923ffabb0a0b051cd7
 
     def computeCartesianTwist(self, actPose, desPose, gain):
         # actPose and des Pose must be in the same reference frame!     
@@ -218,3 +241,6 @@ class RaiRobot():
 
         #act_pose = getPose(frameName)
         return 0
+
+    def addPointCloud(self):
+        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']]))
