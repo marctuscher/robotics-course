@@ -151,7 +151,7 @@ class RaiRobot():
         q = utils.arr2quat(rot)
 
         homTF_pose = utils.pose7d2homTF(pose)
-        homTF_framePose = utils.pose7d2homTF(np.concatenate(framePos, np.array[1, 0, 0, 0]), axis=0))
+        homTF_framePose = utils.pose7d2homTF(np.concatenate(framePos, np.array([1, 0, 0, 0]), axis=0))
         homTF_res = homTF_pose @ homTF_framePose
         t = np.transpose(homTF_res[0:3, 3])
 
