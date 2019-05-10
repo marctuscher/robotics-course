@@ -24,24 +24,42 @@ def findContoursInMask(mask):
         return cnts
 
 def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
-    x, y = findBallInImage(img_bgr)
-    print(d)
-    dp = d[int(x)][int(y)]
-    xc = dp * (x - intrinsics['px'])/intrinsics['fx']
-    yc = -dp * (y-intrinsics['py'])/intrinsics['fy']
-    zc = -dp
-    return [xc, yc, zc]
+    p = findBallInImage(img_bgr)
+    if p:
+        x, y = p
+        dp = calcDepth(d, int(y), int(x))
+        xc = dp * (x - intrinsics['px'])/intrinsics['fx']
+        yc = -dp * (y-intrinsics['py'])/intrinsics['fy']
+        zc = -dp
+        return [xc, yc, zc], int(x), int(y)
+
+def calcDepth(d, u, v):
+    range_x = [-4, -3, -2, -1,0,1, 2, 3, 4]
+    range_y = [-4, -3, -2, -1,0,1, 2, 3, 4]
+    sum_ranges = len(range_x) * len(range_y)
+    cumulated_depth = 0
+    for x in range_x:
+        for y in range_y:
+            val = d[u + x][v + y]
+            if val == np.nan:
+                sum_ranges -= 1
+            else:
+                cumulated_depth += val
+    if sum_ranges >=3:
+        print("shit")
+    return cumulated_depth / (sum_ranges)
 
 def findBallInImage(img_bgr):
     mask = greenMask(img_bgr)
     cnts = findContoursInMask(mask)
-    center = None
     if cnts:
         c = max(cnts, key=cv2.contourArea)
         ((x,y), r) = cv2.minEnclosingCircle(c)
         M = cv2.moments(c)
         center=(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"]))
         return (x,y)
+
+
 
 def plotCircles(img_rgb, circles):
     circles = np.uint16(np.around(circles))
