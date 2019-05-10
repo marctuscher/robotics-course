@@ -11,7 +11,7 @@ import quaternion
 from practical import utils
 from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions
 import time 
 
 class RaiRobot():
@@ -81,7 +81,13 @@ class RaiRobot():
         - val [0,1]
         - gripperIndex:
          - leftGripper: -3
-         - rightGripper: -4 
+         - rightGripper: -4
+        BAX: 
+        - val [0,1]
+        - gripperIndex:
+         - leftGripper: -1
+         - rightGripper: -2 
+         
         """
         q = self.C.getJointState()
         q[gripperIndex] = val
@@ -142,10 +148,14 @@ class RaiRobot():
                 gazeAt([gripperFrame, targetFrame]), 
                 scalarProductXZ([gripperFrame, targetFrame], 0), 
                 scalarProductZZ([gripperFrame, targetFrame], 0), 
-                distance([gripperFrame, targetFrame], -0.1)
+                distance([gripperFrame, targetFrame], -0.1),
+                accumulatedCollisions()
             ]
         )
         self.move([q])
+        #TODO: dont do this
+        self.setGripper(0, -1) # close right gripper
+        self.setGripper(0, -2) # close left gripper
 
 
     def computeCartesianPos(self, framePos, frameName):

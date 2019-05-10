@@ -71,7 +71,7 @@ def distance(frames:list, target:float):
         - -0.1: positions of frames are 0.1 apart
     """
     return {
-        'type': ry.OT.eq,
+        'type': ry.OT.sos,
         'feature': ry.FS.distance,
         'frames': frames,
         'target': [target]    
