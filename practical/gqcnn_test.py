@@ -13,43 +13,24 @@ except ValueError:
 import cv2
 sys.path.append('../')
 
+
 #%%
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 from practical.vision import findBallPosition, findBallInImage
+from practical import utils
 import libry as ry
 
+
 #%%
-def reset(robot, model):
-    """
-    reset robot model
-    only works when not connected to rosnode
-    """
-    robot.C = 0
-    robot.D = 0
-    robot.B = 0
-    return RaiRobot('', model)
+from autolab_core import YamlConfig
+from gqcnn.grasping import Grasp2D, SuctionPoint2D, CrossEntropyRobustGraspingPolicy, RgbdImageState
+from gqcnn.utils import GripperMode, NoValidGraspsException
+from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, RgbdImage
+from visualization import Visualizer2D as vis
 
 #%%
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
-#%%
-# for resetting when running without rosnode
-robot = reset(robot, 'rai-robotModels/baxter/baxter_new.g')
-
-#%%
-ball = robot.C.frame('ball2')
-#%%
-img, d = robot.virtImgAndDepth()
-
-#%%
-plt.imshow(img)
-
-#%%
-ball.setPosition([5, 0, 1])
 
 
-
-
-
-#%%

@@ -1,0 +1,9 @@
+pip3 uninstall -y tornado
+pip3 install autolab_core
+pip3 install tornado==5.1.1
+pip3 install git+https://github.com/BerkeleyAutomation/perception.git
+pip3 install git+https://github.com/marctuscher/gqcnn.git
+pip3 uninstall prompt_toolkit
+pip3 install prompt_toolkit==1.0.15
+pip3 install tensorflow
+pip3 install tf
