@@ -2,7 +2,6 @@
 %reload_ext autoreload
 %autoreload 2
 %matplotlib inline
-#%%
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,7 +35,7 @@ r = 0.2
 c = [0.8, 0, 1]
 while True:
     ball_target.setPosition(utils.calcBallPos(i, r, c))
-    img, depth = robot.imgAndDepth()
+    img, depth = robot.imgAndDepth('cam')
     res =  findBallPosition(img, depth)
     if res:
         pc, x, y = res
@@ -52,10 +51,8 @@ while True:
         break
 
 
-
 #%%
-from practical.objectives import moveToPose, qItself
-#%%
+# IBVS approach
 targetFrame = 'baxterL'
 p_act = robot.getPose(targetFrame)
 print('p_act: ', p_act)
@@ -72,7 +69,7 @@ r = 0.2
 c = [0.8, 0, 1]
 while True:
     ball_target.setPosition(utils.calcBallPos(i, r, c))
-    img, depth = robot.imgAndDepth()
+    img, depth = robot.imgAndDepth('cam_lhc')
     res =  findBallPosition(img, depth)
     if res:
         pc, x, y = res
@@ -82,15 +79,14 @@ while True:
         pos = robot.computeCartesianPos(pc, 'pcl')
         if utils.isPointInsideBox(boxMin, boxMax, pos):
             #robot.trackAndGraspTarget(pos, 'ball', 'baxterL')
-        
-
-
+            print('')
+            robot.trackAndGraspTarget(pos, 'ball', 'baxterL')
 
     time.sleep(0.5)
     i += 1
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+'''
 q = robot.C.getJointState()
 while(True)
     p_act = robot.getPose(targetFrame)
@@ -112,4 +108,12 @@ while(True)
         ]
     )
     self.move([q])
+'''
 #%%
+l = robot.getFrameNames()
+for i in l: print(i)
+
+#%%
+robot.trackAndGraspTarget([0.8,0,1], 'ball', 'baxterL')
+img, depth = robot.imgAndDepth('cam_lhc')
+plt.imshow(img)

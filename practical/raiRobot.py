@@ -36,6 +36,12 @@ class RaiRobot():
         self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
         self.camView = self.getCamView(False, frameAttached='pcl', name='headCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam = None
+        # add camera on baxters left hand -> lhc (left hand cam)
+        self.lhc = self.C.addFrame('lhc', 'left_hand_camera')
+        self.lhc.setRelativePose('t(-.0 .0 .0) d(-180 1 0 0) ')
+        self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
+        self.cam_lhc = None
+
         if nodeName:
             self.cam = ry.Camera(nodeName, "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
@@ -168,13 +174,24 @@ class RaiRobot():
 
 
 
-    def imgAndDepth(self, virtual=False):
-        if not self.cam or virtual:
-            self.camView.updateConfig(self.C)
-            img, d = self.camView.computeImageAndDepth()
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        else:
-            img, d = self.cam.getRgb(), self.cam.getDepth()
+    def imgAndDepth(self, camName, virtual=False):
+        if camName == 'cam':
+            if not self.cam or virtual:
+                self.camView.updateConfig(self.C)
+                img, d = self.camView.computeImageAndDepth()
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            else:
+                img, d = self.cam.getRgb(), self.cam.getDepth()
+
+        elif camName == 'cam_lhc':
+            if not self.cam_lhc or virtual:
+                self.camView_lhc.updateConfig(self.C)
+                img, d = self.camView_lhc.computeImageAndDepth()
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            else:
+                img, d = self.cam_lhc.getRgb(), self.cam_lhc.getDepth()
+                
+        
         return img, d
 
 
