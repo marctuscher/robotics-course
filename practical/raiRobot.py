@@ -1,5 +1,10 @@
 import sys
 sys.path.append("rai/rai/ry")
+try:
+    sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+except ValueError:
+    pass  # do nothing!
+import cv2
 import libry as ry
 import numpy as np
 import quaternion
@@ -166,13 +171,15 @@ class RaiRobot():
         return v_ + pos
  
 
-    def imgAndDepth(self):
-        assert self.cam
-        return self.cam.getRgb(), self.cam.getDepth()
+    def imgAndDepth(self, virtual=False):
+        if not self.cam or virtual:
+            self.camView.updateConfig(self.C)
+            img, d = self.camView.computeImageAndDepth()
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        else:
+            img, d = self.cam.getRgb(), self.cam.getDepth()
+        return img, d
 
-    def virtImgAndDepth(self):
-        self.camView.updateConfig(self.C)
-        return self.camView.computeImageAndDepth()
 
     def computeCartesianTwist(self, actPose, desPose, gain):
         # actPose and des Pose must be in the same reference frame!     
