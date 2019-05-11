@@ -118,7 +118,7 @@ class RaiRobot():
     
     def deleteFrame(self, frameName:str):
         assert(frameName in self.getFrameNames())
-        if self.views[frameName]:
+        if frameName in self.views:
             self.views[frameName] = 0
             del self.views[frameName]
         self.C.delFrame(frameName)
