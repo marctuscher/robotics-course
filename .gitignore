@@ -136,3 +136,4 @@ srv_gen
 venv
 .vscode/ipch
 GQ*
+models/*
