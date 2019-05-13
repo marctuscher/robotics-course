@@ -104,11 +104,22 @@ SSD for that.
 \subsection{Motion Planning (Marc)}
 \label{3_2subsec_motion_planning}
 Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
-A core problem in robot motion planning and robotis in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
+A core problem in robot motion planning and robotics in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
 \begin{equation}
     y = \phi(q),  \phi : \mathbb{R}^n \rightarrow \mathbb{R}^d
 \end{equation}
 In robotics this problem is referred to as the inverse kinematics problem.
+We formulate this problem as a constrained optimization problem 
+\begin{equation}
+    \min_x f(x) \ \text{s.t.} \ g(x) \leq 0, \  h(x) = 0
+\end{equation}
+where different objectives can be defined. 
+Such objectives can either be equality constraints $h$, e.g. the distance between to frames, inequality constraints $g$ or costs terms $f$.
+The generality of this formulation allows to directly incorporate constraints for avoiding collisions.
+To solve this constrained optimization problem we rely on the KOMO library which formulates the constrained optimization problem as an unconstrained optimization problem, which is then solved using Newtons method~\cite{laumond_tutorial_2017}.
+As a first step, we only use inverse kinematics with some kind of collision avoidance for motion planning. 
+For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
+
 
 
 \section{Milestones}
