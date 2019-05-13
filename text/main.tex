@@ -55,6 +55,8 @@ Goals:
 
 * plan collision free paths 
 
+* test
+
 * drop the grasped object in a bin
 
 
@@ -99,8 +101,42 @@ This section gives an overview over the general problems of the objective and th
 
 \subsection{Perception}
 \label{3_1subsec_perception}
-needs to be infered if more than one object is in the scene. We will use a 
-SSD for that.
+Robotic systems increasingly leverage RGB-D sensors and data for tasks like object recognition \cite{8_lai2011large}, detection \cite{9_lai2012detection}, and mapping \cite{11_du2011rgb}. 
+RGB-D sensors like the Kinect are inexpensive, and the extra depth information is invaluable for robots that interact with a 3-D environment.
+Recent work on grasp detection focusses on the problem of finding grasps solely from RGB-D data \cite{13_saxena2008robotic}. 
+Due to the recent successful results of deep learning methods in computer vision, many robotics researchers have applicated the insights to the research field of robotic grasp detection.
+These techniques rely on machine learning to find the features of a good grasp from data. 
+Visual models of grasps generalize well to novel objects and only require a single view of the object, not a full physical model \cite{18_erhan2014scalable}.
+A deep CNN is built with multiple layers to extract information representations [67].
+Goodfellow et al. [17] has stated that the representation of the learning process of a deep neural network has similar attributes to the method through which information is processed by the human brain. 
+Literature suggests that lower level features are identified using the convolutional layer while application specific features are extracted by the fully connected portion of the network [68].
+Grasp detection methods can be categorized as follows:
+\begin{itemize}
+    \item Structured Output for grasp candidate parameters (e.g.: x, y, z, w, ix, jy, kz)
+    \item Grasp Robustness (selecting a grasp candidate based on the robustness factor)
+\end{itemize}
+
+\subsubsection{Structured Output}
+The most popular method for structured grasp detection was the sliding window approach proposed by Lenz et al. \cite{18_erhan2014scalable}. 
+In their approach, a classifier is used to predict if a small patch of the image contains a potential grasp.
+This method yielded a detection accuracy of 75\% and a processing time of 13.5 s per image.
+As an alternative, Redmon et al. \cite{19_redmon2015real} proposed the one-shot detection method.
+In most one-shot detection methods, a direct regression approach for predicting a structured grasp output is used. 
+In the first one-shot detection approach, the authors argued that a faster and more accurate method was necessary and proposed to use transfer learning techniques to predict grasp representation from images \cite{19_redmon2015real}. 
+They reported a detection accuracy of 84.4\% in 76 milliseconds per image.
+
+\subsubsection{Grasp Robustness}
+Learning a grasp robustness function also had been the central idea of many studies in deep grasp detection. 
+The researchers used this function to identify the grasp pose candidate with the highest score as the output. 
+Grasp robustness described the grasp probability of a certain location or an area of an image.
+A method to learn an optimal grasp robustness function was proposed by Mahler et al. \cite{27_mahler2017dex}.
+They considered the robustness as a scalar probability in the range of [0, 1]. 
+The authors compiled a dataset known as Dex-Net 2.0 with 6.7 million point clouds and analytic grasp quality metrics with
+parallel-plate grippers planned using robust on a dataset of 1500 3D object mesh models \textit{Dex-Net 2.0 Dataset}\footnote{\url{https://berkeley.app.box.com/s/6mnb2bzi5zfa7qpwyn7uq5atb7vbztng}}. 
+They further trained a grasp quality convolutional network (GQ-CNN) that was used to learn a robustness metric for grasp candidates. They tested their CNN with their dataset which achieved an accuracy of 98.1\% for grasp detection.
+
+
+
 \subsection{Motion Planning}
 \label{3_2subsec_motion_planning}
 Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
