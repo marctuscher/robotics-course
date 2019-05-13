@@ -28,12 +28,27 @@
 \maketitle
 
 \section{Introduction}
-Robust grasping of unknown and even known objects is a problem at the heart of many tasks in the field of robotics.
-Often robot perception pipelines suffer from high noise and uncertainty.
-In this work we leverage the combination of pretrained deep neural networks and a computer vision pipeline to extract robust grasp poses from RGBD-images of real world objects.
-This perception pipeline is integrated in a robot motion framework to perform the grasps with a robot.
+Recent advancements in robotics and automated systems have led to the expansion of autonomous capabilities and more intelligent machines being utilised in ever more varied applications \cite{1Visual_learning_2005, 2Teleoperation:2014}.
+While manipulating objects is relatively easy for humans, reliable grasping arbitrary objects remains an open challange for general-purpose robots.
+Resolving it would advance the application of robotics to industrial use cases, such as part assembly, binning, and sorting.
+The capability of adapting to changing environments is a necessary skill for task generalised robots \cite{3Robot_learning_2012, 4Imitation_and_Reinforcement_Learning_2010}.
+A grasp describes how a robotic end-effector can be arranged to securely grab an object and successfully lift.
+Grasp planning relates to the path planning process that is required to securely grasp the object and maintain the closed gripper contacts to hold and lift the object from its resting surface \cite{5Robotic_grasping_and_contact}.
+Initially, deriving the grasp-points of a perceived object is an essential aspects.
+Consequently, accurate and diverse detection of robotic grasp candidates for target objects should lead to a better grasp path planning and improve the overall performance of grasp-based manipulation tasks.
 
-\section{Goal}
+In this work we propose a deep learning strategy to detect grasp points from sensor data and plan collision free robot paths to manipulate arbitrary objects.
+In the past decade, deep learning has achieved major success on detection, classification, and regression tasks \cite{6bo2013unsupervised, 7krizhevsky2012imagenet}. 
+Its key strength is the ability to leverage large quantities of labelled and unlabelled data to learn powerful representations without hand-engineering the feature space.
+To conclude this work we experimentally validate our approach using a humanoid robotic system and a structured light RGB-D seonsor.
+
+This project proposal is organized as follows: In section \ref{2sec_goal} the goal of the work is described. 
+Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed mehtods are described.
+Section \ref{4_sec_milestones} thematizes the milestones of implementing the methods in a robotic demonstator system to evaluate the proposed approach.
+
+
+\section{Goal} 
+\label{2sec_goal}
 Robot grasping can be subdivided into two related problems: perception and planning.
 A typical example of this approach is the ROS grasp pipeline~~\cite{chitta_perception_2012}.
 Herein, a CAD model is mapped to a point cloud of the object.
@@ -41,6 +56,7 @@ Optimal grasp poses are then derived from the CAD model.
 This works well in ideal scenarios, however, in most realistic applications the scenario is far from ideal.
 Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
 \section{Problems and methods}
+\label{3sec_prob_n_meth}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
 \subsection{Localization of objects}
 needs to be infered if more than one object is in the scene. We will use a 
@@ -66,6 +82,8 @@ The planning component highly relies on the RAI framework for robot manipulation
     \end{itemize}
 \end{itemize}
 \section{Milestones}
+\label{4_sec_milestones}
+TODO
 
 
 
@@ -94,7 +112,7 @@ The planning component highly relies on the RAI framework for robot manipulation
 \end{itemize}
 
 
-\bibliographystyle{abbrv}
+\bibliographystyle{alpha}
 \bibliography{main}
 \end{document}
 
