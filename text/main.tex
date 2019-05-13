@@ -4,8 +4,7 @@
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{fourier,erewhon}
-\usepackage{amssymb, amsbsy}
+\usepackage{amssymb, amsbsy, amsmath}
 \usepackage{array, booktabs, longtable}
 \usepackage{graphicx}
 \usepackage[x11names, table]{xcolor}
@@ -82,6 +81,7 @@ Our main goal is to set up a framework which extracts robust grasp poses from RG
 \label{3sec_prob_n_meth}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
 
+
 \begin{itemize}
     \item Problems:\\
     \begin{itemize}
@@ -104,6 +104,11 @@ SSD for that.
 \subsection{Motion Planning (Marc)}
 \label{3_2subsec_motion_planning}
 Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
+A core problem in robot motion planning and robotis in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
+\begin{equation}
+    y = \phi(q),  \phi : \mathbb{R}^n \rightarrow \mathbb{R}^d
+\end{equation}
+In robotics this problem is referred to as the inverse kinematics problem.
 
 
 \section{Milestones}
