@@ -31,11 +31,16 @@
 \begin{document}
 \maketitle
 
-\subsection*{Goal}
+\section{Introduction}
+Robust grasping of unknown and even known objects is a problem at the heart of many tasks in the field of robotics.
+Often robot perception pipelines suffer from high noise and uncertainty.
+In this work we leverage the combination of pretrained deep neural networks and a computer vision pipeline to extract robust grasp poses from RGBD-images of real world objects.
+This perception pipeline is integrated in a robot motion framework to perform the grasps with a robot. 
 
-Robust grasping of unknown objects is a problem at the heart of many tasks in the field of robotics. Our main goal 
-is to setup a framework which extracts robust grasp poses from RGBD-Images. 
-\subsection*{Problems and methods}
+\section{Goal}
+Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps the object.
+
+\section{Problems and methods}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
 \begin{itemize}
     \item Problems:\\
@@ -51,23 +56,25 @@ This section gives an overview over the general problems of the objective and th
         \item localization of objects using bounding boxes (if necessary)
     \end{itemize}
 \end{itemize}
-\subsection*{Milestones}
+\section{Milestones}
 
 
 
-
+\begin{figure}
+    \label{timeline}
 \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
-\begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm}}
- \caption{Timeline} \\[-1.5ex]
-\toprule
+\begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm} p{5cm}}
+%\caption{Timeline} \\[-1.5ex]
+%\toprule
 \addlinespace[1.5ex] 
- \multicolumn{1}{c!{\tfoo}}{}& \\[-2.3ex]
-16.05.19 & Basic setup, process RGBD images from Baxter/PR2 with GQCNN\\
-23.05.19 & Grasp object with default grasping policy\\
-06.06.19 & Tune control, recalculate online if object moves\\
-13.06.19 & Experiment with different grasping policies\\
- \multicolumn{1}{c!{\bfoo}}{}&
+ &  \textbf{Marc} & \textbf{Ralf}  \\
+16.05.19 & Basic setup, process RGBD images from Baxter/PR2 with GQCNN & Ralfas asdasdasda sdas dasd asdasd as dasd\\
+23.05.19 & Grasp object with default grasping policy & \\
+06.06.19 & Tune control, recalculate online if object moves &\\
+13.06.19 & Experiment with different grasping policies &\\
 \end{longtable}
+    
+\end{figure}
 \subsection*{Requirements}
 \begin{itemize}
     \item Baxter
@@ -77,3 +84,5 @@ This section gives an overview over the general problems of the objective and th
     \item RAI framework running on machines with nvidia graphics card (but this problem might be related to the newest nvidia-driver.)
 \end{itemize}
 \end{document}
+
+
