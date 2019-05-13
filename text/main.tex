@@ -134,7 +134,11 @@ They considered the robustness as a scalar probability in the range of [0, 1].
 The authors compiled a dataset known as Dex-Net 2.0 with 6.7 million point clouds and analytic grasp quality metrics with
 parallel-plate grippers planned using robust on a dataset of 1500 3D object mesh models \textit{Dex-Net 2.0 Dataset}\footnote{\url{https://berkeley.app.box.com/s/6mnb2bzi5zfa7qpwyn7uq5atb7vbztng}}. 
 They further trained a grasp quality convolutional network (GQ-CNN) that was used to learn a robustness metric for grasp candidates. They tested their CNN with their dataset which achieved an accuracy of 98.1\% for grasp detection.
-
+\\
+ 
+Since the dexnet dataset is the largest publicly accessible dataset, and the quality of deep learning approaches significantly depends on the amount of available data, DexNet 2.0 is used in our approach.
+Furthermore, our literature research indicates that approaches based on grasp robustness achieve excellent accuracy at a low computation time. 
+Therefore a grasp robustness based method is selected.
 
 
 \subsection{Motion Planning}
