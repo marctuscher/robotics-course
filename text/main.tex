@@ -93,11 +93,11 @@ We formulate this problem as a constrained optimization problem
     \min_x f(x) \ \text{s.t.} \ g(x) \leq 0, \  h(x) = 0
 \end{equation}
 where different objectives can be defined. 
-Such objectives can either be equality constraints $h$, e.g. the distance between to frames, inequality constraints $g$ or costs terms $f$.
+Such objectives can either be equality constraints $h$, e.g. the distance between to frames, inequality constraints $g$ or costs terms which contribute to $f$.
 The generality of this formulation allows to directly incorporate constraints for avoiding collisions.
 To solve this constrained optimization problem we rely on the KOMO library which formulates the constrained optimization problem as an unconstrained optimization problem, which is then solved using Newtons method~\cite{laumond_tutorial_2017}.
 As a first step, we only use inverse kinematics with some kind of collision avoidance for motion planning. 
-For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
+For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories.
 \clearpage
 \section{Milestones}
 \label{4_sec_milestones}
@@ -111,7 +111,7 @@ The following section presents a timeline which serves as a workplan for the pro
 \addlinespace[1.5ex] 
  & \multicolumn{1}{c}{\textbf{Marc}}  & \multicolumn{1}{c}{\textbf{Ralf}}  \\[10pt]
 16.05.19 & get \textit{RAI} running on machines with nvidia gpu & port \textit{GQCNN} to python3, load pretrained model and basic setup\\[5pt]
-23.05.19 & set up bounding box detector for object localization & transform the output pose of \textit{GQCNN} into cartesian coordinates\\[5pt]
+23.05.19 & set up bounding box detector for object localization & transform output pose of \textit{GQCNN} into cartesian coordinates\\[5pt]
 06.06.19 & Tune control, test KOMO path planning & optimize prediction speed, check online capabilities\\[5pt]
 13.06.19 & Tune camera intrinsics with tensorflow-graphics\footnote{\url{https://github.com/tensorflow/graphics}} & Experiment on combining opencv pipeline and \textit{GQCNN} \\[5pt]
 20.06.19 & \multicolumn{2}{c}{experimental validation of the approach in several grasp scenarios} \\
