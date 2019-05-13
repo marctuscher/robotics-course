@@ -239,5 +239,9 @@ class RaiRobot():
         #act_pose = getPose(frameName)
         return 0
 
+    def sync(self):
+        self.B.sync(self.C)
+
     def addPointCloud(self):
-        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']]))
+        self.sync()
+        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']], self.cam.getRgb()))

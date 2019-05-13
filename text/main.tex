@@ -38,10 +38,16 @@ In this work we leverage the combination of pretrained deep neural networks and 
 This perception pipeline is integrated in a robot motion framework to perform the grasps with a robot. 
 
 \section{Goal}
-Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps the object.
+Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
 
 \section{Problems and methods}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
+\subsection{Localization of objects}
+needs to be infered if more than one object is in the scene. We will use a 
+SSD for that.
+
+\subsection{Localization of robust grasp points}
+
 \begin{itemize}
     \item Problems:\\
     \begin{itemize}
