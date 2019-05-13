@@ -97,11 +97,11 @@ This section gives an overview over the general problems of the objective and th
     \end{itemize}
 \end{itemize}
 
-\subsection{Perception (Ralf)}
+\subsection{Perception}
 \label{3_1subsec_perception}
 needs to be infered if more than one object is in the scene. We will use a 
 SSD for that.
-\subsection{Motion Planning (Marc)}
+\subsection{Motion Planning}
 \label{3_2subsec_motion_planning}
 Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
 A core problem in robot motion planning and robotics in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
@@ -121,39 +121,27 @@ As a first step, we only use inverse kinematics with some kind of collision avoi
 For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
 
 
-
+\clearpage
 \section{Milestones}
-\label{4_sec_milestones}F
-TODO
+\label{4_sec_milestones}
 
-blabla
+The following section presents a timeline which serves as a workplan for the project.
 
-
-\begin{figure}[b]
-    \label{timeline}
 \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
 \begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm} p{5cm}}
 %\caption{Timeline} \\[-1.5ex]
 %\toprule
 \addlinespace[1.5ex] 
  &  \textbf{Marc} & \textbf{Ralf}  \\
-16.05.19 & Basic setup, process RGBD images from Baxter/PR2 with GQCNN & Ralfas asdasdasda sdas dasd asdasd as dasd\\
-23.05.19 & Grasp object with default grasping policy & \\
-06.06.19 & Tune control, recalculate online if object moves &\\
-13.06.19 & Experiment with different grasping policies &\\
+16.05.19 & get \textit{RAI} running on machines with nvidia gpu & port \textit{GQCNN} to python3, load pretrained model and basic setup\\
+23.05.19 & set up bounding box detector for object localization & transform the output pose of \textit{GQCNN} into cartesian coordinates\\
+06.06.19 & Tune control, test KOMO path planning & optimize prediction speed, check online capabilities\\
+13.06.19 & Tune camera intrinsics with tensorflow-graphics\footnote{\url{https://github.com/tensorflow/graphics}} & Experiment on combining opencv pipeline and \textit{GQCNN} \\
+rest of time & \multicolumn{2}{c}{ \textbf{cleanup super messy code}}
 \end{longtable}
-\end{figure}
-
-\subsection*{Requirements}
-\begin{itemize}
-    \item Baxter
-    \item PR2
-    \item Optional: machine with GPU for further training. We can also bring our own desktop pc.
-    \item Details about camera intrinsics
-    \item RAI framework running on machines with nvidia graphics card (but this problem might be related to the newest nvidia-driver.)
-\end{itemize}
 
 
+\clearpage
 \bibliographystyle{alpha}
 \bibliography{main}
 \end{document}
