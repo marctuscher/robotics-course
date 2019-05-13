@@ -33,7 +33,7 @@ Resolving it would advance the application of robotics to industrial use cases, 
 The capability of adapting to changing environments is a necessary skill for task generalised robots \cite{3Robot_learning_2012, 4Imitation_and_Reinforcement_Learning_2010}.
 A grasp describes how a robotic end-effector can be arranged to securely grab an object and successfully lift.
 Grasp planning relates to the path planning process that is required to securely grasp the object and maintain the closed gripper contacts to hold and lift the object from its resting surface \cite{5Robotic_grasping_and_contact}.
-Initially, deriving the grasp-points of a perceived object is an essential aspects.
+Initially, deriving the grasp-points of a perceived object is an essential aspect.
 Consequently, accurate and diverse detection of robotic grasp candidates for target objects should lead to a better grasp path planning and improve the overall performance of grasp-based manipulation tasks.
 
 In this work we propose a deep learning strategy to detect grasp points from raw sensor data and plan collision free robot paths to manipulate arbitrary objects.
@@ -46,58 +46,18 @@ Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed method
 Section \ref{4_sec_milestones} thematizes the milestones of implementing the approach in a robotic demonstator system to evaluate the proposed approach.
 
 
-\section{Goal (Ralf)} 
+\section{Goal} 
 \label{2sec_goal}
-
-Goals:
-
-* detect parallel jaw grasps a priori unknown objects
-
-* plan collision free paths 
-
-* test
-
-* drop the grasped object in a bin
-
-
-Restrictions:
-
-* dynamic changing environments are not considered
-
-* objecte must in principle be manipulable by a two-finger parallel gripper.
-
-
-optional
-
-* suction cup gripper
-
-
-Robot grasping can be subdivided into two related problems: perception and planning.
-A typical example of this approach is the ROS grasp pipeline~~\cite{chitta_perception_2012}.
-Herein, a CAD model is mapped to a point cloud of the object.
-Optimal grasp poses are then derived from the CAD model. 
-This works well in ideal scenarios, however, in most realistic applications the scenario is far from ideal.
-Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
+he main goal in this project is to set up a framework which is able to detect a stable grasp pose of unkown objects and grab these objects using a parallel jaw gripper.
+This includes recognizing objects and their positions in the camera frame as well as identifying stable grasp poses.
+In order to execute a grasp, such a pose is transformed into cartesian coordinates in the world frame.
+Further, it also includes collision free planning of robot motion in order to execute the manipulation.
+We will not consider dynamic changing environments or objects which are not manipulable using a parallel jaw gripper. 
+However, we plan to experiment with an extension to this approach using a suction cup gripper.
 
 \section{Problems and methods}
 \label{3sec_prob_n_meth}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
-
-
-\begin{itemize}
-    \item Problems:\\
-    \begin{itemize}
-        \item Localization of objects.
-        \item Localization of robust grasp points.
-    \end{itemize}
-    \item Methods:\\
-    \begin{itemize}
-        \item Robot control using \textit{rai} framework
-        \item Sampling of grasp candidates using a grasping policy (e.g. \textit{CrossEntropyRobustGraspingPolicy}\footnote{\url{https://github.com/BerkeleyAutomation/gqcnn/blob/a0930e9d2fef3c930c41dd91cde902d261348fbe/gqcnn/grasping/policy/policy.py#L627}}) 
-        \item evaluation of grasp candidates with pretrained \textit{GQCNN}\footnote{\url{https://github.com/BerkeleyAutomation/gqcnn}}
-        \item localization of objects using bounding boxes (if necessary)
-    \end{itemize}
-\end{itemize}
 
 \subsection{Perception}
 \label{3_1subsec_perception}
@@ -161,7 +121,6 @@ As a first step, we only use inverse kinematics with some kind of collision avoi
 For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
 
 
-\clearpage
 \section{Milestones}
 \label{4_sec_milestones}
 
