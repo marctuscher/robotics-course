@@ -33,7 +33,7 @@ Resolving it would advance the application of robotics to industrial use cases, 
 The capability of adapting to changing environments is a necessary skill for task generalised robots \cite{3Robot_learning_2012, 4Imitation_and_Reinforcement_Learning_2010}.
 A grasp describes how a robotic end-effector can be arranged to securely grab an object and successfully lift.
 Grasp planning relates to the path planning process that is required to securely grasp the object and maintain the closed gripper contacts to hold and lift the object from its resting surface \cite{5Robotic_grasping_and_contact}.
-Initially, deriving the grasp-points of a perceived object is an essential aspects.
+Initially, deriving the grasp-points of a perceived object is an essential aspect.
 Consequently, accurate and diverse detection of robotic grasp candidates for target objects should lead to a better grasp path planning and improve the overall performance of grasp-based manipulation tasks.
 
 In this work we propose a deep learning strategy to detect grasp points from raw sensor data and plan collision free robot paths to manipulate arbitrary objects.
@@ -42,18 +42,18 @@ Its key strength is the ability to leverage large quantities of labelled and unl
 To conclude this work we experimentally validate our approach using a humanoid robotic system and a structured light RGB-D sensor.
 
 This project proposal is organized as follows: In section \ref{2sec_goal} the goal of the work is described. 
-Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed methods are described.
+Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed methods are presented.
 Section \ref{4_sec_milestones} thematizes the milestones of implementing the approach in a robotic demonstator system to evaluate the proposed approach.
 
 
 \section{Goal} 
 \label{2sec_goal}
-he main goal in this project is to set up a framework which is able to detect a stable grasp pose of unkown objects and grab these objects using a parallel jaw gripper.
-This includes recognizing objects and their positions in the camera frame as well as identifying stable grasp poses.
+The main goal in this project is to set up a software framework  that enables the robust planning and execution of robotic graps using a humanoid robot system.
+The robot system is equipped with a parallel jaw gripper to manipulate the environment. Planning robot grasps includes recognizing objects and their positions in reference to camera coordinates as well as identifying stable robust graps poses.
 In order to execute a grasp, such a pose is transformed into cartesian coordinates in the world frame.
-Further, it also includes collision free planning of robot motion in order to execute the manipulation.
-We will not consider dynamic changing environments or objects which are not manipulable using a parallel jaw gripper. 
-However, we plan to experiment with an extension to this approach using a suction cup gripper.
+Further, it also includes collision free planning of robot motion in order to execute the manipulation task.
+Both, a dynamic changing environment, as well as objects which are not manipulable using a parallel jaw gripperare not considered in this work. 
+An optional goal is to extend this approach for object manipulation using a suction cup gripper.
 
 \section{Problems and methods}
 \label{3sec_prob_n_meth}
