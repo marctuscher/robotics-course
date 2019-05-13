@@ -1,0 +1,78 @@
+
+@article{mahler_dex-net_2017,
+	title = {Dex-{Net} 2.0: {Deep} {Learning} to {Plan} {Robust} {Grasps} with {Synthetic} {Point} {Clouds} and {Analytic} {Grasp} {Metrics}},
+	shorttitle = {Dex-{Net} 2.0},
+	url = {http://arxiv.org/abs/1703.09312},
+	abstract = {To reduce data collection time for deep learning of robust robotic grasp plans, we explore training from a synthetic dataset of 6.7 million point clouds, grasps, and analytic grasp metrics generated from thousands of 3D models from Dex-Net 1.0 in randomized poses on a table. We use the resulting dataset, DexNet 2.0, to train a Grasp Quality Convolutional Neural Network (GQ-CNN) model that rapidly predicts the probability of success of grasps from depth images, where grasps are speciﬁed as the planar position, angle, and depth of a gripper relative to an RGB-D sensor. Experiments with over 1,000 trials on an ABB YuMi comparing grasp planning methods on singulated objects suggest that a GQ-CNN trained with only synthetic data from Dex-Net 2.0 can be used to plan grasps in 0.8s with a success rate of 93\% on eight known objects with adversarial geometry and is 3× faster than registering point clouds to a precomputed dataset of objects and indexing grasps. The Dex-Net 2.0 grasp planner also has the highest success rate on a dataset of 10 novel rigid objects and achieves 99\% precision (one false positive out of 69 grasps classiﬁed as robust) on a dataset of 40 novel household objects, some of which are articulated or deformable. Code, datasets, videos, and supplementary material are available at http://berkeleyautomation.github.io/dex-net.},
+	language = {en},
+	urldate = {2019-05-13},
+	journal = {arXiv:1703.09312 [cs]},
+	author = {Mahler, Jeffrey and Liang, Jacky and Niyaz, Sherdil and Laskey, Michael and Doan, Richard and Liu, Xinyu and Ojea, Juan Aparicio and Goldberg, Ken},
+	month = mar,
+	year = {2017},
+	note = {arXiv: 1703.09312},
+	keywords = {Computer Science - Robotics},
+	annote = {Comment: To appear at Robotics: Science and Systems 2017},
+	file = {Mahler et al. - 2017 - Dex-Net 2.0 Deep Learning to Plan Robust Grasps w.pdf:/Users/marc/Zotero/storage/TABWSHQX/Mahler et al. - 2017 - Dex-Net 2.0 Deep Learning to Plan Robust Grasps w.pdf:application/pdf}
+}
+
+@inproceedings{mahler_dex-net_2016,
+	address = {Stockholm, Sweden},
+	title = {Dex-{Net} 1.0: {A} cloud-based network of 3D objects for robust grasp planning using a {Multi}-{Armed} {Bandit} model with correlated rewards},
+	isbn = {978-1-4673-8026-3},
+	shorttitle = {Dex-{Net} 1.0},
+	url = {http://ieeexplore.ieee.org/document/7487342/},
+	doi = {10.1109/ICRA.2016.7487342},
+	abstract = {This paper presents the Dexterity Network (DexNet) 1.0, a dataset of 3D object models and a sampling-based planning algorithm to explore how Cloud Robotics can be used for robust grasp planning. The algorithm uses a MultiArmed Bandit model with correlated rewards to leverage prior grasps and 3D object models in a growing dataset that currently includes over 10,000 unique 3D object models and 2.5 million parallel-jaw grasps. Each grasp includes an estimate of the probability of force closure under uncertainty in object and gripper pose and friction. Dex-Net 1.0 uses Multi-View Convolutional Neural Networks (MV-CNNs), a new deep learning method for 3D object classiﬁcation, to provide a similarity metric between objects, and the Google Cloud Platform to simultaneously run up to 1,500 virtual cores, reducing experiment runtime by up to three orders of magnitude. Experiments suggest that correlated bandit techniques can use a cloud-based network of object models to signiﬁcantly reduce the number of samples required for robust grasp planning. We report on system sensitivity to variations in similarity metrics and in uncertainty in pose and friction. Code and updated information is available at http://berkeleyautomation.github.io/dex-net/.},
+	language = {en},
+	urldate = {2019-05-13},
+	booktitle = {2016 {IEEE} {International} {Conference} on {Robotics} and {Automation} ({ICRA})},
+	publisher = {IEEE},
+	author = {Mahler, Jeffrey and Pokorny, Florian T. and Hou, Brian and Roderick, Melrose and Laskey, Michael and Aubry, Mathieu and Kohlhoff, Kai and Kroger, Torsten and Kuffner, James and Goldberg, Ken},
+	month = may,
+	year = {2016},
+	pages = {1957--1964},
+	file = {Mahler et al. - 2016 - Dex-Net 1.0 A cloud-based network of 3D objects f.pdf:/Users/marc/Zotero/storage/BD3STM2J/Mahler et al. - 2016 - Dex-Net 1.0 A cloud-based network of 3D objects f.pdf:application/pdf}
+}
+
+@article{kehoe_survey_2015,
+	title = {A {Survey} of {Research} on {Cloud} {Robotics} and {Automation}},
+	volume = {12},
+	issn = {1545-5955},
+	doi = {10.1109/TASE.2014.2376492},
+	abstract = {The Cloud infrastructure and its extensive set of Internet-accessible resources has potential to provide significant benefits to robots and automation systems. We consider robots and automation systems that rely on data or code from a network to support their operation, i.e., where not all sensing, computation, and memory is integrated into a standalone system. This survey is organized around four potential benefits of the Cloud: 1) Big Data: access to libraries of images, maps, trajectories, and descriptive data; 2) Cloud Computing: access to parallel grid computing on demand for statistical analysis, learning, and motion planning; 3) Collective Robot Learning: robots sharing trajectories, control policies, and outcomes; and 4) Human Computation: use of crowdsourcing to tap human skills for analyzing images and video, classification, learning, and error recovery. The Cloud can also improve robots and automation systems by providing access to: a) datasets, publications, models, benchmarks, and simulation tools; b) open competitions for designs and systems; and c) open-source software. This survey includes over 150 references on results and open challenges. A website with new developments and updates is available at: http://goldberg.berkeley.edu/cloud-robotics/.},
+	number = {2},
+	journal = {IEEE Transactions on Automation Science and Engineering},
+	author = {Kehoe, B. and Patil, S. and Abbeel, P. and Goldberg, K.},
+	month = apr,
+	year = {2015},
+	keywords = {Automation, automation system, Big data, Big Data, cloud automation, cloud computing, Cloud computing, cloud robotics, collective robot learning, Computational modeling, control engineering computing, crowdsourcing, grid computing, groupware, human computation, learning (artificial intelligence), open source, outsourcing, parallel grid computing, parallel processing, Robot kinematics, Robot sensing systems, robots, robots sharing trajectory},
+	pages = {398--409},
+	file = {IEEE Xplore Abstract Record:/Users/marc/Zotero/storage/IAZNEIXC/7006734.html:text/html;IEEE Xplore Full Text PDF:/Users/marc/Zotero/storage/ANRUHSMQ/Kehoe et al. - 2015 - A Survey of Research on Cloud Robotics and Automat.pdf:application/pdf}
+}
+
+@article{pas_grasp_2017,
+	title = {Grasp {Pose} {Detection} in {Point} {Clouds}},
+	url = {http://arxiv.org/abs/1706.09911},
+	abstract = {Recently, a number of grasp detection methods have been proposed that can be used to localize robotic grasp conﬁgurations directly from sensor data without estimating object pose. The underlying idea is to treat grasp perception analogously to object detection in computer vision. These methods take as input a noisy and partially occluded RGBD image or point cloud and produce as output pose estimates of viable grasps, without assuming a known CAD model of the object. Although these methods generalize grasp knowledge to new objects well, they have not yet been demonstrated to be reliable enough for wide use. Many grasp detection methods achieve grasp success rates (grasp successes as a fraction of the total number of grasp attempts) between 75\% and 95\% for novel objects presented in isolation or in light clutter. Not only are these success rates too low for practical grasping applications, but the light clutter scenarios that are evaluated often do not reﬂect the realities of real world grasping. This paper proposes a number of innovations that together result in a signiﬁcant improvement in grasp detection performance. The speciﬁc improvement in performance due to each of our contributions is quantitatively measured either in simulation or on robotic hardware. Ultimately, we report a series of robotic experiments that average a 93\% end-to-end grasp success rate for novel objects presented in dense clutter.},
+	language = {en},
+	urldate = {2019-05-13},
+	journal = {arXiv:1706.09911 [cs]},
+	author = {Pas, Andreas ten and Gualtieri, Marcus and Saenko, Kate and Platt, Robert},
+	month = jun,
+	year = {2017},
+	note = {arXiv: 1706.09911},
+	keywords = {Computer Science - Robotics},
+	annote = {Comment: arXiv admin note: text overlap with arXiv:1603.01564},
+	file = {Pas et al. - 2017 - Grasp Pose Detection in Point Clouds.pdf:/Users/marc/Zotero/storage/MHFMCVJZ/Pas et al. - 2017 - Grasp Pose Detection in Point Clouds.pdf:application/pdf}
+}
+
+@article{chitta_perception_2012,
+	title = {Perception, planning, and execution for mobile manipulation in unstructured environments},
+	volume = {19},
+	number = {2},
+	journal = {IEEE Robotics and Automation Magazine, Special Issue on Mobile Manipulation},
+	author = {Chitta, Sachin and Jones, E. Gil and Ciocarlie, Matei and Hsiao, Kaijen},
+	year = {2012},
+	pages = {58--71}
+}

@@ -17,12 +17,8 @@
 {\color{LightSteelBlue3}\tiny\textbullet}}}%
 \newcommand{\tfoo}{\makebox[\dimexpr2\tabcolsep]%
 {\color{LightSteelBlue3}$\boldsymbol \uparrow $}}%
-
-
-
 %% Sets page size and margins
 \usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-
 \usepackage{url}
 
 \title{Practical course robotics \\ project proposal}
@@ -35,18 +31,25 @@
 Robust grasping of unknown and even known objects is a problem at the heart of many tasks in the field of robotics.
 Often robot perception pipelines suffer from high noise and uncertainty.
 In this work we leverage the combination of pretrained deep neural networks and a computer vision pipeline to extract robust grasp poses from RGBD-images of real world objects.
-This perception pipeline is integrated in a robot motion framework to perform the grasps with a robot. 
+This perception pipeline is integrated in a robot motion framework to perform the grasps with a robot.
 
 \section{Goal}
+Robot grasping can be subdivided into two related problems: perception and planning.
+A typical example of this approach is the ROS grasp pipeline~~\cite{chitta_perception_2012}.
+Herein, a CAD model is mapped to a point cloud of the object.
+Optimal grasp poses are then derived from the CAD model. 
+This works well in ideal scenarios, however, in most realistic applications the scenario is far from ideal.
 Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
-
 \section{Problems and methods}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
 \subsection{Localization of objects}
 needs to be infered if more than one object is in the scene. We will use a 
 SSD for that.
-
 \subsection{Localization of robust grasp points}
+Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
+\subsection{Grasp planning}
+Reason about how to move the manipulator into the desired grasp pose.
+The planning component highly relies on the RAI framework for robot manipulation.
 
 \begin{itemize}
     \item Problems:\\
@@ -89,6 +92,10 @@ SSD for that.
     \item Details about camera intrinsics
     \item RAI framework running on machines with nvidia graphics card (but this problem might be related to the newest nvidia-driver.)
 \end{itemize}
+
+
+\bibliographystyle{abbrv}
+\bibliography{main}
 \end{document}
 
 
