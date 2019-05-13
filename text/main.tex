@@ -82,7 +82,7 @@ needs to be infered if more than one object is in the scene. We will use a
 SSD for that.
 \subsection{Motion Planning}
 \label{3_2subsec_motion_planning}
-Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
+This section presents the core problems in robot motion planning the a specific solution we choose to solve these problems.
 A core problem in robot motion planning and robotics in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
 \begin{equation}
     y = \phi(q),  \phi : \mathbb{R}^n \rightarrow \mathbb{R}^d
@@ -98,8 +98,6 @@ The generality of this formulation allows to directly incorporate constraints fo
 To solve this constrained optimization problem we rely on the KOMO library which formulates the constrained optimization problem as an unconstrained optimization problem, which is then solved using Newtons method~\cite{laumond_tutorial_2017}.
 As a first step, we only use inverse kinematics with some kind of collision avoidance for motion planning. 
 For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
-
-
 \clearpage
 \section{Milestones}
 \label{4_sec_milestones}
