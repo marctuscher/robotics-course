@@ -46,36 +46,15 @@ Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed method
 Section \ref{4_sec_milestones} thematizes the milestones of implementing the approach in a robotic demonstator system to evaluate the proposed approach.
 
 
-\section{Goal (Ralf)} 
+\section{Goal} 
 \label{2sec_goal}
 
-Goals:
-
-* detect parallel jaw grasps a priori unknown objects
-
-* plan collision free paths 
-
-* drop the grasped object in a bin
-
-
-Restrictions:
-
-* dynamic changing environments are not considered
-
-* objecte must in principle be manipulable by a two-finger parallel gripper.
-
-
-optional
-
-* suction cup gripper
-
-
-Robot grasping can be subdivided into two related problems: perception and planning.
-A typical example of this approach is the ROS grasp pipeline~~\cite{chitta_perception_2012}.
-Herein, a CAD model is mapped to a point cloud of the object.
-Optimal grasp poses are then derived from the CAD model. 
-This works well in ideal scenarios, however, in most realistic applications the scenario is far from ideal.
-Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
+The main goal in this project is to set up a framework which is able to detect a stable grasp pose of unkown objects and grab these objects using a parallel jaw gripper.
+This includes recognizing objects and their positions in the camera frame as well as identifying stable grasp poses.
+In order to execute a grasp, such a pose is transformed into cartesian coordinates in the world frame.
+Further, it also includes collision free planning of robot motion in order to execute the manipulation.
+We will not consider dynamic changing environments or objects which are not manipulable using a parallel jaw gripper. 
+However, we plan to experiment with an extension to this approach using a suction cup gripper.
 
 \section{Problems and methods}
 \label{3sec_prob_n_meth}
@@ -137,6 +116,7 @@ The following section presents a timeline which serves as a workplan for the pro
 23.05.19 & set up bounding box detector for object localization & transform the output pose of \textit{GQCNN} into cartesian coordinates\\[5pt]
 06.06.19 & Tune control, test KOMO path planning & optimize prediction speed, check online capabilities\\[5pt]
 13.06.19 & Tune camera intrinsics with tensorflow-graphics\footnote{\url{https://github.com/tensorflow/graphics}} & Experiment on combining opencv pipeline and \textit{GQCNN} \\[5pt]
+20.06.19 & \multicolumn{2}{c}{experimental validation of the approach in several grasp scenarios} \\
 rest of time & \multicolumn{2}{c}{ \textbf{cleanup super messy code}}
 \end{longtable}
 
