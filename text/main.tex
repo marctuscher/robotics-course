@@ -37,7 +37,7 @@ Grasp planning relates to the path planning process that is required to securely
 Initially, deriving the grasp-points of a perceived object is an essential aspects.
 Consequently, accurate and diverse detection of robotic grasp candidates for target objects should lead to a better grasp path planning and improve the overall performance of grasp-based manipulation tasks.
 
-In this work we propose a deep learning strategy to detect grasp points from sensor data and plan collision free robot paths to manipulate arbitrary objects.
+In this work we propose a deep learning strategy to detect grasp points from raw sensor data and plan collision free robot paths to manipulate arbitrary objects.
 In the past decade, deep learning has achieved major success on detection, classification, and regression tasks \cite{6bo2013unsupervised, 7krizhevsky2012imagenet}. 
 Its key strength is the ability to leverage large quantities of labelled and unlabelled data to learn powerful representations without hand-engineering the feature space.
 To conclude this work we experimentally validate our approach using a humanoid robotic system and a structured light RGB-D sensor.
@@ -47,25 +47,31 @@ Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed method
 Section \ref{4_sec_milestones} thematizes the milestones of implementing the approach in a robotic demonstator system to evaluate the proposed approach.
 
 
-\section{Goal} 
+\section{Goal (Ralf)} 
 \label{2sec_goal}
+
+Goals:
+* detect parallel jaw grasps a priori unknown objects
+* plan collision free paths 
+* drop the grasped object in a bin
+
+Restrictions:
+* dynamic changing environments are not considered
+* objecte must in principle be manipulable by a two-finger parallel gripper.
+
+optional
+* suction cup gripper
+
 Robot grasping can be subdivided into two related problems: perception and planning.
 A typical example of this approach is the ROS grasp pipeline~~\cite{chitta_perception_2012}.
 Herein, a CAD model is mapped to a point cloud of the object.
 Optimal grasp poses are then derived from the CAD model. 
 This works well in ideal scenarios, however, in most realistic applications the scenario is far from ideal.
 Our main goal is to set up a framework which extracts robust grasp poses from RGBD-Images and grasps an object lying on a table.
+
 \section{Problems and methods}
 \label{3sec_prob_n_meth}
 This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
-\subsection{Localization of objects}
-needs to be infered if more than one object is in the scene. We will use a 
-SSD for that.
-\subsection{Localization of robust grasp points}
-Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
-\subsection{Grasp planning}
-Reason about how to move the manipulator into the desired grasp pose.
-The planning component highly relies on the RAI framework for robot manipulation.
 
 \begin{itemize}
     \item Problems:\\
@@ -81,13 +87,27 @@ The planning component highly relies on the RAI framework for robot manipulation
         \item localization of objects using bounding boxes (if necessary)
     \end{itemize}
 \end{itemize}
+
+\subsection{Perception ()}
+\label{3_1subsec_perception}
+needs to be infered if more than one object is in the scene. We will use a 
+SSD for that.
+\subsection{Motion Planning (Marc)}
+\label{3_2subsec_motion_planning}
+Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
+\subsection{Grasp planning}
+Reason about how to move the manipulator into the desired grasp pose.
+The planning component highly relies on the RAI framework for robot manipulation.
+
+
 \section{Milestones}
 \label{4_sec_milestones}
 TODO
 
+blabla
 
 
-\begin{figure}
+\begin{figure}[b]
     \label{timeline}
 \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
 \begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm} p{5cm}}
@@ -100,8 +120,8 @@ TODO
 06.06.19 & Tune control, recalculate online if object moves &\\
 13.06.19 & Experiment with different grasping policies &\\
 \end{longtable}
-    
 \end{figure}
+
 \subsection*{Requirements}
 \begin{itemize}
     \item Baxter
