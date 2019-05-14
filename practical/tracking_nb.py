@@ -69,3 +69,9 @@ def trackReal(sendToReal):
         #time.sleep(1)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+
+#%%
+trackVirtual()
+
+#%%

@@ -45,8 +45,6 @@ def calcDepth(d, u, v):
                 sum_ranges -= 1
             else:
                 cumulated_depth += val
-    if sum_ranges >=3:
-        print("shit")
     return cumulated_depth / (sum_ranges)
 
 def findBallInImage(img_bgr):
