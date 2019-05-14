@@ -22,7 +22,7 @@ from practical import utils
 import libry as ry
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('marc2AwesomeNode', 'rai-robotModels/baxter/baxter_new.g')
 
 
 #%%
@@ -53,11 +53,12 @@ def trackVirtual():
 
 def trackReal(sendToReal):
     robot.sendToReal(sendToReal)
-    boxMax = np.array([2., 2., 2.])
+    boxMax = np.array([1.5, 1.5, 1.5])
     boxMin = -boxMax
     while True:
         img, depth = robot.imgAndDepth('cam')
         res =  findBallPosition(img, depth)
+        robot.addPointCloud()
         if res:
             pc, x, y = res
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -65,13 +66,14 @@ def trackReal(sendToReal):
             cv2.imshow('rgb', img)
             pos = robot.computeCartesianPos(pc, 'pcl')
             if utils.isPointInsideBox(boxMin, boxMax, pos):
-                robot.trackAndGraspTarget(pos, 'ball2', 'baxterR', sendQ=False)
+                if not np.array(pos).any() == np.nan:
+                    robot.trackAndGraspTarget(pos, 'ball2', 'baxterR', sendQ=True)
         #time.sleep(1)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 
 #%%
-trackVirtual()
+trackReal(True)
 
 #%%

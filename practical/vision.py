@@ -34,8 +34,8 @@ def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
         return [xc, yc, zc], int(x), int(y)
 
 def calcDepth(d, u, v):
-    range_x = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
-    range_y = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+    range_x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    range_y = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
     sum_ranges = len(range_x) * len(range_y)
     cumulated_depth = 0
     for x in range_x:

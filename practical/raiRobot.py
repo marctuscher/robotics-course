@@ -102,7 +102,7 @@ class RaiRobot():
 
     
     def move(self, q:list):
-        self.B.move(q, [2.0], False)
+        self.B.moveHard(q)
         #self.B.wait()
 
     def getCamView(self, view:bool, **kwargs):
@@ -157,8 +157,8 @@ class RaiRobot():
                     scalarProductXZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 0), 
                     distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(),
-                    qItself(q, 0.1)
+                    #accumulatedCollisions(),
+                    #qItself(q, 0.1)
                 ]
             )
             self.move([q])
@@ -247,4 +247,4 @@ class RaiRobot():
 
     def addPointCloud(self):
         self.sync()
-        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']], self.cam.getRgb()))
+        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']]), self.cam.getRgb())
