@@ -11,7 +11,7 @@ import quaternion
 from practical import utils
 from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself
 import time 
 
 class RaiRobot():
@@ -146,22 +146,25 @@ class RaiRobot():
         self.move([q])
         self.setGripper(0, gripperIndex)
     
-    def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame):
+    def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, sendQ=False):
         target = self.C.frame(targetFrame)
         target.setPosition(targetPos)
-        q = self.inverseKinematics(
-            [
-                gazeAt([gripperFrame, targetFrame]), 
-                scalarProductXZ([gripperFrame, targetFrame], 0), 
-                scalarProductZZ([gripperFrame, targetFrame], 0), 
-                distance([gripperFrame, targetFrame], -0.1),
-                accumulatedCollisions()
-            ]
-        )
-        self.move([q])
+        q = self.C.getJointState()
+        if sendQ:
+            q = self.inverseKinematics(
+                [
+                    gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductXZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
+                    distance([gripperFrame, targetFrame], -0.1),
+                    accumulatedCollisions(),
+                    qItself(q, 0.1)
+                ]
+            )
+            self.move([q])
         #TODO: dont do this
-        self.setGripper(0, -1) # close right gripper
-        self.setGripper(0, -2) # close left gripper
+        #self.setGripper(0, -1) # close right gripper
+        #self.setGripper(0, -2) # close left gripper
 
 
     def computeCartesianPos(self, framePos, frameName):
