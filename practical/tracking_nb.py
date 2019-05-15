@@ -22,7 +22,7 @@ from practical import utils
 import libry as ry
 
 #%%
-robot =  RaiRobot('marc2AwesomeNode', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
 
 #%%
@@ -74,6 +74,6 @@ def trackReal(sendToReal):
 
 
 #%%
-trackReal(True)
+trackVirtual()
 
 #%%
