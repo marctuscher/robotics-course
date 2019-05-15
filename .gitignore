@@ -135,3 +135,5 @@ srv_gen
 *Result.msg
 venv
 .vscode/ipch
+GQ*
+models/*

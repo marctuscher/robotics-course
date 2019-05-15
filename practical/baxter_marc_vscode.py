@@ -22,13 +22,13 @@ def reset(robot, model):
 
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter.g')
+robot =  RaiRobot('', 'rai-robotModels/pr2/pr2.g')
 
 #%%
-robot = reset(robot, 'rai-robotModels/baxter/baxter.g')
+robot = reset(robot, 'rai-robotModels/pr2/pr2.g')
 
 #%%
-robot.grasp_ball('baxterL', 'ball2', -1)
+robot.grasp('baxterL', 'ball2', -1)
 robot.goHome()
 #%%
 robot.getFrameNames()
@@ -48,7 +48,6 @@ try:
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 except ValueError:
     pass  # do nothing!
-
 import cv2
 
 cameraView.selectSensor('kinect')
@@ -75,12 +74,23 @@ blurred = cv2.GaussianBlur(graying,(3,3), 0)
 plt.imshow(blurred, cmap='gray', vmin=0, vmax=255)
 
 #%%
-blurred = cv2.GaussianBlur(graying,(3,3), 0)
-med = np.median(blurred)
+img_hsv = cv2.cvtColor(rgb, cv2.COLOR_BGR2HSV)
+print('hsv img')
+plt.imshow(img_hsv)
+mask1 = cv2.inRange(img_hsv, (0, 100, 100), (5, 255, 255))
+mask2 = cv2.inRange(img_hsv, (160, 100, 100), (179, 255, 255))
+red_img =  mask1 | mask2
+
+print('redish img')
+plt.imshow(red_img)
+
+#%%
+#blurred = cv2.GaussianBlur(graying,(3,3), 0)
+med = np.median(red_img)
 lower = int(max(0,(1.0 - 0.33) * med))
 upper = int(max(0,(1.0 + 0.33) * med))
 print('lower: ', lower, 'upper: ', upper)
-circles = cv2.HoughCircles(blurred,cv2.HOUGH_GRADIENT,1,45, param1=100,param2=10,minRadius=0,maxRadius=0)
+circles = cv2.HoughCircles(red_img,cv2.HOUGH_GRADIENT,1,45, param1=100,param2=10,minRadius=0,maxRadius=0)
 #print('circles: ', circles)
 print('circles: ', circles.shape)
 
@@ -96,45 +106,9 @@ print('show detected circles')
 plt.imshow(rgb, cmap='gray', vmin=0, vmax=255)
 
 #%%
-circles
-#%%
-sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
-
-# as we found te center pixel of the ball in image space we
-# want to compute cartesian coordinates using depth infromation 
-# from kinect
-
-u = circles[0,0,0]
-v = circles[0,0,1]
-
-#cv2.circle(depth,(i[0],i[1]),2,(0,0,255),3)
-#plt.imshow(depth)
-
-# now use depht pixel and also do a spatial filtering to account the 
-# neighborhood 
-
-range_x = [-1,0,1]
-range_y = [-1,0,1]
-cumulated_depth = 0
-for x in range_x:
-    for y in range_y:
-        cumulated_depth += depth[u + x][v + y]
-
-mean_depth = cumulated_depth / (len(range_x) * len(range_y))
-
-print('standard_depth: ', depth[u][y])
-print('mean_depth: ', mean_depth)
-
-# as we got the depth of the circle in reference to the kinect frame
-# we transform the point in cartesian space
-
+c = [0.1, 0, 1]
+r = 0.3
 
 #%%
-robot.deleteFrame('camera')
-
-#%%
-cameraView = robot.C.cameraView()
-
-#%%
-robot.setGripper(0, -4)
-
+target = c 
+robot.inverseKinematics([moveToPosition(target, 'pr2L')])

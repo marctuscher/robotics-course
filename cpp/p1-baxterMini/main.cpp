@@ -3,9 +3,9 @@
 #include <Operate/robotOperation.h>
 
 void minimal_use(){
-  rai::KinematicWorld K;
-  K.addFile("../../rai-robotModels/baxter/baxter.g");
-  arr q0 = K.getJointState();
+  rai::KinematicWorld C;
+  C.addFile("../../rai-robotModels/baxter/baxter.g");
+  arr q0 = C.getJointState();
 
   BaxterInterface B(true);
   B.send_q(q0);
@@ -16,35 +16,65 @@ void minimal_use(){
     cout <<B.get_qdot() <<endl;
     cout <<B.get_u() <<endl;
   }
-  K.watch(true);
+  C.watch(true);
 
   arr q = q0;
   q = 0.;
-  K.setJointState(q);
+  C.setJointState(q);
   B.send_q(q);
-  K.watch(true);
+  C.watch(true);
 }
 
 
 void spline_use(){
-  rai::KinematicWorld K;
-  K.addFile("../../rai-robotModels/baxter/baxter.g");
-  K.addObject("object", rai::ST_capsule, {.2, .05}, {1., 1., 0.}, -1., 0, {.8, .0, 1.});
-  arr q_home = K.getJointState();
+  rai::KinematicWorld C;
+  C.addFile("../../rai-robotModels/baxter/baxter.g");
+  C.addObject("object", rai::ST_capsule, {.2, .05}, {1., 1., 0.}, -1., 0, {.8, .0, 1.});
+  arr q_home = C.getJointState();
 
   arr q_zero = 0.*q_home;
 
-  RobotOperation B(K);
+  RobotOperation B(C);
+
   cout <<"joint names: " <<B.getJointNames() <<endl;
-  B.move({q_zero,q_home}, {5.,10.});
-  B.move({q_zero}, {15.}); //appends
-  B.wait();
+
+  //spline motion of the reference
+  B.move({q_zero}, {10.});
+
+  //output states
+  for(;;){
+    cout <<" q:" <<B.getJointPositions()
+        <<" gripper right:" <<B.getGripperOpened("right") <<' ' <<B.getGripperGrabbed("right")
+       <<" gripper left:" <<B.getGripperOpened("left") <<' ' <<B.getGripperGrabbed("left")
+      <<endl;
+    if(!B.timeToGo()) break;
+    rai::wait(.1);
+  }
+  cout <<"motion done!" <<endl;
   rai::wait();
 
-  q_home(-1) = .1; //last joint set to .1: left gripper opens 10cm (or 20cm?)
-  B.move({q_home}, {4.});
-  B.wait();
+  //instantaneous move of the reference (baxter does interpolation)
+  B.moveHard(q_home);
+  rai::wait();
 
+  //close right gripper
+  q_home(-2) = 1.;
+  B.moveHard(q_home);
+  rai::wait();
+
+  //open right gripper
+  q_home(-2) = 0.;
+  B.moveHard(q_home);
+  rai::wait();
+
+  //close left gripper
+  q_home(-1) = 1.;
+  B.moveHard(q_home);
+  rai::wait();
+
+  //open left gripper
+  q_home(-1) = 0.;
+  B.moveHard(q_home);
   rai::wait();
 }
 

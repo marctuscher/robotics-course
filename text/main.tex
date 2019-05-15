@@ -1,0 +1,148 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb, amsbsy, amsmath}
+\usepackage{array, booktabs, longtable}
+\usepackage{graphicx}
+\usepackage[x11names, table]{xcolor}
+\usepackage{caption}
+\DeclareCaptionFont{blue}{\color{LightSteelBlue3}}
+
+\newcommand{\foo}{\color{LightSteelBlue3}\makebox[0pt]{\tiny\textbullet}\hskip-0.5pt\vrule width 1pt\hspace{\labelsep}}
+\newcommand{\bfoo}{\raisebox{2.1ex}[0pt]{\makebox[\dimexpr2\tabcolsep]%
+{\color{LightSteelBlue3}\tiny\textbullet}}}%
+\newcommand{\tfoo}{\makebox[\dimexpr2\tabcolsep]%
+{\color{LightSteelBlue3}$\boldsymbol \uparrow $}}%
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{url}
+
+\title{Practical course robotics \\ project proposal}
+\author{Marc Tuscher, Ralf Gulde}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Recent advancements in robotics and automated systems have led to the expansion of autonomous capabilities and more intelligent machines being utilised in ever more varied applications \cite{1Visual_learning_2005, 2Teleoperation:2014}.
+While manipulating objects is relatively easy for humans, reliable grasping arbitrary objects remains an open challange for general-purpose robots.
+Resolving it would advance the application of robotics to industrial use cases, such as part assembly, binning, and sorting.
+The capability of adapting to changing environments is a necessary skill for task generalised robots \cite{3Robot_learning_2012, 4Imitation_and_Reinforcement_Learning_2010}.
+A grasp describes how a robotic end-effector can be arranged to securely grab an object and successfully lift.
+Grasp planning relates to the path planning process that is required to securely grasp the object and maintain the closed gripper contacts to hold and lift the object from its resting surface \cite{5Robotic_grasping_and_contact}.
+Initially, deriving the grasp-points of a perceived object is an essential aspect.
+Consequently, accurate and diverse detection of robotic grasp candidates for target objects should lead to a better grasp path planning and improve the overall performance of grasp-based manipulation tasks.
+
+In this work we propose a deep learning strategy to detect grasp points from raw sensor data and plan collision free robot paths to manipulate arbitrary objects.
+In the past decade, deep learning has achieved major success on detection, classification, and regression tasks \cite{6bo2013unsupervised, 7krizhevsky2012imagenet}. 
+Its key strength is the ability to leverage large quantities of labelled and unlabelled data to learn powerful representations without hand-engineering the feature space.
+To conclude this work we experimentally validate our approach using a humanoid robotic system and a structured light RGB-D sensor.
+
+This project proposal is organized as follows: In section \ref{2sec_goal} the goal of the work is described. 
+Further, in section \ref{3sec_prob_n_meth} a formulation and the proposed methods are presented.
+Section \ref{4_sec_milestones} thematizes the milestones of implementing the approach in a robotic demonstator system to evaluate the proposed approach.
+
+
+\section{Goal} 
+\label{2sec_goal}
+The main goal in this project is to set up a software framework  that enables the robust planning and execution of robotic graps using a humanoid robot system.
+The robot system is equipped with a parallel jaw gripper to manipulate the environment. Planning robot grasps includes recognizing objects and their positions in reference to camera coordinates as well as identifying stable robust graps poses.
+In order to execute a grasp, such a pose is transformed into cartesian coordinates in the world frame.
+Further, it also includes collision free planning of robot motion in order to execute the manipulation task.
+Both, a dynamic changing environment, as well as objects that are not manipulable using a parallel jaw gripper are not considered in this work. 
+An optional goal is to extend our approach for object manipulation using a suction cup gripper.
+
+\section{Problems and methods}
+\label{3sec_prob_n_meth}
+This section gives an overview over the general problems of the objective and the methods we will use to overcome these difficulties.
+
+\subsection{Perception}
+\label{3_1subsec_perception}
+Robotic systems increasingly leverage RGB-D sensors and data for tasks like object recognition \cite{8_lai2011large}, detection \cite{9_lai2012detection}, and mapping \cite{11_du2011rgb}. 
+RGB-D sensors like the Kinect are inexpensive, and the extra depth information is valuable for robots that interact with a 3-D environment.
+Recent work on grasp detection focusses on the problem of finding grasps solely from RGB-D data \cite{13_saxena2008robotic}. 
+Due to the recent successful results of deep learning methods in computer vision, many robotics researchers apply the insights to the research field of robotic grasp detection.
+These techniques rely on machine learning to find the features of a good grasp from data. 
+Visual models of grasps generalize well to novel objects and only require a single view of the object, not a full physical model \cite{18_erhan2014scalable}.
+A deep CNN is built with multiple layers to extract information representations.
+Goodfellow et al. \cite{goodfellow2016deep} states that the representation of the learning process of a deep neural network has similar attributes to the method through which information is processed by the human brain. 
+Literature suggests that lower level features are identified using the convolutional layer while application specific features are extracted by the fully connected portion of the network.
+Grasp detection methods can be categorized as follows:
+\begin{itemize}
+    \item Structured Output for grasp candidate parameters $(e.g.: x, y, z, w, ix, jy, kz)$
+    \item Grasp Robustness (selecting a grasp candidate based on the robustness factor)
+\end{itemize}
+
+\subsubsection{Structured Output}
+The most popular method for structured grasp detection was the sliding window approach proposed by Lenz et al. \cite{18_erhan2014scalable}. 
+In their approach, a classifier is used to predict if a small patch of the image contains a potential grasp.
+This method yielded a detection accuracy of 75\% and a processing time of 13.5 s per image.
+As an alternative, Redmon et al. \cite{19_redmon2015real} proposed the one-shot detection method.
+In most one-shot detection methods, a direct regression approach for predicting a structured grasp output is used. 
+In the first one-shot detection approach, the authors argued that a faster and more accurate method was necessary and proposed to use transfer learning techniques to predict grasp representation from images \cite{19_redmon2015real}. 
+They reported a detection accuracy of 84.4\% in 76 milliseconds per image.
+
+\subsubsection{Grasp Robustness}
+Learning a grasp robustness function also had been the central idea of many studies in deep grasp detection. 
+The researchers used this function to identify the grasp pose candidate with the highest score as the output. 
+Grasp robustness described the grasp probability of a certain location or an area of an image.
+A method to learn an optimal grasp robustness function was proposed by Mahler et al. \cite{27_mahler2017dex}.
+They considered the robustness as a scalar probability in the range of [0, 1]. 
+The authors compiled a dataset known as Dex-Net 2.0 with 6.7 million point clouds and analytic grasp quality metrics with
+parallel-plate grippers planned using robust on a dataset of 1500 3D object mesh models \textit{Dex-Net 2.0 Dataset}\footnote{\url{https://berkeley.app.box.com/s/6mnb2bzi5zfa7qpwyn7uq5atb7vbztng}}. 
+They further trained a grasp quality convolutional network (GQ-CNN) that was used to learn a robustness metric for grasp candidates. They tested their CNN with their dataset which achieved an accuracy of 98.1\% for grasp detection.
+\\
+ 
+Since the dexnet dataset is the largest publicly accessible dataset, and the quality of deep learning approaches significantly depends on the amount of available data, DexNet 2.0 is used in our approach.
+Furthermore, our literature research indicates that approaches based on grasp robustness achieve excellent accuracy at a low computation time. 
+Therefore a grasp robustness based method is selected.
+
+
+\subsection{Motion Planning}
+\label{3_2subsec_motion_planning}
+Sampling grasp points from RGBD-Images is a major problem and has been studied by a wide variety of approaches.
+A core problem in robot motion planning and robotics in general is defined as: given a cartesian position $y \in \mathbb{R}^d$, find a corresponding joint configuration $q \in \mathbb{R}^n$ such that
+\begin{equation}
+    y = \phi(q),  \phi : \mathbb{R}^n \rightarrow \mathbb{R}^d
+\end{equation}
+In robotics this problem is referred to as the inverse kinematics problem.
+We formulate this problem as a constrained optimization problem 
+\begin{equation}
+    \min_x f(x) \ \text{s.t.} \ g(x) \leq 0, \  h(x) = 0
+\end{equation}
+where different objectives can be defined. 
+Such objectives can either be equality constraints $h$, e.g. the distance between to frames, inequality constraints $g$ or costs terms $f$.
+The generality of this formulation allows to directly incorporate constraints for avoiding collisions.
+To solve this constrained optimization problem we rely on the KOMO library which formulates the constrained optimization problem as an unconstrained optimization problem, which is then solved using Newtons method~\cite{laumond_tutorial_2017}.
+As a first step, we only use inverse kinematics with some kind of collision avoidance for motion planning. 
+For further improvements we test the path planning feature of the KOMO library which allows to calculate complete trajectories for path planning.
+
+
+\section{Milestones}
+\label{4_sec_milestones}
+
+The following section presents a timeline which serves as a workplan for the project.
+
+\renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
+\begin{longtable}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm} p{5cm}}
+%\caption{Timeline} \\[-1.5ex]
+%\toprule
+\addlinespace[1.5ex] 
+ & \multicolumn{1}{c}{\textbf{Marc}}  & \multicolumn{1}{c}{\textbf{Ralf}}  \\[10pt]
+16.05.19 & get \textit{RAI} running on machines with nvidia gpu & port \textit{GQCNN} to python3, load pretrained model and basic setup\\[5pt]
+23.05.19 & set up bounding box detector for object localization & transform the output pose of \textit{GQCNN} into cartesian coordinates\\[5pt]
+06.06.19 & Tune control, test KOMO path planning & optimize prediction speed, check online capabilities\\[5pt]
+13.06.19 & Tune camera intrinsics with tensorflow-graphics\footnote{\url{https://github.com/tensorflow/graphics}} & Experiment on combining opencv pipeline and \textit{GQCNN} \\[5pt]
+rest of time & \multicolumn{2}{c}{ \textbf{cleanup super messy code}}
+\end{longtable}
+
+
+\clearpage
+\bibliographystyle{alpha}
+\bibliography{main}
+\end{document}
+
+

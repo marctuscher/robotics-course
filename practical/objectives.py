@@ -8,7 +8,7 @@ def moveToPosition(pos:list, frame:str):
     Move frame to a given position
     """
     return {
-        'type': ry.OT.none,
+        'type': ry.OT.eq,
         'feature': ry.FS.position, 
         'frames': [frame],
         'target': pos,
@@ -71,8 +71,31 @@ def distance(frames:list, target:float):
         - -0.1: positions of frames are 0.1 apart
     """
     return {
-        'type': ry.OT.eq,
+        'type': ry.OT.sos,
         'feature': ry.FS.distance,
         'frames': frames,
         'target': [target]    
         }
+
+def qItself(q, scale):
+    """
+    Minimize zhe configuration joint vector.
+
+    Parameters:
+     - 
+    """
+    return {
+        'type': ry.OT.sos,
+        'feature': ry.FS.qItself,
+        'frames': [],
+        'target': q,
+        'scale': [scale]   
+        }
+
+def accumulatedCollisions():
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.accumulatedCollisions,
+        'frames': [],
+        'target': [0]
+    }
