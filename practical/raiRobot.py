@@ -11,7 +11,7 @@ import quaternion
 from practical import utils
 from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition
 import time 
 
 class RaiRobot():
@@ -60,7 +60,7 @@ class RaiRobot():
         IK = self.C.komo_IK(False)
         for obj in objectives:
             IK.addObjective(**obj)
-        IK.optimize()
+        IK.optimize(True)
         self.C.setFrameState(IK.getConfiguration(0))
         return self.C.getJointState()
 
@@ -69,12 +69,12 @@ class RaiRobot():
         path = self.C.komo_path(1, 100, 5)
         for obj in objectives:
             path.addObjective(**obj)
-        path.optimize()
+        path.optimize(False)
         self.C.setFrameState(path.getConfiguration(0))
         return self.C.getJointState()
 
     def goHome(self):
-        self.move([self.q_home])
+        self.move(self.q_home)
     
     def sendToReal(self, val:bool):
         self.real = val
@@ -156,12 +156,14 @@ class RaiRobot():
                     gazeAt([gripperFrame, targetFrame]), 
                     scalarProductXZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 0), 
-                    distance([gripperFrame, targetFrame], -0.1),
+                    #distance([gripperFrame, targetFrame], -0.1),
                     #accumulatedCollisions(),
-                    #qItself(q, 0.1)
+                    qItself(q, 0.1),
+                    moveToPosition(targetPos, 'baxterR')
+
                 ]
             )
-            self.move([q])
+            self.move(q)
         #TODO: dont do this
         #self.setGripper(0, -1) # close right gripper
         #self.setGripper(0, -2) # close left gripper
