@@ -55,6 +55,7 @@ def trackReal(sendToReal):
     robot.sendToReal(sendToReal)
     boxMax = np.array([1.5, 1.5, 1.5])
     boxMin = -boxMax
+    lastPos = np.array([0, 0, 0])
     while True:
         img, depth = robot.imgAndDepth('cam')
         res =  findBallPosition(img, depth)
@@ -65,9 +66,10 @@ def trackReal(sendToReal):
             cv2.circle(img,(x,y),2,(255,0,0),3)
             cv2.imshow('rgb', img)
             pos = robot.computeCartesianPos(pc, 'pcl')
-            if utils.isPointInsideBox(boxMin, boxMax, pos):
+            if utils.isPointInsideBox(boxMin, boxMax, pos) and np.linalg.norm(pos - lastPos) < 1:
                 if not np.array(pos).any() == np.nan:
                     robot.trackAndGraspTarget(pos, 'ball2', 'baxterR', sendQ=True)
+            lastPos = pos
         #time.sleep(1)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
