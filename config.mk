@@ -16,4 +16,4 @@ BULLET = 0
 FCL = 0
 PNG = 0
 #ROS = 0
-ROS_VERSION = kinetic
+ROS_VERSION = melodic
