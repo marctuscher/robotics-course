@@ -30,15 +30,8 @@ from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, Rg
 from visualization import Visualizer2D as vis
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('awesome', 'rai-robotModels/baxter/baxter_new.g')
 
-#%% 
-q_zero = np.zeros(robot.C.getJointState().shape)
-robot.C.setJointState(q_zero)
-
-#%%
-ball = robot.C.frame('ball2')
-ball.setPosition([0.5, 0, 1])
 
 #%%
 img, d = robot.imgAndDepth('cam')

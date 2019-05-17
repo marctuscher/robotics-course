@@ -22,9 +22,11 @@ from practical import utils
 import libry as ry
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('marc3Node', 'rai-robotModels/baxter/baxter_new.g')
 
-
+#%%
+robot.sendToReal(True)
+robot.goHome()
 #%%
 def trackVirtual():
     boxMax = np.array([2., 2., 2.])
@@ -57,6 +59,7 @@ def trackReal(sendToReal):
     boxMin = -boxMax
     lastPos = np.array([0, 0, 0])
     while True:
+        time.sleep(0.2)
         img, depth = robot.imgAndDepth('cam')
         res =  findBallPosition(img, depth)
         robot.addPointCloud()
@@ -76,6 +79,8 @@ def trackReal(sendToReal):
 
 
 #%%
-trackVirtual()
+trackReal(True)
 
+#%%
+robot.goHome()
 #%%
