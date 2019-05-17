@@ -2,7 +2,7 @@
 
 # install dependencies for rospy
 sudo apt-get install python3-pip python3-yaml
-sudo pip3 install rospkg catkin_pkg
+pip3 install rospkg catkin_pkg
 
 # install dependencies to build cv_bridge
 sudo apt-get install python-catkin-tools python3-dev python3-numpy
