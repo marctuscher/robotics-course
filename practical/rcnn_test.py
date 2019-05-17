@@ -29,20 +29,14 @@ os.getcwd()
 #%%
 tf.reset_default_graph()
 
-#graph = loadFrozenGraph('models/rcnn/rfcn_resnet101_coco_2018_01_28/')
 
-#%%
-l = [n.name for n in graph.as_graph_def().node]
-#%%
-l[-30:]
 #%%
 sess, x, classes, scores, boxes = loadRCNN('models/rcnn/rfcn_resnet101_coco_2018_01_28/')
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
-
+cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 #%%
-img, d = robot.imgAndDepth('cam')
+img = cam.getRgb()
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 #%%
 plt.imshow(img)
@@ -52,7 +46,12 @@ pred_class, pred_score, pred_box = sess.run([classes, scores, boxes], {x : [img]
 
 
 #%%
-output
+pred_box
+
+
+#%%
+pred_class
+
 
 
 #%%

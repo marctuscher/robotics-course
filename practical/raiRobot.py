@@ -43,7 +43,7 @@ class RaiRobot():
         self.cam_lhc = None
 
         if nodeName:
-            self.cam = ry.Camera(nodeName, "/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
+            self.cam = ry.Camera(nodeName, "/camera/color/image_raw", "/camera/depth/image_rect_raw")
 
 
     def getFrameNames(self)-> list:
