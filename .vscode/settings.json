@@ -9,5 +9,7 @@
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}/ry/"
     ],
-    "python.jediEnabled": true
+    "python.jediEnabled": true,
+    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.quoteStyle": "'''",
 }

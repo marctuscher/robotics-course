@@ -23,36 +23,21 @@ from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 from practical.vision import findBallPosition, findBallInImage
 from practical import utils
+from practical.rcnn import RetinaNet
 #%%
 os.getcwd()
 
-#%%
-tf.reset_default_graph()
-
-
-#%%
-sess, x, classes, scores, boxes = loadRCNN('models/rcnn/rfcn_resnet101_coco_2018_01_28/')
+model = RetinaNet('models/retinanet/retinanet_resnet152_level_1_v1.2_converted.h5')
 
 #%%
 cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 #%%
 img = cam.getRgb()
+model.predict(img, True)
+#%%
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 #%%
 d = cam.getDepth()
 plt.imshow(d)
 
-#%%
-pred_class, pred_score, pred_box = sess.run([classes, scores, boxes], {x : [img]})
 
-
-#%%
-pred_box
-
-
-#%%
-pred_class
-
-
-
-#%%
