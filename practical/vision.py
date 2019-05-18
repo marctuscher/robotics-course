@@ -40,11 +40,14 @@ def calcDepth(d, u, v):
     cumulated_depth = 0
     for x in range_x:
         for y in range_y:
-            val = d[u + x][v + y]
-            if val == np.nan:
-                sum_ranges -= 1
+            if d.shape[0] > u+x and u+x > 0 and v+y > 0 and v+y < d.shape[1]:
+                val = d[u + x][v + y]
+                if val == np.nan:
+                    sum_ranges -= 1
+                else:
+                    cumulated_depth += val
             else:
-                cumulated_depth += val
+                sum_ranges -= 1
     return cumulated_depth / (sum_ranges)
 
 def findBallInImage(img_bgr):
