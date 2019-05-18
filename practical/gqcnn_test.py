@@ -30,41 +30,28 @@ from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, Rg
 from visualization import Visualizer2D as vis
 
 #%%
-robot =  RaiRobot('awesome', 'rai-robotModels/baxter/baxter_new.g')
+#robot =  RaiRobot('awesome', 'rai-robotModels/baxter/baxter_new.g')
 
+cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 
 #%%
-img, d = robot.imgAndDepth('cam')
+grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
+#%%
+img = cam.getRgb()
+d = cam.getDepth()
 #%%
 plt.imshow(img)
 #%%
 cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
 #%%
 cam_intr = CameraIntrinsics(frame='pcl', fx=intr['fx'], fy=intr['fy'], cx=intr['px'], cy=intr['py'], height=intr['height'], width=intr['width'])
-
-#%%
 color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame='pcl')
 depth_im = DepthImage(d.astype(np.float32), frame='pcl')
-
-#%%
-plt.imshow(color_im._data)
-#%%
 color_im = color_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
 depth_im = depth_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
-
-#%%
-plt.imshow(color_im._data)
-
-#%%
 rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
-#%%
-plt.imshow(rgbd_im.color._data)
-
-#%%
 rgbd_state = RgbdImageState(rgbd_im, cam_intr)
 
-#%%
-grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 
 
 #%%
@@ -82,3 +69,5 @@ grasp.grasp.center.x
 
 #%%
 grasp.grasp.center.x
+
+#%%
