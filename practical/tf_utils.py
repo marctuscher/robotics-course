@@ -22,3 +22,5 @@ def loadSession(model_path, input_tensor_name, classes_name, scores_name, boxes_
     boxes = graph.get_tensor_by_name(boxes_name)
     sess = tf.Session(graph=graph)
     return sess, x, classes, scores, boxes
+
+

@@ -39,7 +39,8 @@ cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_ra
 img = cam.getRgb()
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 #%%
-plt.imshow(img)
+d = cam.getDepth()
+plt.imshow(d)
 
 #%%
 pred_class, pred_score, pred_box = sess.run([classes, scores, boxes], {x : [img]})
