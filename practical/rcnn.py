@@ -81,12 +81,18 @@ class RetinaNet:
         return labels, scores, boxes
     
     def visualizePredictions(self, idToLabels:list, image:np.ndarray, labels:np.ndarray, scores:np.ndarray, boxes:np.ndarray):
-        print('vis')
+        ''' Visualize Predictions of RetinaNet
+        
+        Args:
+            idToLabels (list): 
+            image (np.ndarray): 
+            labels (np.ndarray): 
+            scores (np.ndarray): 
+            boxes (np.ndarray): 
+        '''
         for box, score, label in zip(boxes, scores, labels):
-
             if score < 0.3:
                 break
-            print("test")
             color = label_color(label)
             b = box.astype(int)
             draw_box(image, b, color=color)
