@@ -30,10 +30,12 @@ from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, Rg
 from visualization import Visualizer2D as vis
 
 #%%
-#robot =  RaiRobot('awesome', 'rai-robotModels/baxter/baxter_new.g')
-
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+#%%
 cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 
+#%%
+cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
 #%%
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 #%%
@@ -41,11 +43,10 @@ img = cam.getRgb()
 d = cam.getDepth()
 #%%
 plt.imshow(img)
-#%%
-cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
+
 #%%
 cam_intr = CameraIntrinsics(frame='pcl', fx=intr['fx'], fy=intr['fy'], cx=intr['px'], cy=intr['py'], height=intr['height'], width=intr['width'])
-color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame='pcl')
+color_im = ColorImage(img.astype(np.uint8), encoding="rgb8", frame='pcl')
 depth_im = DepthImage(d.astype(np.float32), frame='pcl')
 color_im = color_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
 depth_im = depth_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
