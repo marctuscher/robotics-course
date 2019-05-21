@@ -35,7 +35,7 @@ robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 
 #%%
-cfg = YamlConfig('practical/cfg/fcgqcnn_pj.yaml')
+cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
 #%%
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 #%%
@@ -53,9 +53,7 @@ depth_im = DepthImage(d.astype(np.float32), frame='pcl')
 color_im = color_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
 depth_im = depth_im.inpaint(rescale_factor=cfg['inpaint_rescale_factor'])
 rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
-rgbd_state = (rgbd_im, cam_intr)
-
-
+rgbd_state = RgbdImageState(rgbd_im, cam_intr)
 
 #%%
 grasp = grasp_policy(rgbd_state)

@@ -48,8 +48,8 @@ d = cam.getDepth()
 mask = np.zeros((d.shape))
 for i in range(len(d)):
     for j in range(len(d[i])):
-        if d[i][j] < 1:
-            mask[i][j] = 1.0 
+        #if d[i][j] < 1:
+        mask[i][j] = 1.0 
 plt.imshow(mask)
 #%%
 plt.imshow(img)

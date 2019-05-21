@@ -29,7 +29,15 @@ policy:
     actions_2d: 0
     actions_3d: 0
     affordance_map: 0
+
+  # visualization
   vis:
+    grasp_sampling : 1
+    tf_images: 1
+    grasp_candidates: 1
+    elite_grasps: 1
+    grasp_ranking: 1
+    grasp_plan: 1
     final_grasp: 1
 
     vmin: 0.5
