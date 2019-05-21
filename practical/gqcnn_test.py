@@ -4,8 +4,6 @@
 %matplotlib inline
 #%%
 import sys
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 try:
@@ -44,8 +42,9 @@ rosco = RosComm('qgcnn')
 
 #%%
 #ts.signalMessage()
-rgbd_img = cache.getLastestTime()
-print(rgbd_img)
+rgb = rosco.latest_depth
+d = rosco.latest_rgb
+print(rgb)
 #%%
 #cfg = YamlConfig('practical/cfg/tst.yaml')
 cfg = YamlConfig('practical/cfg/examples/replication/dex-net_4.0_fc_pj.yaml')
