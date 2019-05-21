@@ -137,4 +137,8 @@ venv
 .vscode/ipch
 GQ*
 models/*
+<<<<<<< HEAD
 data/*
+=======
+data/*
+>>>>>>> f55fd822c026755cf508b95d8ead2a76e4ed9ef4
