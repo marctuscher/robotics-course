@@ -1,9 +1,7 @@
 policy:
-  type: fully_conv_pj
+  type: fully_conv_suction
 
   sampling_method: top_k
-  num_depth_bins: 16
-  gripper_width: 0.05
   gqcnn_stride: 4
   gqcnn_recep_h: 96
   gqcnn_recep_w: 96
@@ -15,7 +13,7 @@ policy:
   # metrics
   metric:
     type: fcgqcnn
-    gqcnn_model: models/FC-GQCNN-4.0-PJ
+    gqcnn_model: /path/to/your/FC-GQ-Image-Wise-Suction
     gqcnn_backend: tf
     fully_conv_gqcnn_config:
       im_height: 480
@@ -37,6 +35,3 @@ policy:
 
 # image pre-processing before input to policy
 inpaint_rescale_factor: 0.5
-
-
-

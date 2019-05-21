@@ -7,3 +7,5 @@ pip3 uninstall prompt_toolkit
 pip3 install prompt_toolkit==1.0.15
 pip3 install tensorflow
 pip3 install tf
+pip3 uninstall scipy
+pip3 install scipy==1.2.1
