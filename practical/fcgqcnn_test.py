@@ -31,7 +31,7 @@ from visualization import Visualizer2D as vis
 from gqcnn.grasping import FullyConvolutionalGraspingPolicyParallelJaw
 
 #%%
-#robot =  RaiRobot('awesome', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
 cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 #%%
