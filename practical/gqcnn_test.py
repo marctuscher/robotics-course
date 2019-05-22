@@ -15,13 +15,10 @@ sys.path.append('../')
 
 
 #%%
-#from practical.raiRobot import RaiRobot
-from practical.rosComm_working import RosComm
-from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
-from practical.vision import findBallPosition, findBallInImage, virtCamIntrinsics as intr
-from practical import utils
-import libry as ry
-
+import rospy
+from cv_bridge import CvBridge, CvBridgeError
+from practical.rosComm import RosComm
+from sensor_msgs.msg import Image
 
 #%%
 from autolab_core import YamlConfig
@@ -30,17 +27,25 @@ from gqcnn.utils import GripperMode, NoValidGraspsException
 from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, RgbdImage
 from visualization import Visualizer2D as vis
 
+#%%
+rosco = RosComm()
+%% 
+rospy.init_node('z')
+#%%
+rosco.subscribe_synced_rgbd('/camera/color/image_raw/', '/camera/depth/image_rect_raw/')
 
-#%% 
-rosco = RosComm('qgcnn', "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
-#rosco
+bridge = CvBridge()
+#%%
+img = bridge.imgmsg_to_cv2(msg, "bgr8")
+plt.imshow(img)
 #%%
 cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
 #%%
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 #%%
-img = cam.getRgb()
-d = cam.getDepth()
+img = rosco.rgb
+d = rosco.depth
+
 #%%
 plt.imshow(img)
 #%%
@@ -61,14 +66,3 @@ grasp = grasp_policy(rgbd_state)
 img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 cv2.circle(img2,(int(grasp.grasp.center.x),int(grasp.grasp.center.y)),2,(255,0,0),3)
 plt.imshow(img2)
-#%%
-grasp.grasp.pose()
-
-#%%
-grasp.grasp.center.x
-
-#%%
-grasp.grasp.center.y
-
-#%%
-

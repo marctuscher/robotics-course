@@ -14,8 +14,12 @@ catkin config --install
 mkdir src
 cd src
 git clone -b melodic https://github.com/ros-perception/vision_opencv.git
+cd vision_opencv
+apt-cache show ros-melodic-cv-bridge | grep Version
+ $:Version: 1.13.0-0bionic.20190320.161824
+git checkout 1.13.0
 cd ~/catkin_build_ws
 catkin build cv_bridge
 
 # always source this stuff
-source devel/setup.bash --extend
+source install/setup.bash --extend
