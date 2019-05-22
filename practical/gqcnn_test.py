@@ -15,8 +15,8 @@ sys.path.append('../')
 
 
 #%%
-from practical.raiRobot import RaiRobot
-from practical.rosComm import RosComm
+#from practical.raiRobot import RaiRobot
+from practical.rosComm_working import RosComm
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
 from practical.vision import findBallPosition, findBallInImage, virtCamIntrinsics as intr
 from practical import utils
@@ -30,13 +30,9 @@ from gqcnn.utils import GripperMode, NoValidGraspsException
 from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, RgbdImage
 from visualization import Visualizer2D as vis
 
-#%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
-#%%
-cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 
 #%% 
-rosco = RosComm('qgcnn')
+rosco = RosComm('qgcnn', "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 #rosco
 #%%
 cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
