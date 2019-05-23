@@ -28,10 +28,19 @@ def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
     if p:
         x, y = p
         dp = calcDepth(d, int(y), int(x))
-        xc = dp * (x - intrinsics['px'])/intrinsics['fx']
-        yc = -dp * (y-intrinsics['py'])/intrinsics['fy']
+        xc = dp * (x - intrinsics['cx'])/intrinsics['fx']
+        yc = -dp * (y-intrinsics['cy'])/intrinsics['fy']
         zc = -dp
         return [xc, yc, zc], int(x), int(y)
+
+def getGraspPosition(d, x, y, intrinsics=baxterCamIntrinsics):
+    dp = calcDepth(d, int(y), int(x))
+    print(dp)
+    xc = dp * (x - intrinsics['cx'])/intrinsics['fx']
+    yc = -dp * (y-intrinsics['cy'])/intrinsics['fy']
+    zc = -dp
+    return [xc, yc, zc], int(x), int(y)
+
 
 def calcDepth(d, u, v):
     range_x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
@@ -42,9 +51,10 @@ def calcDepth(d, u, v):
         for y in range_y:
             if d.shape[0] > u+x and u+x > 0 and v+y > 0 and v+y < d.shape[1]:
                 val = d[u + x][v + y]
-                if val == np.nan:
+                if np.isnan(val):
                     sum_ranges -= 1
                 else:
+                    print(val)
                     cumulated_depth += val
             else:
                 sum_ranges -= 1

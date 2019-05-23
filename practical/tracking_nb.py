@@ -1,4 +1,6 @@
 #%%
+
+# TODO update to new ik stuff
 %reload_ext autoreload
 %autoreload 2
 %matplotlib inline
@@ -12,8 +14,6 @@ except ValueError:
 import cv2
 sys.path.append('../')
 import time
-
-
 #%%
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
@@ -27,6 +27,9 @@ robot =  RaiRobot('marc3Node', 'rai-robotModels/baxter/baxter_new.g')
 #%%
 robot.sendToReal(True)
 robot.goHome()
+
+
+
 #%%
 def trackVirtual():
     boxMax = np.array([2., 2., 2.])

@@ -11,7 +11,7 @@ import quaternion
 from practical import utils
 from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition, scalarProductYZ
 import time 
 
 class RaiRobot():
@@ -41,37 +41,45 @@ class RaiRobot():
         self.lhc.setRelativePose('t(-.0 .0 .0) d(-180 1 0 0) ')
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
-
+        self.IK = self.C.komo_IK(False)
+        self.path = self.C.komo_path(10, 1, 0.1, False)
         if nodeName:
-            self.cam = ry.Camera(nodeName, "/camera/color/image_raw", "/camera/depth/image_rect_raw")
+            self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
+    def updateIk(self):
+        self.IK.setConfigurations(self.C)
+        self.path.setConfigurations(self.C)
 
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
+
+    def optimizeIk(self):
+        self.IK.setConfigurations(self.C)
+        self.IK.optimize(True)
+        q_curr = self.C.getJointState()
+        self.C.setFrameState(self.IK.getConfiguration(0))
+        q = self.C.getJointState()
+        q[-1] = q_curr[-1]
+        q[-2] = q_curr[-2]
+        return q
+
+    def addIkObjectives(self, objectives, clear=False):
+        if clear:
+            self.IK.clearObjectives()
+        for obj in objectives:
+            self.IK.addObjective(**obj)
     
-    def inverseKinematics(self, objectives:list):
-        """
-        Calculate inverse kinematics by solving a constraint optimization problem, 
-        given by objectives. 
-
-        Using a new IK object, to ensure that all frames that have been added to 
-        the configuration are also added to the computational graph of the solver.
-        """
-        IK = self.C.komo_IK(False)
-        for obj in objectives:
-            IK.addObjective(**obj)
-        IK.optimize(True)
-        self.C.setFrameState(IK.getConfiguration(0))
+    def optimizePath(self, objectives):
+        self.path.setConfigurations(self.C)
+        self.path.optimize(True)
+        self.C.setFrameState(self.path.getConfiguration(0))
         return self.C.getJointState()
 
-
-    def path(self, objectives):
-        path = self.C.komo_path(1, 100, 5)
+    def addPathObjectives(self, objectives, clear=False):
+        if clear:
+            self.path.clearObjectives()
         for obj in objectives:
-            path.addObjective(**obj)
-        path.optimize(False)
-        self.C.setFrameState(path.getConfiguration(0))
-        return self.C.getJointState()
+            self.path.addObjective(**obj)
 
     def goHome(self):
         self.move(self.q_home)
@@ -98,7 +106,7 @@ class RaiRobot():
         q = self.C.getJointState()
         q[gripperIndex] = val
         self.C.setJointState(q)
-        self.move([q])
+        self.move(q)
 
     
     def move(self, q:list):
@@ -132,37 +140,25 @@ class RaiRobot():
         # a pose is represented 7D vector (x,y,z, qw,qx,qy,qz)
         pose = self.C.getFrameState(frame_name)
         return pose
-        
-    def grasp(self, gripperFrame:str, targetFrame:str, gripperIndex:int):
-        self.setGripper(0.04, gripperIndex)
-        q = self.inverseKinematics(
-            [
-            gazeAt([gripperFrame, targetFrame]), 
-            scalarProductXZ([gripperFrame, targetFrame], 0), 
-            scalarProductZZ([gripperFrame, targetFrame], 0), 
-            distance([gripperFrame, targetFrame], 0.1)
-            ]
-        )
-        self.move([q])
-        self.setGripper(0, gripperIndex)
     
     def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, sendQ=False):
         target = self.C.frame(targetFrame)
         target.setPosition(targetPos)
         q = self.C.getJointState()
         if sendQ:
-            q = self.inverseKinematics(
+            self.addIkObjectives(
                 [
-                    gazeAt([gripperFrame, targetFrame]), 
-                    scalarProductXZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 0), 
+                    #gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductYZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
                     #accumulatedCollisions(),
-                    qItself(q, 0.1),
+                    qItself(self.q_home, 1),
                     moveToPosition(targetPos, 'baxterR')
 
                 ]
-            )
+            , True)
+            q = self.optimizeIk()
             self.move(q)
         #TODO: dont do this
         #self.setGripper(0, -1) # close right gripper
@@ -249,4 +245,4 @@ class RaiRobot():
 
     def addPointCloud(self):
         self.sync()
-        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['px'],baxterCamIntrinsics['py']]), self.cam.getRgb())
+        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())

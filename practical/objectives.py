@@ -19,7 +19,7 @@ def moveToPose(pos:list, frame:str):
     Move frame to a given position
     """
     return {
-        'type': ry.OT.eq,
+        'type': ry.OT.sos,
         'feature': ry.FS.pose, 
         'frames': [frame],
         'target': pos,
@@ -34,6 +34,18 @@ def gazeAt(frames:list):
         'feature': ry.FS.gazeAt, 
         'frames': frames,
         'target': [0, 0],
+    }
+
+def scalarProductYZ(frames:list, target):
+    """
+    Align two frames. The scalar product of two of the axes of those frames is
+    equal to 1, if aligned.
+    """
+    return {
+        'type': ry.OT.eq,
+        'feature': ry.FS.scalarProductYZ,
+        'frames': frames,
+        'target': [target],
     }
 
 def scalarProductXZ(frames:list, target):
@@ -57,7 +69,7 @@ def scalarProductZZ(frames:list, target):
         'type': ry.OT.eq,
         'feature': ry.FS.scalarProductZZ,
         'frames': frames,
-        'target': [target]
+        'target': [target],
     }
 
 def distance(frames:list, target:float):
@@ -98,4 +110,11 @@ def accumulatedCollisions():
         'feature': ry.FS.accumulatedCollisions,
         'frames': [],
         'target': [0]
+    }
+
+def positionDiff(frames):
+    return{
+        'type': ry.OT.eq,
+        'feature': ry.FS.positionDiff,
+        'frames': frames
     }
