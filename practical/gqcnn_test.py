@@ -27,6 +27,14 @@ from practical.rosComm import RosComm
 import sensor_msgs
 
 #%%
+from practical.raiRobot import RaiRobot
+from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
+from practical.vision import findBallPosition, calcDepth,findBallInImage, virtCamIntrinsics as intr
+from practical import utils
+import libry as ry
+
+
+#%%
 rosco = RosComm()
 
 #%% 
@@ -46,7 +54,34 @@ img = rosco.rgb
 d = rosco.depth
 
 #%%
+type(d[0][0])
+
+#%%
+cam = ry.Camera('test', '/camera/color/image_raw/', '/camera/depth/image_rect_raw/', True)
+
+#%%
+img_ry = cam.getRgb()
+d_ry = cam.getDepth()
+
+
+#%%
+
+# Convert the depth image to a Numpy array since most cv2 functions
+# require Numpy arrays.
+depth_array = np.array(d, dtype=np.float32)
+
+# Normalize the depth image to fall between 0 (black) and 1 (white)
+cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
+
+# Process the depth image
+d = self.process_depth_image(depth_array)
+
+#%%
+type(d_ry[0][0])
+#%%
 plt.imshow(img)
+#%%
+plt.imshow(d)
 
 #%%
 cam_intr = CameraIntrinsics(frame='pcl', fx=intr['fx'], fy=intr['fy'], cx=intr['cx'], cy=intr['cy'], height=intr['height'], width=intr['width'])

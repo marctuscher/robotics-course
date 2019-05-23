@@ -32,8 +32,9 @@ from gqcnn.grasping import FullyConvolutionalGraspingPolicyParallelJaw
 
 #%%
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+#%%
+cam = ry.Camera('test', '/camera/color/image_raw/', '/camera/depth/image_rect_raw/', True)
 
-cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
 #%%
 cfg = YamlConfig('practical/cfg/fcgqcnn_pj.yaml')
 
