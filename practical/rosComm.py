@@ -1,7 +1,8 @@
 import threading
+import time
 import rospy
 import message_filters
-from sensor_msgs.msg import Image
+import sensor_msgs
 from cv_bridge import CvBridge, CvBridgeError
 import sys
 try:
@@ -26,8 +27,8 @@ class RosComm:
         #self.depth_array = np.array(self.depth_image, dtype=np.float32)
 
     def threaded_synced_rgbd(self, *argv):
-        self.image_sub = message_filters.Subscriber(argv[0], Image)
-        self.depth_sub = message_filters.Subscriber(argv[1], Image)
+        self.image_sub = message_filters.Subscriber(argv[0], sensor_msgs.msg.Image)
+        self.depth_sub = message_filters.Subscriber(argv[1], sensor_msgs.msg.Image)
         self.ts = message_filters.ApproximateTimeSynchronizer([self.image_sub, self.depth_sub], queue_size=10, slop=0.5)
         #self.cache = message_filters.Cache(self.ts, 10)
         self.ts.registerCallback(self.threaded_synced_rgbd_cb)
@@ -42,7 +43,7 @@ class RosComm:
         self.output_registry[threading.currentThread().getName()] = (data)
 
     def threaded_subscription(self, *argv):
-        print(argv[0])
+        #print(argv[0])
         self.subscriber_registry[argv[0]] = rospy.Subscriber(argv[0], argv[1], self.threaded_callback)
         rospy.spin()
 
@@ -54,12 +55,32 @@ class RosComm:
         self.thread.start()
         
     def stop_subscription(self, topic):
-        if self.output_registry.get(topic) is not None:
+        if self.subscriber_registry[topic] is not None:
             self.subscriber_registry[topic].unregister()
             del self.output_registry[topic]
+            del self.subscriber_registry[topic]
 
-    def getLatestMessage(self, topic):
+    def get_latest_message(self, topic):
         return self.output_registry.get(topic) 
+
+    def get_camera_intrinsics(self, topic):
+        self.subscribe(topic, sensor_msgs.msg.CameraInfo)
+        time.sleep(.1)
+        msg = self.get_latest_message(topic)
+        self.stop_subscription(topic)
+        # build intr dict
+        intr = {}
+        intr['frame_id'] = msg.header.frame_id
+        intr['K'] = msg.K
+        intr['P'] = msg.P
+        intr['height'] = msg.height
+        intr['width'] = msg.width
+        intr['fx'] = msg.K[0]
+        intr['fy'] = msg.K[4]
+        intr['cx'] = msg.K[2]
+        intr['cy'] = msg.K[5]
+        return intr
+        
     
     @property
     def output_reg(self):
