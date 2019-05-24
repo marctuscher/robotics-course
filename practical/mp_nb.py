@@ -36,9 +36,6 @@ robot.goHome()
 #%%
 robot.move(robot.q_zero)
 
-
-
-
 #%%
 robot.goHome()
 #%%
