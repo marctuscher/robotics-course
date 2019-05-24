@@ -25,7 +25,6 @@ class RaiRobot():
         self.q_home = self.C.getJointState()
         self.q_zero = self.q_home * 0.
         self.B = self.C.operate(nodeName)
-        self.B.sync(self.C)
         self.real = False
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
@@ -41,8 +40,9 @@ class RaiRobot():
         self.lhc.setRelativePose('t(-.0 .0 .0) d(-180 1 0 0) ')
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
-        self.IK = self.C.komo_IK(False)
-        self.path = self.C.komo_path(10, 1, 0.1, False)
+        self.IK = self.C.komo_IK(True)
+        self.path = self.C.komo_path(3, 1, 0.1, True)
+        self.B.sync(self.C)
         if nodeName:
             self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
 
@@ -54,6 +54,7 @@ class RaiRobot():
         return self.C.getFrameNames()
 
     def optimizeIk(self):
+        self.sync()
         self.IK.setConfigurations(self.C)
         self.IK.optimize(True)
         q_curr = self.C.getJointState()
@@ -69,11 +70,20 @@ class RaiRobot():
         for obj in objectives:
             self.IK.addObjective(**obj)
     
-    def optimizePath(self, objectives):
+    def optimizePath(self):
+        self.sync()
         self.path.setConfigurations(self.C)
         self.path.optimize(True)
-        self.C.setFrameState(self.path.getConfiguration(0))
-        return self.C.getJointState()
+        q_curr = self.C.getJointState()
+        q = []
+        t = self.path.getT()
+        for i in range(t):
+            self.C.setFrameState(self.path.getConfiguration(i))
+            q_tmp = self.C.getJointState()
+            q_tmp[-1] = q_curr[-1]
+            q_tmp[-2] = q_curr[-2]
+            q += [q_tmp]
+        return q
 
     def addPathObjectives(self, objectives, clear=False):
         if clear:
@@ -113,6 +123,9 @@ class RaiRobot():
         self.B.moveHard(q)
         #self.B.wait()
 
+    def movePath(self, path):
+        self.B.move(path, [10/len(path) for _ in range(len(path))], False)
+    
     def getCamView(self, view:bool, **kwargs):
         if view:
             self.addView(kwargs['frameAttached'])
@@ -152,7 +165,7 @@ class RaiRobot():
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    #accumulatedCollisions(),
+                    accumulatedCollisions(),
                     qItself(self.q_home, 1),
                     moveToPosition(targetPos, 'baxterR')
 
@@ -160,9 +173,27 @@ class RaiRobot():
             , True)
             q = self.optimizeIk()
             self.move(q)
-        #TODO: dont do this
-        #self.setGripper(0, -1) # close right gripper
-        #self.setGripper(0, -2) # close left gripper
+
+
+    def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False):
+        target = self.C.frame(targetFrame)
+        target.setPosition(targetPos)
+        q = self.C.getJointState()
+        if sendQ:
+            self.addPathObjectives(
+                [
+                    #gazeAt([gripperFrame, targetFrame]), 
+                    scalarProductYZ([gripperFrame, targetFrame], 0), 
+                    scalarProductZZ([gripperFrame, targetFrame], 1), 
+                    #distance([gripperFrame, targetFrame], -0.1),
+                    accumulatedCollisions(),
+                    qItself(self.q_home, 1),
+                    moveToPosition(targetPos, 'baxterR')
+
+                ]
+            , True)
+            q = self.optimizePath()
+            self.movePath(q)
 
 
     def computeCartesianPos(self, framePos, frameName):
@@ -246,3 +277,19 @@ class RaiRobot():
     def addPointCloud(self):
         self.sync()
         self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())
+
+
+
+    #### Baxter Stuff ####
+
+    def closeBaxterR(self):
+        self.setGripper(0.07, -2)
+    
+    def openBaxterR(self):
+        self.setGripper(0.0, -2)
+
+    def closeBaxterL(self):
+        self.setGripper(0.07, -1)
+    
+    def openBaxterL(self):
+        self.setGripper(0.0, -1)

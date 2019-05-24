@@ -28,6 +28,7 @@ policy:
     min_dist_from_boundary: 45
     min_grasp_dist: 2.5
     angle_dist_weight: 5.0
+    #max_num_edge_pixels: 100
 
     # depth sampling
     depth_sampling_mode: uniform
@@ -35,12 +36,12 @@ policy:
     depth_sample_win_height: 1
     depth_sample_win_width: 1
     min_depth_offset: 0.015
-    max_depth_offset: 0.05
+    max_depth_offset: 0.02
 
   # metrics
   metric:
     type: gqcnn
-    gqcnn_model: models/GQ
+    gqcnn_model: models/GQCNN-2.1
     
     crop_height: 96
     crop_width: 96

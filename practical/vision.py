@@ -16,6 +16,13 @@ baxterCamIntrinsics = {'fx': f, 'fy': f, 'cx': 320, 'cy': 240, 'width': 640, 'he
 virtCamIntrinsics = {'fx': 640 * fVirt, 'fy': 480 * fVirt, 'px': 320, 'py': 240, 'height': 480, 'width': 640}
 
 
+
+def maskDepth(d, lower, upper):
+    mask = np.logical_and(d >= lower, d <= upper)
+    d[~mask] = np.nan
+    return d
+
+    
 def findContoursInMask(mask):
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
@@ -35,7 +42,6 @@ def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
 
 def getGraspPosition(d, x, y, intrinsics=baxterCamIntrinsics):
     dp = calcDepth(d, int(y), int(x))
-    print(dp)
     xc = dp * (x - intrinsics['cx'])/intrinsics['fx']
     yc = -dp * (y-intrinsics['cy'])/intrinsics['fy']
     zc = -dp
@@ -43,8 +49,10 @@ def getGraspPosition(d, x, y, intrinsics=baxterCamIntrinsics):
 
 
 def calcDepth(d, u, v):
-    range_x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-    range_y = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    #range_x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    #range_y = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    range_x = np.arange(-3, 4, 1)
+    range_y = np.arange(-3, 4, 1)
     sum_ranges = len(range_x) * len(range_y)
     cumulated_depth = 0
     for x in range_x:
@@ -54,7 +62,6 @@ def calcDepth(d, u, v):
                 if np.isnan(val):
                     sum_ranges -= 1
                 else:
-                    print(val)
                     cumulated_depth += val
             else:
                 sum_ranges -= 1
