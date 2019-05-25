@@ -41,7 +41,7 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.path = self.C.komo_path(50, 1, 0.1, True)
+        self.path = self.C.komo_path(5, 1, 0.1, True)
         self.B.sync(self.C)
         if nodeName:
             self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
