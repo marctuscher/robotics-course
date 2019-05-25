@@ -8,7 +8,6 @@ try:
 except ValueError:
     pass  # do nothing!
 import cv2
-from ry import libry as ry
 import base64
 
 
