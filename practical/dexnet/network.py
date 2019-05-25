@@ -26,8 +26,13 @@ class GQCNNLoader():
         rgbd_state = RgbdImageState(rgbd_im, cam_intr)
         return rgbd_state
     
-    def predict(self, rgbd2state):
-        return self.graspPolicy(rgbd2state)
+    def predict(self, rgbdState):
+        res = self.graspPolicy(rgbdState)
+        pred = {
+            "x": res.grasp.center.x,
+            "y": res.grasp.center.y
+        }
+        return pred
 
 
 

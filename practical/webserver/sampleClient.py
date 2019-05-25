@@ -12,21 +12,10 @@ from ry import libry as ry
 import base64
 
 
-
-cam = ry.Camera("test","/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
-
-addr = 'http://localhost:5000'
-test_url = addr + '/gqcnn'
-
-# prepare headers for http request
-content_type = 'application/json'
-headers = {'content-type': content_type}
-img = cam.getRgb()
-d = cam.getDepth()
-
-_ ,img_dec = cv2.imencode('.jpg', img)
-_, d_dec = cv2.imencode('.jpg', d)
-
-response = requests.post(test_url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), 'width': 640, 'height':480}, headers=headers)
-# decode response
-print (json.loads(response.text))
+def predictGQCNN(img, d, host='http://localhost:5000'):
+    url = host + '/gqcnn'
+    headers = {'content-type': 'application/json'}
+    _ ,img_dec = cv2.imencode('.jpg', img)
+    _, d_dec = cv2.imencode('.jpg', d)
+    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec)}, headers=headers)
+    return json.loads(response)
