@@ -32,7 +32,6 @@ def rgbdFromRequest(request):
     rgb_str = r['rgb']
     depth_str = r['d']
     encoded = r['encoded']
-        
     rgb_buff = base64.b64decode(rgb_str)
     d_buff = base64.b64decode(depth_str)
     nparr_rgb = np.frombuffer(rgb_buff, np.uint8)

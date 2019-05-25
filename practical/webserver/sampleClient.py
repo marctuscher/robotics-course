@@ -19,5 +19,5 @@ def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000', width=640, heigh
     else:
         img_dec = memoryview(img)
     d_dec = memoryview(d)
-    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), "height": height, "width": width, encoded: encoded}, headers=headers)
+    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), "height": height, "width": width, "encoded": encoded}, headers=headers)
     return response.json()
