@@ -36,7 +36,7 @@ def rgbdFromRequest(request):
     nparr_rgb = np.frombuffer(rgb_buff, np.uint8)
     nparr_depth = np.frombuffer(d_buff, np.float32)
     img_rgb = cv2.imdecode(nparr_rgb, cv2.IMREAD_COLOR)
-    img_d = cv2.imdecode(nparr_depth, cv2.IMREAD_ANYDEPTH)
+    #img_d = cv2.imdecode(nparr_depth, cv2.IMREAD_ANYDEPTH)
     return img_rgb, img_d
 
 
