@@ -11,7 +11,7 @@ import cv2
 import base64
 from practical.vision import baxterCamIntrinsics as intr
 
-def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000', width=640, height=480, encoded=False
+def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000', width=640, height=480, encoded=False,
     fx=intr['fx'],
     fy=intr['fy'],
     cx=intr['cx'],
