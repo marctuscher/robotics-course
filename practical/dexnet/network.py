@@ -33,12 +33,11 @@ class GQCNNLoader():
             "y": res.grasp.center.y,
             "angle": res.grasp.angle,
             "q": res.q_value,
-            "approachAxis": [res.grasp.approach_axis[0], res.grasp.approach_axis[1], res.grasp.approach_axis[2]],
+            "approachAxis": [int(res.grasp.approach_axis[0]), int(res.grasp.approach_axis[1]), int(res.grasp.approach_axis[2])],
             "axis": [res.grasp.axis[0], res.grasp.axis[0]],
             "width": res.grasp.width,
             "depth": res.grasp.depth,
             "approachAngle": res.grasp.approach_angle
-
         }
         return pred
 
