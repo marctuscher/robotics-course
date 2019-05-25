@@ -22,16 +22,17 @@ def helloWorld():
 
 @app.route('/gqcnn', methods=['POST'])
 def gqcnn():
-    img, d = rgbdFromRequest(request)
-    state = gqcnn_net.rgbd2state(img, d)
+    r = request.get_json()
+    img, d = rgbdFromRequest(r)
+    state = gqcnn_net.rgbd2state(img, d, intr=r['intr'])
     res = gqcnn_net.predict(state)
     return jsonify(res)
 
-def rgbdFromRequest(request):
-    r = request.get_json()
+def rgbdFromRequest(r):
     rgb_str = r['rgb']
     depth_str = r['d']
     encoded = r['encoded']
+    intr = r['intr']
     rgb_buff = base64.b64decode(rgb_str)
     d_buff = base64.b64decode(depth_str)
     nparr_rgb = np.frombuffer(rgb_buff, np.uint8)
@@ -39,9 +40,9 @@ def rgbdFromRequest(request):
     if encoded:
         img_rgb = cv2.imdecode(nparr_rgb, cv2.IMREAD_COLOR)
     else:
-        img_rgb = np.reshape(nparr_rgb, (r["height"], r["width"], 3))
+        img_rgb = np.reshape(nparr_rgb, (intr["height"], intr["width"], 3))
     #img_d = cv2.imdecode(nparr_depth, cv2.IMREAD_ANYDEPTH)
-    nparr_depth = np.reshape(nparr_depth, (r["height"], r["width"]))
+    nparr_depth = np.reshape(nparr_depth, (intr["height"], intr["width"]))
     return img_rgb, nparr_depth
 
 
