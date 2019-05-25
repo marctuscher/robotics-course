@@ -33,7 +33,6 @@ from practical.vision import findBallPosition, calcDepth,findBallInImage, virtCa
 from practical import utils
 import libry as ry
 
-
 #%%
 rosco = RosComm()
 
@@ -46,19 +45,44 @@ rosco.subscribe_synced_rgbd('/camera/color/image_raw/', '/camera/depth/image_rec
 intr = rosco.get_camera_intrinsics('/camera/color/camera_info')
 
 #%%
-cfg = YamlConfig('practical/cfg/gqcnn_pj.yaml')
+cfg = YamlConfig('practical/cfg/gqcnn_pj_dbg.yaml')
 #%%
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 #%%
 img = rosco.rgb
 d = rosco.depth
-#%%
-np.max(d)
 
 #%%
-d=d*256
+depth = d
 #%%
-hist =  plt.hist(d.ravel(),256,[0,255])
+lol = np.nan
+#%%
+if(lol is np.nan):
+    print('yep')
+
+#%%
+plt.imshow(img)
+
+#%%
+np.int(np.ceil(np.max(d)))
+#%%
+hist =  plt.hist((d).ravel(),np.int(np.ceil(np.max(d))),[np.int(np.min(d)),np.int(np.ceil(np.max(d)))])
+#%%
+np.min(d)
+
+#%%
+cam = ry.Camera('lolz', '/camera/color/image_raw/', '/camera/depth/image_rect_raw/', True)
+#%%
+img_ry = cam.getRgb()
+d_ry = cam.getDepth()
+#%%
+np.max(d_ry)
+
+#%%
+np.min(d)
+
+#%%
+hist =  plt.hist((d*256).ravel(),256,[0,255])
 
 #%%
 type(d[0][0])
