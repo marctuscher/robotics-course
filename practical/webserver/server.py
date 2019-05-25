@@ -4,7 +4,6 @@ import numpy as np
 import json
 import base64
 import sys
-import matplotlib.pyplot as plt
 sys.path.append('.')
 try:
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
@@ -42,4 +41,4 @@ def rgbdFromRequest(request):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")

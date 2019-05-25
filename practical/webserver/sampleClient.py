@@ -12,7 +12,7 @@ from ry import libry as ry
 import base64
 
 
-def predictGQCNN(img, d, host='http://localhost:5000'):
+def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000'):
     url = host + '/gqcnn'
     headers = {'content-type': 'application/json'}
     _ ,img_dec = cv2.imencode('.jpg', img)
