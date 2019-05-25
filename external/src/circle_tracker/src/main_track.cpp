@@ -1,7 +1,7 @@
 //**************************************************************************
 // Circle_tracker
 //
-// Track circles in an RGB image provided by the Kinect v2 using Hought-Trransform
+// Track circles in an RGB image provided using Hought-Trransform
 //
 //**************************************************************************
 // Date:    
@@ -114,7 +114,7 @@ class SubscribeAndPublish{
   	// Reduce the noise so we avoid false circle detection
 	  GaussianBlur( img_gray, img_gray, Size(9, 9), 2, 2 );
 	
-	  // will hold the results of the detection
+	  // will hold the results of theextern detection
     std::vector<Vec3f> circles;
 	
     // runs the actual detection
