@@ -12,10 +12,10 @@ from ry import libry as ry
 import base64
 
 
-def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000'):
+def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000', width=640, height=480):
     url = host + '/gqcnn'
     headers = {'content-type': 'application/json'}
     _ ,img_dec = cv2.imencode('.jpg', img)
     d_dec = memoryview(d)
-    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec)}, headers=headers)
+    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), "height": height, "width": width}, headers=headers)
     return json.loads(response)
