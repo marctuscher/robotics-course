@@ -33,13 +33,13 @@ def rgbdFromRequest(request):
     depth_str = r['d']
     rgb_buff = base64.b64decode(rgb_str)
     d_buff = base64.b64decode(depth_str)
-
     nparr_rgb = np.frombuffer(rgb_buff, np.uint8)
     nparr_depth = np.frombuffer(d_buff, np.float32)
-    img_rgb = cv2.imdecode(nparr_rgb, cv2.IMREAD_COLOR)
+    #img_rgb = cv2.imdecode(nparr_rgb, cv2.IMREAD_COLOR)
     #img_d = cv2.imdecode(nparr_depth, cv2.IMREAD_ANYDEPTH)
     nparr_depth = np.reshape(nparr_depth, (r["height"], r["width"]))
-    return img_rgb, nparr_depth
+    nparr_rgb = np.reshape(nparr_rgb, (r["height"], r["width"], 3))
+    return nparr_rgb, nparr_depth
 
 
 if __name__ == '__main__':
