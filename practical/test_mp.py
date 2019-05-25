@@ -1,4 +1,7 @@
-
+#%%
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
 #%%
 import gc
 import sys
@@ -21,10 +24,14 @@ from practical import utils
 import libry as ry
 
 #%%
-robot =  RaiRobot('marc2node', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
 #%%
-robot.sendToReal(True)
+robot.sync()
+
+#%%
+robot.openBaxterR()
+#%%
 robot.goHome()
 #%%
 img, d = robot.imgAndDepth('cam')
@@ -33,11 +40,8 @@ plt.imshow(d)
 #%%
 boxMax = np.array([1.5, 1.5, 1.5])
 boxMin = -boxMax
-lastPos = np.array([0, 0, 0])
-time.sleep(0.2)
 img, depth = robot.imgAndDepth('cam')
 res =  findBallPosition(img, depth)
-robot.addPointCloud()
 if res:
     pc, x, y = res
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -46,5 +50,8 @@ if res:
     pos = robot.computeCartesianPos(pc, 'pcl')
     if utils.isPointInsideBox(boxMin, boxMax, pos):
         robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
+#%%
+pos = [1, 0, 0]
+robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
 
 #%%

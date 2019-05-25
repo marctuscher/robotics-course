@@ -41,10 +41,18 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.path = self.C.komo_path(3, 1, 0.1, True)
+        self.path = self.C.komo_path(50, 1, 0.1, True)
         self.B.sync(self.C)
         if nodeName:
             self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
+        
+    def __delete__(self, instance):
+        self.C = 0
+        self.B = 0
+        for key in self.views.keys():
+            self.views[key] = 0
+        if self.cam:
+            self.cam = 0
 
     def updateIk(self):
         self.IK.setConfigurations(self.C)
@@ -80,6 +88,7 @@ class RaiRobot():
         for i in range(t):
             self.C.setFrameState(self.path.getConfiguration(i))
             q_tmp = self.C.getJointState()
+            print(self.C.getJointState_qdot())
             q_tmp[-1] = q_curr[-1]
             q_tmp[-2] = q_curr[-2]
             q += [q_tmp]
