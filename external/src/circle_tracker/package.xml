@@ -1,0 +1,10 @@
+<package>
+  <name>circle_tracker</name>
+  <version>0.0.0</version>
+  <description>
+  Transform the stream of pointclouds delivered by kinect bridge Node into single Pointclouds
+  </description>
+  <maintainer email="ralf.gulde@online.de">Ralf Gulde</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
