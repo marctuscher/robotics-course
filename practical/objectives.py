@@ -104,17 +104,20 @@ def qItself(q, scale):
         'scale': [scale]   
         }
 
-def accumulatedCollisions():
+def accumulatedCollisions(scale):
     return {
         'type': ry.OT.eq,
         'feature': ry.FS.accumulatedCollisions,
         'frames': [],
-        'target': [0]
+        'target': [0],
+        'scale': [scale]
     }
 
-def positionDiff(frames):
+def positionDiff(frames, target, scale):
     return{
         'type': ry.OT.eq,
         'feature': ry.FS.positionDiff,
-        'frames': frames
+        'frames': frames,
+        'target': [target],
+        'scale': [scale]
     }

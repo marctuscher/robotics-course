@@ -11,7 +11,7 @@ import quaternion
 from practical import utils
 from practical.vision import baxterCamIntrinsics
 from pdb import set_trace
-from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition, scalarProductYZ
+from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition, scalarProductYZ, positionDiff
 import time 
 
 class RaiRobot():
@@ -43,6 +43,8 @@ class RaiRobot():
         self.IK = self.C.komo_IK(True)
         self.path = self.C.komo_path(10, 1, 0.1, True)
         self.B.sync(self.C)
+        self.pathObjectives = []
+        self.ikObjectives = []
         if nodeName:
             self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
         
@@ -72,14 +74,18 @@ class RaiRobot():
         q[-2] = q_curr[-2]
         return q
 
-    def addIkObjectives(self, objectives, clear=False):
-        if clear:
+
+    def addIkObjectives(self, objectives):
+        if objectives == self.ikObjectives:
+            return
+        else:
+            self.ikObjectives = []
             self.IK.clearObjectives()
-        for obj in objectives:
-            self.IK.addObjective(**obj)
+            for obj in objectives:
+                self.ikObjectives.append(obj)
+                self.IK.addObjective(**obj)
     
     def optimizePath(self, collectData=False):
-        #self.sync()
         self.path.setConfigurations(self.C)
         self.path.optimize(True)
         if collectData:
@@ -102,10 +108,14 @@ class RaiRobot():
         return q
 
     def addPathObjectives(self, objectives, clear=False):
-        if clear:
-            self.path.clearObjectives()
-        for obj in objectives:
-            self.path.addObjective(**obj)
+        if objectives == self.pathObjectives:
+            return
+        else:
+            self.IK.clearObjectives()
+            self.pathObjectives = []
+            for obj in objectives:
+                self.pathObjectives.append(obj)
+                self.path.addObjective(**obj)
 
     def goHome(self, hard=True ,randomHome=False):
         if randomHome and not self.real:
@@ -181,7 +191,7 @@ class RaiRobot():
         return pose
     
     def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, sendQ=False):
-        target = self.C.frame(targetFrame)
+        target = self._checkTarget(targetFrame)
         target.setPosition(targetPos)
         q = self.C.getJointState()
         if sendQ:
@@ -191,33 +201,35 @@ class RaiRobot():
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(),
+                    accumulatedCollisions(5),
                     qItself(self.q_home, 1),
-                    moveToPosition(targetPos, 'baxterR')
+                    moveToPosition(targetPos, gripperFrame)
+                    #positionDiff([targetFrame, gripperFrame], 0, 1)
 
                 ]
-            , True)
+            )
             q = self.optimizeIk()
             self.move(q)
 
 
     def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False, collectData=False):
-        target = self.C.frame(targetFrame)
+        target = self._checkTarget(targetFrame)
         target.setPosition(targetPos)
         q = self.C.getJointState()
         if sendQ:
             self.addPathObjectives(
                 [
                     #gazeAt([gripperFrame, targetFrame]), 
-                    scalarProductYZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 1), 
+                    #scalarProductYZ([gripperFrame, targetFrame], 0), 
+                    #scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(),
-                    qItself(self.q_home, 0.1),
-                    moveToPosition(targetPos, 'baxterR')
+                    accumulatedCollisions(10),
+                    #qItself(self.q_home, 0.05),
+                    #positionDiff([targetFrame, gripperFrame], 0, 1)
+                    moveToPosition(targetPos, gripperFrame)
 
                 ]
-            , True)
+            )
             if collectData:
                 q, q_data, q_dot_data = self.optimizePath(True)
                 self.movePath(q)
@@ -225,6 +237,12 @@ class RaiRobot():
             else:
                 q = self.optimizePath()
                 self.movePath(q)
+
+    def _checkTarget(self, targetFrame):
+        if targetFrame not in self.C.getFrameNames():
+            print('adding')
+            self.C.addObject(name=targetFrame, shape=ry.ST.sphere, size=[.05], pos=[0,0,0], color=[0.,0.,1.])
+        return self.C.frame(targetFrame)
 
 
     def computeCartesianPos(self, framePos, frameName):
