@@ -1,4 +1,6 @@
 build
 devel
 install
+src
 .catkin_workspace
+.catkin_tools

@@ -36,7 +36,8 @@ def gatherDataSet(steps=10, pos = [0.2, 1, 1]):
     return data
 
 
-
+#%%
+data = gatherDataSet()
 #%%
 robot.openBaxterR()
 #%%
