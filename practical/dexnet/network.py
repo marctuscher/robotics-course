@@ -12,13 +12,13 @@ from gqcnn.grasping import FullyConvolutionalGraspingPolicyParallelJaw
 class GQCNNLoader():
 
 
-    def __init__(self, cfgFile="practical/cfg/gqcnn_pj.yaml"):
+    def __init__(self, cfgFile="practical/cfg/gqcnn_pj_serv.yaml"):
         self.cfg = YamlConfig(cfgFile)
         self.graspPolicy = CrossEntropyRobustGraspingPolicy(self.cfg['policy'])
 
     def rgbd2state(self, img, d, frame='pcl',rgbEncoding='bgr8', intr=baxterCamIntrinsics):
         cam_intr = CameraIntrinsics(frame=frame, fx=intr['fx'], fy=intr['fy'], cx=intr['cx'], cy=intr['cy'], height=intr['height'], width=intr['width'])
-        color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame=frame)
+        color_im = ColorImage(img.astype(np.uint8), encoding=rgbEncoding, frame=frame)
         depth_im = DepthImage(d.astype(np.float32), frame=frame)
         color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
@@ -26,8 +26,20 @@ class GQCNNLoader():
         rgbd_state = RgbdImageState(rgbd_im, cam_intr)
         return rgbd_state
     
-    def predict(self, rgbd2state):
-        return self.graspPolicy(rgbd2state)
+    def predict(self, rgbdState):
+        res = self.graspPolicy(rgbdState)
+        pred = {
+            "x": res.grasp.center.x,
+            "y": res.grasp.center.y,
+            "angle": res.grasp.angle,
+            "q": res.q_value,
+            "approachAxis": [int(res.grasp.approach_axis[0]), int(res.grasp.approach_axis[1]), int(res.grasp.approach_axis[2])],
+            "axis": [res.grasp.axis[0], res.grasp.axis[0]],
+            "width": res.grasp.width,
+            "depth": res.grasp.depth,
+            "approachAngle": res.grasp.approach_angle
+        }
+        return pred
 
 
 

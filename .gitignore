@@ -136,6 +136,7 @@ srv_gen
 venv
 .vscode/ipch
 GQ*
+mesh/*
 models/*
 <<<<<<< HEAD
 data/*

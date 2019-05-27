@@ -8,25 +8,21 @@ try:
 except ValueError:
     pass  # do nothing!
 import cv2
-from ry import libry as ry
 import base64
+from practical.vision import baxterCamIntrinsics as intr
 
-
-
-cam = ry.Camera("test","/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
-
-addr = 'http://localhost:5000'
-test_url = addr + '/gqcnn'
-
-# prepare headers for http request
-content_type = 'application/json'
-headers = {'content-type': content_type}
-img = cam.getRgb()
-d = cam.getDepth()
-
-_ ,img_dec = cv2.imencode('.jpg', img)
-_, d_dec = cv2.imencode('.jpg', d)
-
-response = requests.post(test_url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), 'width': 640, 'height':480}, headers=headers)
-# decode response
-print (json.loads(response.text))
+def predictGQCNN(img, d, host='http://multitask.ddnss.de:5000', width=640, height=480, encoded=False,
+    fx=intr['fx'],
+    fy=intr['fy'],
+    cx=intr['cx'],
+    cy=intr['cy']
+    ):
+    url = host + '/gqcnn'
+    headers = {'content-type': 'application/json'}
+    if encoded:
+        _ ,img_dec = cv2.imencode('.png', img)
+    else:
+        img_dec = memoryview(img)
+    d_dec = memoryview(d)
+    response = requests.post(url, json={'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec),  "encoded": encoded, "intr": {"fx": fx, "fy": fy, "cx": cx, "cy": cy, "height": height, "width": width,}}, headers=headers)
+    return response.json()
