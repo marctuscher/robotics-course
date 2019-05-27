@@ -36,7 +36,7 @@ policy:
     depth_sample_win_height: 1
     depth_sample_win_width: 1
     min_depth_offset: 0.015
-    max_depth_offset: 0.02
+    max_depth_offset: 0.5
 
   # metrics
   metric:
