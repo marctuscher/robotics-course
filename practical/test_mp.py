@@ -27,16 +27,38 @@ import libry as ry
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
 #%%
-robot.sync()
+def gatherDataSet(steps=10, pos = [0.2, 1, 1]):
+    data = []
+    for _ in range(steps):
+        robot.goHome(hard=True, randomHome=True)
+        q_data, q_dot_data = robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True, collectData=True)
+        data.append(q_data + q_dot_data)
+    return data
+
+
 
 #%%
 robot.openBaxterR()
 #%%
-robot.goHome()
+robot.goHome(True)
+
+#%%
+robot.C.addObject(name="ball3", shape=ry.ST.sphere, size=[.05], pos=[0.8,-0.2,1], color=[0.,0.,1.])
+
+#%%
+ball = robot.C.frame('ball3')
+#%%
+ball.setPosition([0.2, 0.7, 1.1])
+#%%
+pos = [0.2, 1, 1]
+robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
 #%%
 img, d = robot.imgAndDepth('cam')
 print(d)
 plt.imshow(d)
+
+
+
 #%%
 boxMax = np.array([1.5, 1.5, 1.5])
 boxMin = -boxMax
@@ -50,8 +72,5 @@ if res:
     pos = robot.computeCartesianPos(pc, 'pcl')
     if utils.isPointInsideBox(boxMin, boxMax, pos):
         robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
-#%%
-pos = [1, 0, 0]
-robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
 
 #%%

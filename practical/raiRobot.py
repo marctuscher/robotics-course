@@ -41,7 +41,7 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.path = self.C.komo_path(50, 1, 0.1, True)
+        self.path = self.C.komo_path(10, 1, 0.1, True)
         self.B.sync(self.C)
         if nodeName:
             self.cam = ry.Camera(nodeName,"/camera/rgb/image_rect_color", "/camera/depth_registered/image_raw")
@@ -62,7 +62,7 @@ class RaiRobot():
         return self.C.getFrameNames()
 
     def optimizeIk(self):
-        self.sync()
+        #self.sync()
         self.IK.setConfigurations(self.C)
         self.IK.optimize(True)
         q_curr = self.C.getJointState()
@@ -78,20 +78,27 @@ class RaiRobot():
         for obj in objectives:
             self.IK.addObjective(**obj)
     
-    def optimizePath(self):
-        self.sync()
+    def optimizePath(self, collectData=False):
+        #self.sync()
         self.path.setConfigurations(self.C)
         self.path.optimize(True)
+        if collectData:
+            q_data = []
+            q_dot_data = []
         q_curr = self.C.getJointState()
         q = []
         t = self.path.getT()
         for i in range(t):
             self.C.setFrameState(self.path.getConfiguration(i))
             q_tmp = self.C.getJointState()
-            print(self.C.getJointState_qdot())
+            if collectData:
+                q_data += [q_tmp]
+                q_dot_data += [self.C.getJointState_qdot()]
             q_tmp[-1] = q_curr[-1]
             q_tmp[-2] = q_curr[-2]
             q += [q_tmp]
+        if collectData:
+            return q, q_data, q_dot_data
         return q
 
     def addPathObjectives(self, objectives, clear=False):
@@ -100,8 +107,15 @@ class RaiRobot():
         for obj in objectives:
             self.path.addObjective(**obj)
 
-    def goHome(self):
-        self.move(self.q_home)
+    def goHome(self, hard=True ,randomHome=False):
+        if randomHome and not self.real:
+            q = self.q_home.copy()
+            noise = np.random.normal(0, 0.1, q.shape[0]-2)
+            q[0:-2] += noise
+        else:
+            q = self.q_home
+        self.move(q, hard)
+        self.C.setJointState(q)
     
     def sendToReal(self, val:bool):
         self.real = val
@@ -128,12 +142,15 @@ class RaiRobot():
         self.move(q)
 
     
-    def move(self, q:list):
-        self.B.moveHard(q)
-        #self.B.wait()
+    def move(self, q:list, hard=True):
+        if hard:
+           self.B.moveHard(q)
+        else:
+            self.movePath([q])
 
     def movePath(self, path):
         self.B.move(path, [10/len(path) for _ in range(len(path))], False)
+        self.B.wait()
     
     def getCamView(self, view:bool, **kwargs):
         if view:
@@ -184,7 +201,7 @@ class RaiRobot():
             self.move(q)
 
 
-    def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False):
+    def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False, collectData=False):
         target = self.C.frame(targetFrame)
         target.setPosition(targetPos)
         q = self.C.getJointState()
@@ -196,13 +213,18 @@ class RaiRobot():
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
                     accumulatedCollisions(),
-                    qItself(self.q_home, 1),
+                    qItself(self.q_home, 0.1),
                     moveToPosition(targetPos, 'baxterR')
 
                 ]
             , True)
-            q = self.optimizePath()
-            self.movePath(q)
+            if collectData:
+                q, q_data, q_dot_data = self.optimizePath(True)
+                self.movePath(q)
+                return q_data, q_dot_data
+            else:
+                q = self.optimizePath()
+                self.movePath(q)
 
 
     def computeCartesianPos(self, framePos, frameName):
