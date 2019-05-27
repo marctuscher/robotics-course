@@ -74,4 +74,4 @@ policy:
 
 # image proc params
 #inpaint_rescale_factor: 0.5
-inpaint_rescale_factor: 1
+inpaint_rescale_factor: 0.5
