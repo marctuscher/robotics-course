@@ -77,8 +77,6 @@ def findBallInImage(img_bgr):
         center=(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"]))
         return (x,y)
 
-
-
 def plotCircles(img_rgb, circles):
     circles = np.uint16(np.around(circles))
     for i in range(len(circles)):
@@ -105,3 +103,22 @@ def greenMask(img_bgr):
     mask = cv2.erode(mask, None, iterations=2)
     mask = cv2.dilate(mask, None, iterations=2)
     return mask
+
+def imcrop(img, bbox): 
+    x1,y1,x2,y2 = bbox
+    if x1 < 0 or y1 < 0 or x2 > img.shape[1] or y2 > img.shape[0]:
+        img, x1, x2, y1, y2 = pad_img_to_fit_bbox(img, x1, x2, y1, y2)
+    if np.shape(img) == (480,640):
+        return img[y1:y2, x1:x2]
+    else:
+        return img[y1:y2, x1:x2, :]
+
+def pad_img_to_fit_bbox(img, x1, x2, y1, y2):
+    print('Image padding is necessary for the cropping operation')
+    img = np.pad(img, ((np.abs(np.minimum(0, y1)), np.maximum(y2 - img.shape[0], 0)),
+               (np.abs(np.minimum(0, x1)), np.maximum(x2 - img.shape[1], 0)), (0,0)), mode="constant")
+    y1 += np.abs(np.minimum(0, y1))
+    y2 += np.abs(np.minimum(0, y1))
+    x1 += np.abs(np.minimum(0, x1))
+    x2 += np.abs(np.minimum(0, x1))
+    return img, x1, x2, y1, y2
