@@ -9,7 +9,7 @@ from practical.webserver.utils import rgbdFromRequest
 from practical.dexnet.network import GQCNNLoader
 
 
-gqcnn_net = GQCNNLoader()
+gqcnn_net = GQCNNLoader(Fri)
 
 @app.route('/', methods=['GET'])
 def helloWorld():

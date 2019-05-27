@@ -1,8 +1,10 @@
 #%%
+remoteCalc = True
+#%%
 %reload_ext autoreload
 %autoreload 2
 %matplotlib inline
-#%%
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,20 +15,19 @@ except ValueError:
 import cv2
 sys.path.append('../')
 
-#%%
-from autolab_core import YamlConfig
-from gqcnn.grasping import Grasp2D, SuctionPoint2D, CrossEntropyRobustGraspingPolicy, RgbdImageState
-from gqcnn.utils import GripperMode, NoValidGraspsException
-from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, RgbdImage
-from visualization import Visualizer2D as vis
+if not remoteCalc:
+    
+    from gqcnn.grasping import Grasp2D, SuctionPoint2D, CrossEntropyRobustGraspingPolicy, RgbdImageState
+    from gqcnn.utils import GripperMode, NoValidGraspsException
+    from perception import CameraIntrinsics, ColorImage, DepthImage, BinaryImage, RgbdImage
+    from visualization import Visualizer2D as vis
 
-#%%
+
 import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from practical.rosComm import RosComm
 import sensor_msgs
 
-#%%
 from practical.webserver import sampleClient
 from practical.raiRobot import RaiRobot
 from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
@@ -54,7 +55,7 @@ d = rosco.depth
 #%%
 plt.imshow(img)
 #%%
-plt.imshow(d)
+plt.imshow(d, cmap='gray', vmin = int(np.floor(np.min(d))), vmax = int(np.ceil(np.max(d))))
 #%%
 #%% x1,y1,x2,y2 = bbox
 b_w = 120
@@ -63,8 +64,9 @@ img = vision.imcrop(img, [b_w, b_h, np.shape(img)[1] - b_w, np.shape(img)[0] -b_
 d = vision.imcrop(d, [b_w, b_h, np.shape(d)[1] - b_w, np.shape(d)[0] - b_h])
 
 #%%
+int(np.floor(np.min(d)))
+#%%
 grasp = sampleClient.predictGQCNN(img,d,host='http://ralfi.nat.selfnet.de:5000',height=intr_rs['height'], width=intr_rs['width'], fx=intr_rs['fx'], fy=intr_rs['fy'], cx=intr_rs['cx'], cy=intr_rs['cy'])
-
 #%%
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 cv2.circle(img,(int(grasp['x']),int(grasp['y'])),2,(255,0,0),3)
