@@ -1,7 +1,7 @@
 #%%
-#%reload_ext autoreload
-#%autoreload 2
-#%matplotlib inline
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
 #%%
 import gc
 import sys
@@ -27,12 +27,12 @@ import libry as ry
 robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 
 #%%
-#robot.C.addObject(name="ball3", shape=ry.ST.sphere, size=[.05], pos=[0.8,-0.2,1], color=[0.,0.,1.])
+robot.C.addObject(name="ball3", shape=ry.ST.sphere, size=[.05], pos=[0.8,-0.2,1], color=[0.,0.,1.])
 
 #%%
-#ball = robot.C.frame('ball3')
+ball = robot.C.frame('ball3')
 #%%
-#ball.setPosition([0.4, 0.8, 1.3])
+ball.setPosition([0.4, 0.8, 1.3])
 
 #%%
 robot.C.makeObjectsConvex()
