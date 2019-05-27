@@ -61,6 +61,17 @@ b_w = 120
 b_h = 90
 img = vision.imcrop(img, [b_w, b_h, np.shape(img)[1] - b_w, np.shape(img)[0] -b_h])
 d = vision.imcrop(d, [b_w, b_h, np.shape(d)[1] - b_w, np.shape(d)[0] - b_h])
+
+#%%
+grasp = sampleClient.predictGQCNN(img,d,host='http://ralfi.nat.selfnet.de:5000',height=intr_rs['height'], width=intr_rs['width'], fx=intr_rs['fx'], fy=intr_rs['fy'], cx=intr_rs['cx'], cy=intr_rs['cy'])
+
+#%%
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+cv2.circle(img,(int(grasp['x']),int(grasp['y'])),2,(255,0,0),3)
+plt.imshow(img)
+#%%
+
+
 #%%
 plt.imshow(img)
 #%%
