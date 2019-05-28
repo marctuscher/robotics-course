@@ -16,14 +16,18 @@ class GQCNNLoader():
         self.cfg = YamlConfig(cfgFile)
         self.graspPolicy = CrossEntropyRobustGraspingPolicy(self.cfg['policy'])
 
-    def rgbd2state(self, img, d, frame='pcl',rgbEncoding='bgr8', intr=baxterCamIntrinsics):
+    def rgbd2state(self, img, d, segmask=None, frame='pcl',rgbEncoding='bgr8', intr=baxterCamIntrinsics):
         cam_intr = CameraIntrinsics(frame=frame, fx=intr['fx'], fy=intr['fy'], cx=intr['cx'], cy=intr['cy'], height=intr['height'], width=intr['width'])
         color_im = ColorImage(img.astype(np.uint8), encoding=rgbEncoding, frame=frame)
         depth_im = DepthImage(d.astype(np.float32), frame=frame)
         color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
-        rgbd_state = RgbdImageState(rgbd_im, cam_intr)
+        if segmask is not None:
+            mask_img = BinaryImage(segmask.astype(np.uint8), frame='pcl')
+            rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
+        else:
+            rgbd_state = RgbdImageState(rgbd_im, cam_intr)
         return rgbd_state
     
     def predict(self, rgbdState):
@@ -49,16 +53,15 @@ class FCGQCNNLoader():
         self.cfg = YamlConfig(cfgFile)
         self.graspPolicy = FullyConvolutionalGraspingPolicyParallelJaw(self.cfg['policy'])
 
-    def rgbd2state(self, img, d, mask,frame='pcl',rgbEncoding='bgr8', intr=baxterCamIntrinsics):
+    def rgbd2state(self, img, d, segmask,frame='pcl',rgbEncoding='bgr8', intr=baxterCamIntrinsics):
         cam_intr = CameraIntrinsics(frame=frame, fx=intr['fx'], fy=intr['fy'], cx=intr['cx'], cy=intr['cy'], height=intr['height'], width=intr['width'])
         color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame=frame)
         depth_im = DepthImage(d.astype(np.float32), frame=frame)
         color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
-        rgbd_state = RgbdImageState(rgbd_im, cam_intr)
-        mask_img = BinaryImage(mask.astype(np.uint8), frame=frame)
-        rgbd_state.segmask = mask_img
+        mask_img = BinaryImage(segmask.astype(np.uint8), frame='pcl')
+        rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
         return rgbd_state
     
     def predict(self, rgbd2state):

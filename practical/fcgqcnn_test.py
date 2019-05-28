@@ -55,6 +55,14 @@ plt.imshow(mask)
 #%%
 plt.imshow(img)
 #%%
+from practical.vision import maskDepth
+from practical.webserver.sampleClient import predictGQCNN
+#%%
+m = maskDepth(d, 0.8, 1.4)
+#%%
+plt.imshow(m)
+#%%
+predictGQCNN(img, d, host='http://localhost:5000')
 #%%
 cam_intr = CameraIntrinsics(frame='pcl', fx=intr['fx'], fy=intr['fy'], cx=intr['px'], cy=intr['py'], height=intr['height'], width=intr['width'])
 color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame='pcl')
