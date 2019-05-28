@@ -3,7 +3,7 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 
 
-def moveToPosition(pos:list, frame:str):
+def moveToPosition(pos:list, frame:str, time):
     """
     Move frame to a given position
     """
@@ -12,6 +12,7 @@ def moveToPosition(pos:list, frame:str):
         'feature': ry.FS.position, 
         'frames': [frame],
         'target': pos,
+        'time': time
     }
 
 def moveToPose(pos:list, frame:str):
@@ -89,7 +90,7 @@ def distance(frames:list, target:float):
         'target': [target]    
         }
 
-def qItself(q, scale):
+def qItself(q, scale, time):
     """
     Minimize zhe configuration joint vector.
 
@@ -101,7 +102,8 @@ def qItself(q, scale):
         'feature': ry.FS.qItself,
         'frames': [],
         'target': q,
-        'scale': [scale]   
+        'scale': [scale],
+        'time': time   
         }
 
 def accumulatedCollisions(scale):

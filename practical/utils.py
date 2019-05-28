@@ -17,7 +17,22 @@ def calcBallPos(i, r, c):
     z = c[2] + r * np.cos(i)
     return [x,y,z]
 
+def rotz (h):
+    """
+    Comput the 3x3 rotation matrix from the heading angle, h
+    
+    """
 
+    c = np.cos (h)
+    s = np.sin (h)
+
+    I = np.ones (c.shape)
+    O = np.zeros (c.shape)
+
+    C_x_h = np.array ([[c,   s,  O],
+                          [-s,   c,  O],
+                          [O,  O,  I]])
+    return C_x_h
 
 ##################################
 # Maths stuff                    #

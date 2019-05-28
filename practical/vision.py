@@ -9,10 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import imutils
 
-
+intrinsics = [538.273, 544.277, 307.502, 249.954]
 f = 320./np.tan(0.5 * 60.8 * np.pi/180.)
 fVirt = 1./np.tan(0.5 * 90 * np.pi/180.)
-baxterCamIntrinsics = {'fx': f, 'fy': f, 'cx': 320, 'cy': 240, 'width': 640, 'height':480}
+#baxterCamIntrinsics = {'fx': f, 'fy': f, 'cx': 320, 'cy': 240, 'width': 640, 'height':480}
+baxterCamIntrinsics = {'fx': intrinsics[0], 'fy': intrinsics[1], 'cx': intrinsics[2], 'cy': intrinsics[3], 'width': 640, 'height':480}
 virtCamIntrinsics = {'fx': 640 * fVirt, 'fy': 480 * fVirt, 'px': 320, 'py': 240, 'height': 480, 'width': 640}
 
 
@@ -35,6 +36,7 @@ def findBallPosition(img_bgr, d, intrinsics=baxterCamIntrinsics):
     if p:
         x, y = p
         dp = calcDepth(d, int(y), int(x))
+        print(dp)
         xc = dp * (x - intrinsics['cx'])/intrinsics['fx']
         yc = -dp * (y-intrinsics['cy'])/intrinsics['fy']
         zc = -dp

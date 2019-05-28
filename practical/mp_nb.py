@@ -117,7 +117,7 @@ if res:
     plt.imshow(img)
     pos = robot.computeCartesianPos(pc, 'pcl')
     if utils.isPointInsideBox(boxMin, boxMax, pos):
-        robot.trackAndGraspTarget(pos, 'ball2', 'baxterR', sendQ=True)
+        robot.trackPath(pos, 'ball2', 'baxterR', sendQ=True)
 
 
 #%%

@@ -29,16 +29,37 @@ from practical.webserver.sampleClient import predictGQCNN, predictFCGQCNN
 robot =  RaiRobot('marc2', 'rai-robotModels/baxter/baxter_new.g')
 #%%
 robot.goHome()
-
+#%%
+robot.move(robot.q_zero)
 #%%
 img, d = robot.imgAndDepth('cam')
-m = maskDepth(d, 0.8, 1.4)
+m = maskDepth(d, 0.6, 1.4)
 #%%
 plt.imshow(m)
 #%%
-res = predictGQCNN(img, d,'http://ralfi.nat.selfnet.de:5000')#segmask=m)
+grasp = predictGQCNN(img, d,'http://ralfi.nat.selfnet.de:5000')#segmask=m)
 #%%
-res = predictFCGQCNN(img, d,m,'http://localhost:5000')#segmask=m)
+grasp = predictFCGQCNN(img, d,m,'http://ralfi.nat.selfnet.de:5000')#segmask=m)
+
+#%%
+grasp
+#%%
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+cv2.circle(img,(int(grasp['x']),int(grasp['y'])),2,(255,0,0),3)
+plt.imshow(img)
+
+#%%
+robot.sendToReal(False)
+
+#%%
+res =  getGraspPosition(d, grasp['x'], grasp['y'])
+if res:
+    pc, x, y = res
+    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    cv2.circle(img2,(int(x),int(y)),2,(255,0,0),3)
+    plt.imshow(img2)
+    pos = robot.computeCartesianPos(pc, 'pcl')
+    robot.graspPath(np.array([pos[0], pos[1], pos[2]]), grasp['angle'],'ball2', 'baxterR', sendQ=True)
 #%%
 robot.C.addObject(name="ball3", shape=ry.ST.sphere, size=[.05], pos=[0.8,-0.2,1], color=[0.,0.,1.])
 
