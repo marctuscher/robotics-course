@@ -8,7 +8,6 @@ sys.path.append('.')
 from practical.webserver.utils import rgbdFromRequest, rgbdSegmaskFromRequest
 from practical.dexnet.network import GQCNNLoader, FCGQCNNLoader
 
-
 gqcnn_net = GQCNNLoader(cfgFile="practical/cfg/gqcnn_pj_tuned.yaml")
 
 fcgqcnn_net = FCGQCNNLoader()
