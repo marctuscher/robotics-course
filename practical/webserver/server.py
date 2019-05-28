@@ -5,7 +5,7 @@ import json
 import base64
 import sys
 sys.path.append('.')
-from practical.webserver.utils import rgbdFromRequest, rgbdSegmaskFromRequest
+from practical.webserver.utils import rgbdFromRequest, rgbdSegmaskFromRequest, plotImage
 from practical.dexnet.network import GQCNNLoader, FCGQCNNLoader
 
 
@@ -26,6 +26,7 @@ def gqcnn():
         res = gqcnn_net.predict(state)
     else:
         img, d = rgbdFromRequest(r)
+        #plotImage(d)
         state = gqcnn_net.rgbd2state(img, d, intr=r['intr'])
         res = gqcnn_net.predict(state)
     return jsonify(res)

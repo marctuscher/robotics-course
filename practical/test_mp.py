@@ -22,10 +22,18 @@ from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalar
 from practical.vision import findBallPosition, findBallInImage, getGraspPosition, maskDepth
 from practical import utils
 import libry as ry
+#%%
+from practical.webserver.sampleClient import predictGQCNN
 
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('marc2', 'rai-robotModels/baxter/baxter_new.g')
+#%%
+robot.goHome()
 
+#%%
+img, d = robot.imgAndDepth('cam')
+#%%
+plt.imshow(img)
 #%%
 robot.C.addObject(name="ball3", shape=ry.ST.sphere, size=[.05], pos=[0.8,-0.2,1], color=[0.,0.,1.])
 

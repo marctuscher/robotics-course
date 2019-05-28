@@ -3,6 +3,7 @@ import base64
 import sys
 sys.path.append('.')
 import cv2
+import matplotlib.pyplot as plt
 
 
 def rgbdFromRequest(r):
@@ -36,3 +37,10 @@ def rgbFromRequest(r):
     else:
         img_rgb = np.reshape(nparr_rgb, (intr["height"], intr["width"], 3))
     return img_rgb
+
+
+
+def plotImage(img, filename="image.png"):
+    plt.figure()
+    plt.imshow(img)
+    plt.savefig(filename)
