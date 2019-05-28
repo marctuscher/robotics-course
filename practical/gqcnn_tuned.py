@@ -14,6 +14,7 @@ except ValueError:
     pass  # do nothing!
 import cv2
 sys.path.append('../')
+from autolab_core import YamlConfig
 
 if not remoteCalc:
     
