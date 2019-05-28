@@ -64,5 +64,17 @@ class FCGQCNNLoader():
         rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
         return rgbd_state
     
-    def predict(self, rgbd2state):
-        return self.graspPolicy(rgbd2state)
+    def predict(self, rgbdState):
+        res = self.graspPolicy(rgbdState)
+        pred = {
+            "x": res.grasp.center.x,
+            "y": res.grasp.center.y,
+            "angle": res.grasp.angle,
+            "q": res.q_value,
+            "approachAxis": [int(res.grasp.approach_axis[0]), int(res.grasp.approach_axis[1]), int(res.grasp.approach_axis[2])],
+            "axis": [res.grasp.axis[0], res.grasp.axis[0]],
+            "width": res.grasp.width,
+            "depth": res.grasp.depth,
+            "approachAngle": res.grasp.approach_angle
+        }
+        return pred
