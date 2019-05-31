@@ -52,3 +52,24 @@ def predictFCGQCNN(img, d, segmask, host='http://multitask.ddnss.de:5000', width
     req_dict = {'rgb':base64.b64encode(img_dec), 'd': base64.b64encode(d_dec), 'segmask': base64.b64encode(s_dec) ,"encoded": encoded, "intr": {"fx": fx, "fy": fy, "cx": cx, "cy": cy, "height": height, "width": width,}}
     response = requests.post(url, json=req_dict, headers=headers)
     return response.json()
+
+def predictMask(img, host='http://multitask.ddnss.de:5000', width=640, height=480, encoded=False,
+    fx=intr['fx'],
+    fy=intr['fy'],
+    cx=intr['cx'],
+    cy=intr['cy']
+    ):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    url = host + '/mask'
+    headers = {'content-type': 'application/json'}
+    if encoded:
+        _ ,img_dec = cv2.imencode('.png', img)
+    else:
+        img_dec = memoryview(img)
+    req_dict = {'rgb':base64.b64encode(img_dec) ,"encoded": encoded, "intr": {"fx": fx, "fy": fy, "cx": cx, "cy": cy, "height": height, "width": width,}}
+    response = requests.post(url, json=req_dict, headers=headers)
+    res_json = response.json()
+    for key in res_json.keys():
+        if isinstance(res_json[key], list):
+            res_json[key] = np.array(res_json[key], dtype=np.float32)
+    return res_json

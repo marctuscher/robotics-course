@@ -78,3 +78,4 @@ class FCGQCNNLoader():
             "approachAngle": res.grasp.approach_angle
         }
         return pred
+

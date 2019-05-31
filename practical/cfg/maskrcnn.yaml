@@ -5,7 +5,7 @@ model:
   path: models/sd_maskrcnn.h5
   mode: inference
   settings:
-    image_shape: [512, 512]
+    image_shape: [480, 640]
     image_channel_count: 3
     mean_pixel: [128,128,128]
     backbone: resnet35
