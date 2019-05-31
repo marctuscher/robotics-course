@@ -43,7 +43,8 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.path = self.C.komo_path(10, 1, 0.1, True)
+        self.pathLength = 10
+        self.path = self.C.komo_path(self.pathLength, 1, 0.1, True)
         self.B.sync(self.C)
         self.pathObjectives = []
         self.ikObjectives = []
@@ -78,7 +79,7 @@ class RaiRobot():
 
 
     def addIkObjectives(self, objectives):
-        if objectives == self.ikObjectives:
+        if False: #objectives == self.ikObjectives:
             return
         else:
             self.ikObjectives = []
@@ -123,6 +124,8 @@ class RaiRobot():
             q = self.q_home
         self.move(q, hard)
         self.C.setJointState(q)
+
+        
     
     def sendToReal(self, val:bool):
         self.real = val
@@ -156,7 +159,7 @@ class RaiRobot():
             self.movePath([q])
 
     def movePath(self, path):
-        self.B.move(path, [10/len(path) for _ in range(len(path))], False)
+        self.B.move(path, self._calcPathSpeed(10, len(path)), True)
         self.B.wait()
     
     def getCamView(self, view:bool, **kwargs):
@@ -196,11 +199,9 @@ class RaiRobot():
                 [
                     #gazeAt([gripperFrame, targetFrame]), 
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 1), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(1),
-                    qItself(self.q_home, 0.1, 0.8),
-                    moveToPosition(targetPos, gripperFrame, [1])
+                    moveToPosition(targetPos, gripperFrame)
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
 
                 ]
@@ -249,10 +250,10 @@ class RaiRobot():
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
                     #accumulatedCollisions(1),
-                    #qItself(self.q_home, 1,[0, 0.6]),
+                    qItself(self.q_home, 0.01, [0, 28]),
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 8]),
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [8, 10])
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 5]),
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [5, 10])
                 ]
             )
             if collectData:
@@ -355,6 +356,14 @@ class RaiRobot():
         self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())
 
 
+    def _calcPathSpeed(self, speed, pathLen):
+        secs = []
+        for i in range(pathLen):
+            if i > pathLen / 2:
+                secs.append(speed / pathLen *3)
+            else:
+                secs.append(3 * speed / pathLen)
+        return secs
 
     #### Baxter Stuff ####
 
