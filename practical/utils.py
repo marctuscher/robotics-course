@@ -7,6 +7,7 @@ from scipy.spatial.transform import Rotation as R
 
 
 
+
 def calcBallPos(i, r, c):
     """
     calculate ball position in circle in from of robot

@@ -43,7 +43,10 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.path = self.C.komo_path(10, 1, 0.1, True)
+        self.numPhases = 10
+        self.stepsPerPhase = 10
+        self.timePerPhase = 1
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
         self.B.sync(self.C)
         self.pathObjectives = []
         self.ikObjectives = []
@@ -58,15 +61,24 @@ class RaiRobot():
         if self.cam:
             self.cam = 0
 
-    def updateIk(self):
-        self.IK.setConfigurations(self.C)
-        self.path.setConfigurations(self.C)
-
     def getFrameNames(self)-> list:
         return self.C.getFrameNames()
 
+
+###################### Motion Planning #################################
+
+    def addIkObjectives(self, objectives):
+        if False: #objectives == self.ikObjectives:
+            return
+        else:
+            self.ikObjectives = []
+            self.IK.clearObjectives()
+            for obj in objectives:
+                self.ikObjectives.append(obj)
+                self.IK.addObjective(**obj)
+
+    @syncBefore   
     def optimizeIk(self):
-        #self.sync()
         self.IK.setConfigurations(self.C)
         self.IK.optimize(True)
         q_curr = self.C.getJointState()
@@ -77,16 +89,19 @@ class RaiRobot():
         return q
 
 
-    def addIkObjectives(self, objectives):
-        if objectives == self.ikObjectives:
+    def addPathObjectives(self, objectives, clear=False):
+        self.path.setConfigurations(self.C)
+        if False: #objectives == self.pathObjectives:
             return
         else:
-            self.ikObjectives = []
-            self.IK.clearObjectives()
+            self.path.clearObjectives()
+            self.pathObjectives = []
             for obj in objectives:
-                self.ikObjectives.append(obj)
-                self.IK.addObjective(**obj)
-    
+                self.pathObjectives.append(obj)
+                self.path.addObjective(**obj)
+
+
+    @syncBefore   
     def optimizePath(self, collectData=False):
         self.path.setConfigurations(self.C)
         self.path.optimize(True)
@@ -103,16 +118,8 @@ class RaiRobot():
             q += [q_tmp]
         return q
 
-    def addPathObjectives(self, objectives, clear=False):
-        self.path.setConfigurations(self.C)
-        if False: #objectives == self.pathObjectives:
-            return
-        else:
-            self.path.clearObjectives()
-            self.pathObjectives = []
-            for obj in objectives:
-                self.pathObjectives.append(obj)
-                self.path.addObjective(**obj)
+
+###################### Motion #################################
 
     def goHome(self, hard=True ,randomHome=False):
         if randomHome and not self.real:
@@ -122,8 +129,14 @@ class RaiRobot():
         else:
             q = self.q_home
         self.move(q, hard)
-        self.C.setJointState(q)
-    
+
+    @syncAfter
+    def move(self, q:list, hard=True):
+        if hard:
+           self.B.moveHard(q)
+        else:
+            self.movePath([q])
+        
     def sendToReal(self, val:bool):
         self.real = val
         self.B.sendToReal(val)
@@ -145,19 +158,35 @@ class RaiRobot():
         """
         q = self.C.getJointState()
         q[gripperIndex] = val
-        self.C.setJointState(q)
         self.move(q)
 
     
-    def move(self, q:list, hard=True):
-        if hard:
-           self.B.moveHard(q)
-        else:
-            self.movePath([q])
-
     def movePath(self, path):
-        self.B.move(path, [10/len(path) for _ in range(len(path))], False)
+        self.B.move(path, self._calcPathSpeed(10, len(path)), True)
         self.B.wait()
+
+
+
+###################### Vision #################################
+
+
+    def imgAndDepth(self, camName, virtual=False):
+        if camName == 'cam':
+            if not self.cam or virtual:
+                self.camView.updateConfig(self.C)
+                img, d = self.camView.computeImageAndDepth()
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            else:
+                img, d = self.cam.getRgb(), self.cam.getDepth()
+
+        elif camName == 'cam_lhc':
+            if not self.cam_lhc or virtual:
+                self.camView_lhc.updateConfig(self.C)
+                img, d = self.camView_lhc.computeImageAndDepth()
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            else:
+                img, d = self.cam_lhc.getRgb(), self.cam_lhc.getDepth()
+        return img, d
     
     def getCamView(self, view:bool, **kwargs):
         if view:
@@ -169,7 +198,14 @@ class RaiRobot():
         
     def addView(self, frameName:str):
         self.views[frameName] = self.C.view(frameName)
+
+    @syncAfter
+    def addPointCloud(self):
+        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())
     
+###################### Utilities #################################
+
+    @syncAndReinitKomo
     def deleteFrame(self, frameName:str):
         assert(frameName in self.getFrameNames())
         if frameName in self.views:
@@ -186,6 +222,33 @@ class RaiRobot():
         # a pose is represented 7D vector (x,y,z, qw,qx,qy,qz)
         pose = self.C.getFrameState(frame_name)
         return pose
+
+    def _sync(self):
+        self.B.sync(self.C)
+        self.path.setConfigurations(self.C)
+        self.IK.setConfigurations(self.C)
+
+    def _checkTarget(self, targetFrame):
+        if targetFrame not in self.C.getFrameNames():
+            print('adding')
+            self.addObject(name=targetFrame, shape=ry.ST.sphere, size=[.01], pos=[0,0,0], color=[0.,0.,1.])
+        return self.C.frame(targetFrame)
+
+    @syncAndReinitKomo    
+    def addObject(self, **kwargs):
+        return self.C.addObject(**kwargs)
+
+
+    def _calcPathSpeed(self, speed, pathLen):
+        secs = []
+        for i in range(pathLen):
+            if i > pathLen / 2:
+                secs.append(speed / pathLen *3)
+            else:
+                secs.append(3 * speed / pathLen)
+        return secs
+
+###################### Predefined stuff #################################
     
     def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, sendQ=False):
         target = self._checkTarget(targetFrame)
@@ -196,11 +259,9 @@ class RaiRobot():
                 [
                     #gazeAt([gripperFrame, targetFrame]), 
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 1), 
+                    scalarProductZZ([gripperFrame, targetFrame], 0), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(1),
-                    qItself(self.q_home, 0.1, 0.8),
-                    moveToPosition(targetPos, gripperFrame, [1])
+                    moveToPosition(targetPos, gripperFrame)
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
 
                 ]
@@ -249,10 +310,10 @@ class RaiRobot():
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
                     #accumulatedCollisions(1),
-                    #qItself(self.q_home, 1,[0, 0.6]),
+                    qItself(self.q_home, 0.01, [0, 28]),
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 8]),
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [8, 10])
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 5]),
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [5, 10])
                 ]
             )
             if collectData:
@@ -263,16 +324,15 @@ class RaiRobot():
                 q = self.optimizePath()
                 self.movePath(q)
 
-    def _checkTarget(self, targetFrame):
-        if targetFrame not in self.C.getFrameNames():
-            print('adding')
-            self.C.addObject(name=targetFrame, shape=ry.ST.sphere, size=[.05], pos=[0,0,0], color=[0.,0.,1.])
-        return self.C.frame(targetFrame)
+    
 
+
+
+
+
+###################### Coordinate Transformations #################################
 
     def computeCartesianPos(self, framePos, frameName):
-
-        # get the pose of the desired frame in respect to world coordinates
         pose = self.C.getFrameState(frameName)
         pos = pose[0:3]
         R = utils.quat2rotm(pose[3:7])
@@ -280,27 +340,6 @@ class RaiRobot():
         print(pos)
         return pos + R @ np.array(framePos)
 
-
-
-    def imgAndDepth(self, camName, virtual=False):
-        if camName == 'cam':
-            if not self.cam or virtual:
-                self.camView.updateConfig(self.C)
-                img, d = self.camView.computeImageAndDepth()
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            else:
-                img, d = self.cam.getRgb(), self.cam.getDepth()
-
-        elif camName == 'cam_lhc':
-            if not self.cam_lhc or virtual:
-                self.camView_lhc.updateConfig(self.C)
-                img, d = self.camView_lhc.computeImageAndDepth()
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            else:
-                img, d = self.cam_lhc.getRgb(), self.cam_lhc.getDepth()
-                
-        
-        return img, d
 
 
     def computeCartesianTwist(self, actPose, desPose, gain):
@@ -317,13 +356,6 @@ class RaiRobot():
         q_err = q_des * q_act_inv
         q_err = utils.quat2arr(q_err)
 
-        ''' twist with angular euluer twist
-        # numpy quaternion uses a zyx-euler convention
-        R = quaternion.as_rotation_matrix(q_err)
-        zyx = utils.rotm2eulZYX(R)
-
-        twist = np.array([t_err[0], t_err[1], t_err[2], zyx[2], zyx[1], zyx[0]])
-        '''
 
         twist = np.array([t_err[0], t_err[1], t_err[2], q_err[0], q_err[1], q_err[2], q_err[3]])
 
@@ -337,26 +369,8 @@ class RaiRobot():
         return twist
 
 
-    def sendCartesianTwist(self, twist, frameName):
-        '''
-        This methods sends cartesian twists in respect to a given frame
-        to the robot. A twist is a 6D vector containing a linear and an 
-        angular twist
-        '''
 
-        #act_pose = getPose(frameName)
-        return 0
-
-    def sync(self):
-        self.B.sync(self.C)
-
-    def addPointCloud(self):
-        self.sync()
-        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())
-
-
-
-    #### Baxter Stuff ####
+###################### Baxter Stuff #################################
 
     def closeBaxterR(self):
         self.setGripper(0.07, -2)
@@ -369,3 +383,33 @@ class RaiRobot():
     
     def openBaxterL(self):
         self.setGripper(0.0, -1)
+
+
+
+###################### Crazy decorators #################################
+
+def syncBefore(f):
+    def need_sync(*args, **kwargs):
+        self = args[0]
+        self._sync()
+        res = f(*args, **kwargs)
+        return res
+    return need_sync
+
+def syncAfter(f):
+    def need_sync(*args, **kwargs):
+        res = f(*args, **kwargs)
+        self = args[0]
+        self._sync()
+        return res
+    return need_sync
+
+def syncAndReinitKomo(f):
+    def need_sync(*args, **kwargs):
+        res = f(*args, **kwargs)
+        self = args[0]
+        self._sync()
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
+        self.IK = self.C.komo_IK(True)
+        return res 
+    return need_sync

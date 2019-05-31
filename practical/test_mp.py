@@ -7,10 +7,6 @@ import gc
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-try:
-    sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
-except ValueError:
-    pass  # do nothing!
 import cv2
 sys.path.append('.')
 import time
@@ -26,16 +22,21 @@ import libry as ry
 from practical.webserver.sampleClient import predictGQCNN, predictFCGQCNN
 
 #%%
+gc.collect()
+#%%
 robot =  RaiRobot('marc2', 'rai-robotModels/baxter/baxter_new.g')
+#%%
+robot.sendToReal(True)
 #%%
 robot.goHome()
 #%%
 robot.move(robot.q_zero)
+robot.sync()
 #%%
 img, d = robot.imgAndDepth('cam')
 m = maskDepth(d, 0.6, 1.4)
 #%%
-plt.imshow(m)
+plt.imshow(d)
 #%%
 grasp = predictGQCNN(img, d,'http://ralfi.nat.selfnet.de:5000')#segmask=m)
 #%%
@@ -49,8 +50,9 @@ cv2.circle(img,(int(grasp['x']),int(grasp['y'])),2,(255,0,0),3)
 plt.imshow(img)
 
 #%%
+robot.sendToReal(True)
+#%%
 robot.sendToReal(False)
-
 #%%
 res =  getGraspPosition(d, grasp['x'], grasp['y'])
 if res:
@@ -83,6 +85,8 @@ def gatherDataSet(steps=10, pos = [0.2, 0.8, 1]):
     return data
 
 
+#%%
+robot.closeBaxterR()
 #%%
 data = gatherDataSet()
 #%%
