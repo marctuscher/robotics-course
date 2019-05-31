@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import imutils
-import libry as ry
 
 intrinsics = [538.273, 544.277, 307.502, 249.954]
 f = 320./np.tan(0.5 * 60.8 * np.pi/180.)
