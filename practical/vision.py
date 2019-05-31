@@ -146,5 +146,4 @@ def temp_filtered_depth(self, cam, numImages=10, blur = 'bilateral', mode= 'medi
         self.fil_depth = np.nanmedian(arr, axis=0, keepdims=True)
     else:
         self.fil_depth = np.nanmean(arr, axis=0, keepdims=True)
-
-return self.fil_depth[0,:,:]
+    return self.fil_depth[0,:,:]
