@@ -31,6 +31,7 @@ policy:
 
     # depth sampling
     depth_sampling_mode: uniform
+    #depth_sampling_mode: top_k
     depth_samples_per_grasp: 3
     depth_sample_win_height: 1
     depth_sample_win_width: 1
@@ -42,8 +43,8 @@ policy:
     type: gqcnn
     #gqcnn_model: models/GQCNN-2.0
     #gqcnn_model: models/GQCNN-2.1
-    gqcnn_model: models/GQCNN-4.0-PJ
-    #gqcnn_model: models/FC-GQCNN-4.0-PJ
+    #gqcnn_model: models/GQCNN-4.0-PJ
+    gqcnn_model: models/FC-GQCNN-4.0-PJ
 
     crop_height: 96
     crop_width: 96

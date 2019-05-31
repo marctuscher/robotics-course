@@ -119,24 +119,25 @@ class SubscribeAndPublish{
 	
     // runs the actual detection
 
-    HoughCircles( img_gray, circles, CV_HOUGH_GRADIENT, 1, minDist, cannyThresholdInitialValue, accumulatorThresholdInitialValue, minRadius, maxRadius);
+    HoughCircles(img_gray, circles, CV_HOUGH_GRADIENT, 1, minDist, cannyThresholdInitialValue, accumulatorThresholdInitialValue, minRadius, maxRadius);
 	
 	  //printf("Found circle: x: %f,y: %f\n", circles[0][0], circles[0][1]);
 	
 	  //--
-	
-	  std_msgs::Float64MultiArray circ_msg;
+    if(circles.size() > 0){
+      std_msgs::Float64MultiArray circ_msg;
 
-	  for( size_t i = 0; i < circles.size(); i++ ){
-	    // x-coordinate
-      circ_msg.data.push_back(circles[i][0]);
-	    // y-coordinate
-      circ_msg.data.push_back(circles[i][1]);
-	    // radius
-      circ_msg.data.push_back(circles[i][2]);
+      for( size_t i = 0; i < circles.size(); i++ ){
+        // x-coordinate
+        circ_msg.data.push_back(circles[i][0]);
+        // y-coordinate
+        circ_msg.data.push_back(circles[i][1]);
+        // radius
+        circ_msg.data.push_back(circles[i][2]);
+      }
+      pub_.publish(circ_msg);
+      circ_msg.data.clear();
     }
-    pub_.publish(circ_msg);
-    circ_msg.data.clear();
   }
     
     
@@ -179,17 +180,17 @@ int main(int argc, char **argv){
   if(fullHD){
     
     // set up Prameters for fullHD RGB Stream
-    accumulatorThresholdInitialValue = 20;
-    cannyThresholdInitialValue = 100;
-    minRadius = 0;
-    maxRadius = 0;
+    accumulatorThresholdInitialValue = 18;
+    cannyThresholdInitialValue = 60;
+    minRadius = 25;
+    maxRadius = 50;
     minDist = 30.0;
     
   }else{
     // set up Prameters for quarter-HD RGB Stream
     accumulatorThresholdInitialValue = 40;
     cannyThresholdInitialValue = 160;
-    minRadius = 7;
+    minRadius = 20;
     maxRadius = 50;
     minDist = 5.0;
     

@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import imutils
+import libry as ry
 
 intrinsics = [538.273, 544.277, 307.502, 249.954]
 f = 320./np.tan(0.5 * 60.8 * np.pi/180.)
@@ -124,3 +125,25 @@ def pad_img_to_fit_bbox(img, x1, x2, y1, y2):
     x1 += np.abs(np.minimum(0, x1))
     x2 += np.abs(np.minimum(0, x1))
     return img, x1, x2, y1, y2
+
+def temp_filtered_depth(self, cam, numImages=10, blur = 'bilateral', mode= 'median'):
+    self.arr = np.zeros([numImages,480,640])
+    #blur =  [gaussian', 'bilateral', 'median']
+    for i in range(numImages):
+        #time.sleep(0.001 * 33.4) # sleep until new photo arrives
+        if blur == 'bilateral':
+            self.arr[i,:,:] = cv2.bilateralFilter(self.cam.getDepth(), 9,75,75)
+        elif blur == 'gaussian':
+            self.arr[i,:,:] = cv2.GaussianBlur(self.cam.getDepth(), (3,3), 0)
+        elif blur == 'median':
+            self.arr[i,:,:] = cv2.medianBlur(self.cam.getDepth(), 5)
+        else:
+            self.arr[i,:,:] = self.cam.getDepth()
+
+    if mode == 'mean':
+        self.fil_depth = np.nanmean(arr, axis=0, keepdims=True)
+    elif mode == 'median':
+        self.fil_depth = np.nanmedian(arr, axis=0, keepdims=True)
+    else:
+        self.fil_depth = np.nanmean(arr, axis=0, keepdims=True)
+    return self.fil_depth[0,:,:]
