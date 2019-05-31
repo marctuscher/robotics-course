@@ -84,7 +84,28 @@ class RosComm:
         intr['cx'] = msg.K[2]
         intr['cy'] = msg.K[5]
         return intr
-        
+
+    def temp_filtered_depth(self, numImages=10, blur = 'bilateral', mode= 'median'):
+        arr = np.zeros([numImages,480,640])
+        #blur =  [gaussian', 'bilateral', 'median']
+        for i in range(numImages):
+            #time.sleep(0.001 * 33.4) # sleep until new photo arrives
+            if blur == 'bilateral':
+                arr[i,:,:] = cv2.bilateralFilter(self.latest_depth, 9,75,75)
+            elif blur == 'gaussian':
+                arr[i,:,:] = cv2.GaussianBlur(self.latest_depth,(3,3), 0)
+            elif blur == 'median':
+                arr[i,:,:] = cv2.medianBlur(self.latest_depth,5)
+            else:
+                arr[i,:,:] = self.latest_depth
+        if mode == 'mean':
+            fil_depth = np.nanmean(arr, axis=0, keepdims=True)
+        elif mode == 'median':
+            fil_depth = np.nanmedian(arr, axis=0, keepdims=True)
+        else:
+            fil_depth = np.nanmean(arr, axis=0, keepdims=True)
+
+        return fil_depth[0,:,:]
     
     @property
     def output_reg(self):
