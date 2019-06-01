@@ -106,7 +106,6 @@ class RaiRobot():
 
     @syncBefore   
     def optimizeIk(self):
-        self.IK.setConfigurations(self.C)
         self.IK.optimize(True)
         q_curr = self.C.getJointState()
         self.C.setFrameState(self.IK.getConfiguration(0))
@@ -130,7 +129,6 @@ class RaiRobot():
 
     @syncBefore   
     def optimizePath(self, collectData=False):
-        self.path.setConfigurations(self.C)
         self.path.optimize(True)
         if collectData:
             q_data = []
@@ -157,12 +155,17 @@ class RaiRobot():
             q = self.q_home
         self.move(q, hard)
 
-    @syncAfter
     def move(self, q:list, hard=True):
         if hard:
            self.B.moveHard(q)
         else:
             self.movePath([q])
+        self.C.setJointState(q)
+
+    @syncAfter   
+    def movePath(self, path):
+        self.B.move(path, self._calcPathSpeed(10, len(path)), True)
+        self.B.wait()
         
     def sendToReal(self, val:bool):
         self.real = val
@@ -187,10 +190,6 @@ class RaiRobot():
         q[gripperIndex] = val
         self.move(q)
 
-    
-    def movePath(self, path):
-        self.B.move(path, self._calcPathSpeed(10, len(path)), True)
-        self.B.wait()
 
 
 
@@ -413,30 +412,3 @@ class RaiRobot():
 
 
 
-###################### Crazy decorators #################################
-
-def syncBefore(f):
-    def need_sync(*args, **kwargs):
-        self = args[0]
-        self._sync()
-        res = f(*args, **kwargs)
-        return res
-    return need_sync
-
-def syncAfter(f):
-    def need_sync(*args, **kwargs):
-        res = f(*args, **kwargs)
-        self = args[0]
-        self._sync()
-        return res
-    return need_sync
-
-def syncAndReinitKomo(f):
-    def need_sync(*args, **kwargs):
-        res = f(*args, **kwargs)
-        self = args[0]
-        self._sync()
-        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
-        self.IK = self.C.komo_IK(True)
-        return res 
-    return need_sync
