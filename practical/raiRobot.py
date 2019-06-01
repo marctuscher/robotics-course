@@ -14,6 +14,33 @@ from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition, scalarProductYZ, positionDiff
 import time 
 
+
+def syncBefore(f):
+    def need_sync(*args, **kwargs):
+        self = args[0]
+        self._sync()
+        res = f(*args, **kwargs)
+        return res
+    return need_sync
+
+def syncAfter(f):
+    def need_sync(*args, **kwargs):
+        res = f(*args, **kwargs)
+        self = args[0]
+        self._sync()
+        return res
+    return need_sync
+
+def syncAndReinitKomo(f):
+    def need_sync(*args, **kwargs):
+        res = f(*args, **kwargs)
+        self = args[0]
+        self._sync()
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
+        self.IK = self.C.komo_IK(True)
+        return res 
+    return need_sync
+
 class RaiRobot():
     
     def __init__(self, nodeName:str, fileName:str):
