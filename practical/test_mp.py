@@ -24,17 +24,16 @@ from practical.webserver.sampleClient import predictGQCNN, predictFCGQCNN
 #%%
 gc.collect()
 #%%
-robot =  RaiRobot('marc2', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 #%%
 robot.sendToReal(True)
 #%%
 robot.goHome()
 #%%
 robot.move(robot.q_zero)
-robot.sync()
 #%%
 img, d = robot.imgAndDepth('cam')
-m = maskDepth(d, 0.6, 1.4)
+#m = maskDepth(d, 0.6, 1.4)
 #%%
 plt.imshow(d)
 #%%
@@ -53,6 +52,8 @@ plt.imshow(img)
 robot.sendToReal(True)
 #%%
 robot.sendToReal(False)
+#%%
+robot.goHome()
 #%%
 res =  getGraspPosition(d, grasp['x'], grasp['y'])
 if res:
