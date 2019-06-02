@@ -45,7 +45,7 @@ def fcgqcnn():
 def mask():
     r = request.get_json()
     img, d = rgbdFromRequest(r)
-    res = mask_net.predict(imdg)
+    res = mask_net.predict(d)
     return jsonify(res)
 
 if __name__ == '__main__':
