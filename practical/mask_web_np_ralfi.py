@@ -1,4 +1,3 @@
-
 #%%
 %reload_ext autoreload
 %autoreload 2
@@ -11,9 +10,6 @@ from practical.rosComm import RosComm
 sys.path.append('.')
 sys.path.append('./rai/rai/ry')
 import rospy
-
-
-#%%
 #%%
 rosco = RosComm()
 #%% 
@@ -25,7 +21,7 @@ rosco.subscribe_synced_rgbd('/camera/color/image_raw/', '/camera/depth/image_rec
 intr_rs = rosco.get_camera_intrinsics('/camera/color/camera_info')
 #%%
 img = rosco.rgb
-d = rosco.temp_filtered_depth(20, blur ='bilateral', mode='median')
+d = rosco.temp_filtered_depth(20, blur ='bilateral', mode='median', filter=False)
 #%%
 plt.imshow(img)
 #%%
