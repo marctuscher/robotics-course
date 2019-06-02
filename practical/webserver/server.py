@@ -41,7 +41,7 @@ def fcgqcnn():
     res = fcgqcnn_net.predict(state)
     return jsonify(res)
 
-@app.route('/mask', methods=['POST'])
+@app.route('/mask-rcnn', methods=['POST'])
 def mask():
     r = request.get_json()
     img, d = rgbdFromRequest(r)
