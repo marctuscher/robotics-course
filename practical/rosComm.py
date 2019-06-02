@@ -105,7 +105,7 @@ class RosComm:
         else:
             fil_depth = np.nanmean(arr, axis=0, keepdims=True)
 
-        return fil_depth[0,:,:]
+        return (fil_depth[0,:,:]).astype('float32')
     
     @property
     def output_reg(self):

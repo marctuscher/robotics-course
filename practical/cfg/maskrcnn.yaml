@@ -6,7 +6,8 @@ model:
   mode: inference
   settings:
     image_shape: [480, 640]
-    image_channel_count: 3
+    #image_channel_count: 3
+    image_channel_count: 1
     mean_pixel: [128,128,128]
     backbone: resnet35
     post_nms_rois_inference: 2000
