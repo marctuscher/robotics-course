@@ -29,6 +29,3 @@ grasp = predictGQCNN(img, d, 'http://localhost:5000')
 
 #%%
 grasp
-
-
-#%%
