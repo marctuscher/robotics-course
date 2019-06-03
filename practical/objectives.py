@@ -3,17 +3,20 @@ sys.path.append("rai/rai/ry")
 import libry as ry
 
 
-def moveToPosition(pos:list, frame:str, time=[]):
+def moveToPosition(pos:list, frame:str, time=None):
     """
     Move frame to a given position
     """
-    return {
+    dic =  {
         'type': ry.OT.eq,
         'feature': ry.FS.position, 
         'frames': [frame],
         'target': pos,
-        'time': time
     }
+    if time:
+        dic['time'] = time
+    return dic
+
 
 def moveToPose(pos:list, frame:str):
     """

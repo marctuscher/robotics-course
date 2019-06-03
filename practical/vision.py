@@ -146,3 +146,9 @@ def temp_filtered_depth(self, cam, numImages=10, blur = 'bilateral', mode= 'medi
     else:
         self.fil_depth = np.nanmean(arr, axis=0, keepdims=True)
     return self.fil_depth[0,:,:]
+
+
+def plotCircleAroundCenter(img, x, y):
+    img2 = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
+    cv2.circle(img2,(int(x),int(y)),2,(255,0,0),3)
+    plt.imshow(img2)

@@ -9,7 +9,7 @@ import libry as ry
 import numpy as np
 import quaternion
 from practical import utils
-from practical.vision import baxterCamIntrinsics
+from practical import vision
 from pdb import set_trace
 from practical.objectives import gazeAt, distance, scalarProductXZ, scalarProductZZ, moveToPosition, moveToPose, accumulatedCollisions, qItself, moveToPosition, scalarProductYZ, positionDiff
 import time 
@@ -55,8 +55,8 @@ class RaiRobot():
         self.real = False
         self.B.sendToReal(self.real)
         self.C.makeObjectsConvex()
-        self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
-        self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,0.,1.])
+        #self.C.addObject(name="ball2", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,1.,0.])
+        #self.C.addObject(name="ball", shape=ry.ST.sphere, size=[.05], pos=[0.8,0,1], color=[0.,0.,1.])
         # add camera on baxter head -> pcl is the camera frame
         self.pcl = self.C.addFrame('pcl', 'head')
         self.pcl.setRelativePose('d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1) ')
@@ -70,8 +70,8 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.numPhases = 10
-        self.stepsPerPhase = 10
+        self.numPhases = 5
+        self.stepsPerPhase = 5
         self.timePerPhase = 1
         self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
         self.B.sync(self.C)
@@ -128,11 +128,8 @@ class RaiRobot():
 
 
     @syncBefore   
-    def optimizePath(self, collectData=False):
+    def optimizePath(self):
         self.path.optimize(True)
-        if collectData:
-            q_data = []
-            q_dot_data = []
         q = []
         t = self.path.getT()
         for i in range(t):
@@ -155,6 +152,7 @@ class RaiRobot():
             q = self.q_home
         self.move(q, hard)
 
+    @syncAfter
     def move(self, q:list, hard=True):
         if hard:
            self.B.moveHard(q)
@@ -164,7 +162,7 @@ class RaiRobot():
 
     @syncAfter   
     def movePath(self, path):
-        self.B.move(path, self._calcPathSpeed(10, len(path)), True)
+        self.B.move(path, [1 for _ in range(len(path))], True)
         self.B.wait()
         
     def sendToReal(self, val:bool):
@@ -227,7 +225,7 @@ class RaiRobot():
 
     @syncAfter
     def addPointCloud(self):
-        self.pcl.setPointCloud(self.cam.getPoints([baxterCamIntrinsics['fx'],baxterCamIntrinsics['fy'],baxterCamIntrinsics['cx'],baxterCamIntrinsics['cy']]), self.cam.getRgb())
+        self.pcl.setPointCloud(self.cam.getPoints([vision.baxterCamIntrinsics['fx'],vision.baxterCamIntrinsics['fy'],vision.baxterCamIntrinsics['cx'],vision.baxterCamIntrinsics['cy']]), self.cam.getRgb())
     
 ###################### Utilities #################################
 
@@ -274,6 +272,7 @@ class RaiRobot():
                 secs.append(3 * speed / pathLen)
         return secs
 
+
 ###################### Predefined stuff #################################
     
     def trackAndGraspTarget(self, targetPos, targetFrame, gripperFrame, sendQ=False):
@@ -296,7 +295,7 @@ class RaiRobot():
             self.move(q)
 
 
-    def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False, collectData=False):
+    def trackPath(self, targetPos, targetFrame, gripperFrame, sendQ=False):
         target = self._checkTarget(targetFrame)
         target.setPosition(targetPos)
         q = self.C.getJointState()
@@ -310,16 +309,12 @@ class RaiRobot():
                     #accumulatedCollisions(1),
                     #qItself(self.q_home, 0.05),
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition(targetPos, gripperFrame, [1])
+                    moveToPosition(targetPos, gripperFrame)
                 ]
             )
-            if collectData:
-                q, q_data, q_dot_data = self.optimizePath(True)
-                self.movePath(q)
-                return q_data, q_dot_data
-            else:
-                q = self.optimizePath()
-                self.movePath(q)
+            q = self.optimizePath()
+            self.movePath(q)
+            return q
 
     def graspPath(self, targetPos, angle,targetFrame, gripperFrame, sendQ=False, collectData=False):
         target = self._checkTarget(targetFrame)
@@ -327,6 +322,7 @@ class RaiRobot():
         quat =utils.rotm2quat(rotM)
         target.setPosition(targetPos)
         target.setQuaternion(quat)
+        approachEnd = int(self.numPhases * 0.7)
         q = self.C.getJointState()
         if sendQ:
             self.addPathObjectives(
@@ -335,24 +331,25 @@ class RaiRobot():
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    #accumulatedCollisions(1),
-                    qItself(self.q_home, 0.01, [0, 28]),
+                    accumulatedCollisions(1),
+                    qItself(self.q_home, 0.01, [0, approachEnd]),
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 5]),
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [5, 10])
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, approachEnd]),
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [approachEnd, self.numPhases])
                 ]
             )
-            if collectData:
-                q, q_data, q_dot_data = self.optimizePath(True)
-                self.movePath(q)
-                return q_data, q_dot_data
-            else:
-                q = self.optimizePath()
-                self.movePath(q)
-
+            q = self.optimizePath()
+            self.movePath(q)
+            return q
     
 
 
+    def approachGrasp(self, grasp, d, gripperFrame='baxterR', targetFrame='graspTarget'):
+        res =  vision.getGraspPosition(d, grasp['x'], grasp['y'])
+        if res:
+            pc, _, _ = res
+            pos = self.computeCartesianPos(pc, 'pcl')
+            self.graspPath(np.array([pos[0], pos[1], pos[2]]), grasp['angle'],targetFrame, gripperFrame, sendQ=True)
 
 
 
@@ -409,6 +406,4 @@ class RaiRobot():
     
     def openBaxterL(self):
         self.setGripper(0.0, -1)
-
-
 
