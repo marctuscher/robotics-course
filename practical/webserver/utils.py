@@ -15,6 +15,14 @@ def rgbdFromRequest(r):
     nparr_depth = np.reshape(nparr_depth, (intr["height"], intr["width"]))
     return img_rgb, nparr_depth
 
+def dFromRequest(r):
+    depth_str = r['d']
+    intr = r['intr']
+    d_buff = base64.b64decode(depth_str)
+    nparr_depth = np.frombuffer(d_buff, np.float32)
+    nparr_depth = np.reshape(nparr_depth, (intr["height"], intr["width"]))
+    return nparr_depth
+
 
 def rgbdSegmaskFromRequest(r):
     img, d = rgbdFromRequest(r)

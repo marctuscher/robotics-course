@@ -4,6 +4,7 @@ from sd_maskrcnn.config import MaskConfig
 import os
 import tensorflow as tf
 from mrcnn import model as modellib
+import numpy as np
 from keras.backend.tensorflow_backend import set_session, clear_session
 
 class MaskLoader():
@@ -31,8 +32,10 @@ class MaskLoader():
         print(("Loading weights from ", config['model']['path']))
         self.model.load_weights(config['model']['path'], by_name=True)
         self.graph = tf.get_default_graph()
-    def predict(self, img):
+    def predict(self, depth_img):
         with self.graph.as_default():
+            img = np.concatenate([depth_img, depth_img, depth_img])
+            img = np.transpose(img, axis=[1, 2, 0])
             res = self.model.detect([img], verbose=0)[0]
             pred = {
                 'rois': res['rois'].tolist(),

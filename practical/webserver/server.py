@@ -5,7 +5,7 @@ import json
 import base64
 import sys
 sys.path.append('.')
-from practical.webserver.utils import rgbdFromRequest, rgbdSegmaskFromRequest, plotImage, rgbFromRequest
+from practical.webserver.utils import rgbdFromRequest, rgbdSegmaskFromRequest, plotImage, rgbFromRequest, dFromRequest
 from practical.dexnet.network import GQCNNLoader, FCGQCNNLoader
 from practical.dexnet.maskNet import MaskLoader
 
@@ -44,7 +44,7 @@ def fcgqcnn():
 @app.route('/mask-rcnn', methods=['POST'])
 def mask():
     r = request.get_json()
-    img, d = rgbdFromRequest(r)
+    d = dFromRequest(r)
     res = mask_net.predict(d)
     return jsonify(res)
 
