@@ -43,12 +43,21 @@ rospy.init_node('z')
 intr_rs = rosco.get_camera_intrinsics('/camera/color/camera_info')
 cfg = YamlConfig('practical/cfg/gqcnn_pj_dbg.yaml')
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
+rosco.subscribe_synced_rgbd('/camera/color/image_raw/', '/camera/depth/image_rect_raw/')
 
 #%%
 cam = ry.Camera('h', "/camera/color/image_raw", "/camera/depth/image_rect_raw", True)
 #%%
 img = cam.getRgb()
 d = cam.getDepth()
+import time
+time.sleep(.1)
+img_ro = rosco.rgb
+d_ro = rosco.depth
+#%%
+d[255][255]
+#%%
+d_ro[255][255]
 #%%
 plt.imshow(img)
 #%%
@@ -87,7 +96,3 @@ intr_rs = rosco.get_camera_intrinsics('/camera/color/camera_info')
 cfg = YamlConfig('practical/cfg/gqcnn_pj_dbg.yaml')
 grasp_policy = CrossEntropyRobustGraspingPolicy(cfg['policy'])
 
-#%%
-img = rosco.rgb
-d = rosco.temp_filtered_depth(20, blur ='bilateral', mode='median', filter=False)
-#%%
