@@ -1,7 +1,7 @@
 policy:
   # optimization params
-  num_seed_samples: 128
-  num_gmm_samples: 64
+  num_seed_samples: 256
+  num_gmm_samples: 128
   num_iters: 3
   gmm_refit_p: 0.25
   gmm_component_frac: 0.4
@@ -31,6 +31,7 @@ policy:
 
     # depth sampling
     depth_sampling_mode: uniform
+    #depth_sampling_mode: top_k
     depth_samples_per_grasp: 3
     depth_sample_win_height: 1
     depth_sample_win_width: 1
@@ -41,12 +42,16 @@ policy:
   metric:
     type: gqcnn
     gqcnn_model: models/GQCNN-2.1
-    
+    #gqcnn_model: models/GQCNN-2.0
+    #gqcnn_model: models/GQCNN-4.0-PJ
+    #gqcnn_model: models/FC-GQCNN-4.0-PJ
+
     crop_height: 96
     crop_width: 96
 
   # visualization
   vis:
+    
     grasp_sampling : 1
     tf_images: 1
     grasp_candidates: 1
@@ -55,10 +60,19 @@ policy:
     grasp_plan: 1
     final_grasp: 1
 
+    #grasp_sampling : 0
+    #tf_images: 0
+    #grasp_candidates: 0
+    #elite_grasps: 1
+    #grasp_ranking: 0
+    #grasp_plan: 1
+    #final_grasp: 1
+        
     vmin: 0.5
     vmax: 0.8
 
     k: 25
 
 # image proc params
+#inpaint_rescale_factor: 0.5
 inpaint_rescale_factor: 0.5
