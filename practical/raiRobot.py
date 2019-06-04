@@ -162,7 +162,7 @@ class RaiRobot():
 
     @syncAfter   
     def movePath(self, path):
-        self.B.move(path, [1 for _ in range(len(path))], True)
+        self.B.move(path, [10 for _ in range(len(path))], True)
         self.B.wait()
         
     def sendToReal(self, val:bool):
