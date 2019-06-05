@@ -262,7 +262,7 @@ class RaiRobot():
         return self.C.addObject(**kwargs)
 
 
-    def _calcPathSpeed(self, speed, pathLen):
+    def _calcPathSpeed(self):
         secs = []
         for i in range(pathLen):
             if i > pathLen / 2:
@@ -325,21 +325,16 @@ class RaiRobot():
         q = self.C.getJointState()
         if sendQ:
             self.addPathObjectives(
-                [
-                    #gazeAt([gripperFrame, targetFrame]), 
-                    scalarProductYZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 1), 
-                    #distance([gripperFrame, targetFrame], -0.1),
-                    #accumulatedCollisions(1),
-                    qItself(self.q_home, 0.01, [1.]),
-                    #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 0.7]),
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2]], gripperFrame, [0.7, 1.0])
+                [   
+                    {'type': ry.OT.eq, 'feature': ry.FS.scalarProductYZ, 'frames': [gripperFrame, targetFrame], 'target': [0], 'time': []},
+                    {'type': ry.OT.eq, 'feature': ry.FS.scalarProductZZ, 'frames': [gripperFrame, targetFrame], 'target': [1], 'time': []},
+                    #{'type': ry.OT.sos, 'feature': ry.FS.qItself, 'frames': [], 'target': self.q_home, 'time': [1.]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.distance, 'frames': [gripperFrame, targetFrame], 'target': [0.2], 'time': [0, .8]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.positionDiff, 'frames': [gripperFrame, targetFrame], 'time': [.8, 1.]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.qItself, 'frames': [], 'order': 1,  'time': [1.]},
                 ]
             )
             q = self.optimizePath()
-            #self.path.display()
-            print(self.path.getReport())
             self.movePath(q)
             return q
     

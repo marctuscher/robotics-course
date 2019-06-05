@@ -27,7 +27,7 @@ os.environ["ROS_MASTER_URI"] = "http://thecount.local:11311/"
 os.environ["ROS_IP"] = "129.69.216.204"
 gc.collect()
 #%%
-robot =  RaiRobot('test', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
 #%%
 robot.sendToReal(True)
 #%%
@@ -37,6 +37,8 @@ robot.move(robot.q_zero)
 #%%
 robot.graspPath(np.array([0.8, 0, 1]), 1.3,'ball2', 'baxterR', sendQ=True)
 
+#%%
+robot.path.getReport()
 #%%
 robot.path.getReport()
 #%%
