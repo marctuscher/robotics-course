@@ -34,8 +34,8 @@ class MaskLoader():
         self.graph = tf.get_default_graph()
     def predict(self, depth_img):
         with self.graph.as_default():
-            img = np.concatenate([depth_img, depth_img, depth_img])
-            img = np.transpose(img, axis=[1, 2, 0])
+            img = np.array([depth_img, depth_img, depth_img])
+            img = np.transpose(img, axes=[1, 2, 0])
             res = self.model.detect([img], verbose=0)[0]
             pred = {
                 'rois': res['rois'].tolist(),

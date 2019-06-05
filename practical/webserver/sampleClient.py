@@ -62,7 +62,7 @@ def predictMask(d, host='http://multitask.ddnss.de:5000', width=640, height=480,
     #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     url = host + '/mask'
     headers = {'content-type': 'application/json'}
-    d_dec = memoryview(d)
+    d_dec = memoryview(d.astype(np.float32))
     req_dict = {'d': base64.b64encode(d_dec), "intr": {"fx": fx, "fy": fy, "cx": cx, "cy": cy, "height": height, "width": width,}}
     response = requests.post(url, json=req_dict, headers=headers)
     res_json = response.json()
