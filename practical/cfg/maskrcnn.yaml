@@ -20,7 +20,7 @@ dataset:
   masks: modal_segmasks
   indices: test_indices.npy
 
-mask:                                                                                                                                                              
+mask:    Fri                                                                                                                                                          
   remove_bin_pixels: 1              # Set to True if we want to discard predictions based on if they have bin pixels
   bin_masks: segmasks_filled        # Directory containing bin masks                                                                                                                                                                                                                         
   overlap_thresh: 0.5               # Overlap threshold

@@ -24,10 +24,10 @@ class RosComm:
         
     def threaded_synced_rgbd_cb(self, rgb_data, depth_data):
         self.latest_rgb = self.bridge.imgmsg_to_cv2(rgb_data, "bgr8")
+
         self.d = self.bridge.imgmsg_to_cv2(depth_data, "32FC1")
-        
-        self.depth_array = np.array(self.d, dtype=np.float32)
-        self.latest_depth  = cv2.normalize(self.depth_array, self.depth_array, 0, 1, cv2.NORM_MINMAX)
+        self.latest_depth = np.array(self.d, dtype=np.float32) * 0.001
+        #self.latest_depth  = cv2.normalize(self.depth_array, self.depth_array, 0, 1, cv2.NORM_MINMAX)
         #self.depth_array = np.array(self.depth_image, dtype=np.float32)
 
     def threaded_synced_rgbd(self, *argv):
