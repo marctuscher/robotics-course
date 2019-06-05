@@ -52,8 +52,10 @@ img = cam.getRgb()
 d = cam.getDepth()
 import time
 time.sleep(.1)
-img_ro = rosco.rgb
-d_ro = rosco.depth
+
+#%%
+img = rosco.rgb
+d = rosco.depth
 #%%
 d[255][255]
 #%%
@@ -80,14 +82,11 @@ img_ = cv2.circle(img,(int(grasp.grasp.center.x),int(grasp.grasp.center.y)),2,(2
 #%%
 plt.imshow(img)
 #%%
-from autolab_core import Point
-vis.figure()
-vis.imshow(img)
-grasp= Grasp2D(img, 0, grasp.grasp.center, 0.05)
-vis.grasp(grasp)
+vis.figure(size=(16,16))
+vis.imshow(rgbd_im.color, vmin=0.5, vmax=2.5)
+vis.grasp(grasp.grasp, scale=2.0,jaw_width=2.0, show_center=True, show_axis=True, color=plt.cm.RdYlBu(.1))
+vis.title('Elite grasp with score: ' + str(grasp.q_value))
 vis.show()
-
-
 #%%
 rosco = RosComm()
 rospy.init_node('z')

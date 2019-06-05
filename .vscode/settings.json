@@ -12,4 +12,8 @@
     "python.jediEnabled": true,
     "autoDocstring.docstringFormat": "google",
     "autoDocstring.quoteStyle": "'''",
+    "C_Cpp.autocomplete": "Default",
+    
+    
+    
 }
