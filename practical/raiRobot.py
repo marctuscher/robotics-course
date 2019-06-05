@@ -70,10 +70,10 @@ class RaiRobot():
         self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam_lhc = None
         self.IK = self.C.komo_IK(True)
-        self.numPhases = 5
-        self.stepsPerPhase = 5
-        self.timePerPhase = 1
-        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
+        self.numPhases = 1
+        self.stepsPerPhase = 30
+        self.timePerPhase = 10
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, False)
         self.B.sync(self.C)
         self.pathObjectives = []
         self.ikObjectives = []
@@ -160,9 +160,8 @@ class RaiRobot():
             self.movePath([q])
         self.C.setJointState(q)
 
-    @syncAfter   
     def movePath(self, path):
-        self.B.move(path, [10 for _ in range(len(path))], True)
+        self.B.move(path, [5/30 * i for i in range(len(path))], True)
         self.B.wait()
         
     def sendToReal(self, val:bool):
@@ -322,7 +321,7 @@ class RaiRobot():
         quat =utils.rotm2quat(rotM)
         target.setPosition(targetPos)
         target.setQuaternion(quat)
-        approachEnd = int(self.numPhases * 0.7)
+        approachEnd = 0.7
         q = self.C.getJointState()
         if sendQ:
             self.addPathObjectives(
@@ -331,14 +330,16 @@ class RaiRobot():
                     scalarProductYZ([gripperFrame, targetFrame], 0), 
                     scalarProductZZ([gripperFrame, targetFrame], 1), 
                     #distance([gripperFrame, targetFrame], -0.1),
-                    accumulatedCollisions(1),
-                    qItself(self.q_home, 0.01, [0, approachEnd]),
+                    #accumulatedCollisions(1),
+                    qItself(self.q_home, 0.01, [1.]),
                     #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, approachEnd]),
-                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] - 0.05], gripperFrame, [approachEnd, self.numPhases])
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2] + 0.2], gripperFrame, [0, 0.7]),
+                    moveToPosition([targetPos[0], targetPos[1], targetPos[2]], gripperFrame, [0.7, 1.0])
                 ]
             )
             q = self.optimizePath()
+            #self.path.display()
+            print(self.path.getReport())
             self.movePath(q)
             return q
     
