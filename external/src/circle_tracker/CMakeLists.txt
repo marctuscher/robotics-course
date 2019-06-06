@@ -36,5 +36,7 @@ include_directories(
 #add_dependencies(talker)
 
 add_executable(circle_tracker src/main_track.cpp)
+add_executable(multi_circle_tracker src/main_multi_track.cpp)
 target_link_libraries(circle_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(multi_circle_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 #add_dependencies(main)

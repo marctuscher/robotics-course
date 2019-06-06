@@ -49,6 +49,8 @@ class SubscribeAndPublish{
     //triggerSS = n_.advertiseService("kinect_trigger/trigger", &SubscribeAndPublish::triggerSrv, this);
     proceedHOUGH = n_.advertiseService("circle_tracker/setMode", &SubscribeAndPublish::setModeSrv, this);
 
+    fun_setMode(1);
+    sub_ = n_.subscribe("/camera/color/image_raw", 1, &SubscribeAndPublish::callback, this);
   }
     
   void fun_setMode(int m){
@@ -178,12 +180,27 @@ int main(int argc, char **argv){
 
   
   if(fullHD){
-    
+
+  //*minDist:	minimum distance between the centers of the detected circles. 
+  //  If the parameter is too small, multiple neighbor circles may be falsely detected in addition to a true one. 
+  //  If it is too large, some circles may be missed.
+  //*param1(canny): it is the higher threshold of the two passed to the Canny edge detector (the lower one is twice smaller).
+  //*param2(accu):	it is the accumulator threshold for the circle centers at the detection stage. 
+  //  The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.
+  //*minRadius	minimum circle radius.
+  //*maxRadius	maximum circle radius.
+
+
+
+
+
+
+
     // set up Prameters for fullHD RGB Stream
-    accumulatorThresholdInitialValue = 18;
     cannyThresholdInitialValue = 60;
-    minRadius = 25;
-    maxRadius = 50;
+    accumulatorThresholdInitialValue = 18;
+    minRadius = 40;
+    maxRadius = 80;
     minDist = 30.0;
     
   }else{
