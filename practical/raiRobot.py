@@ -160,8 +160,9 @@ class RaiRobot():
             self.movePath([q])
         self.C.setJointState(q)
 
+    @syncAfter
     def movePath(self, path):
-        self.B.move(path, [5/30 * i for i in range(len(path))], True)
+        self.B.move(path, [self.timePerPhase/self.stepsPerPhase * i for i in range(len(path))], False)
         self.B.wait()
         
     def sendToReal(self, val:bool):
