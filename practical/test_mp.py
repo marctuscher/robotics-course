@@ -27,30 +27,46 @@ os.environ["ROS_MASTER_URI"] = "http://thecount.local:11311/"
 os.environ["ROS_IP"] = "129.69.216.204"
 gc.collect()
 #%%
-robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+robot =  RaiRobot('test2node', 'rai-robotModels/baxter/baxter_new.g')
 #%%
-robot.sendToReal(True)
 #%%
 robot.goHome()
 #%%
 robot.move(robot.q_zero)
 #%%
-robot.graspPath(np.array([0.8, 0, 1]), 1.3,'ball2', 'baxterR', sendQ=True)
+q = robot.graspPath(np.array([0.8, 0, 1]), 1.3,'ball2', 'baxterR', sendQ=True)
+#%%
+robot.sendToReal(True)
+#%%
+robot.path.getReport()
+#%%
+import numpy as np
+#%%
+plt.figure()
+plt.plot([np.linalg.norm(tmp) for tmp in q])
 
 #%%
 robot.path.getReport()
 #%%
 robot.path.getReport()
 #%%
+d = robot.path.view()
+#%%
+d= 0
+#%%
 img, d = robot.imgAndDepth('cam')
 #%%
-grasp = sampleClient.predictMask(d, 'http://localhost:5000')
+plt.imshow(d)
+#%%
+grasp = sampleClient.predictFCGQCNN(img, d, host='http://localhost:5000')
 #%%
 grasp
 #%%
 from practical import vision
 #%%
 grasp
+#%%
+plt.imshow(grasp['masks'][:, :, 4])
 #%%
 vision.plotCircleAroundCenter(img, grasp['x'], grasp['y'])
 #%%

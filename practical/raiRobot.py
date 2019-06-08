@@ -36,7 +36,7 @@ def syncAndReinitKomo(f):
         res = f(*args, **kwargs)
         self = args[0]
         self._sync()
-        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, True)
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, False)
         self.IK = self.C.komo_IK(True)
         return res 
     return need_sync
@@ -125,6 +125,7 @@ class RaiRobot():
             for obj in objectives:
                 self.pathObjectives.append(obj)
                 self.path.addObjective(**obj)
+                
 
 
     @syncBefore   
@@ -263,15 +264,6 @@ class RaiRobot():
         return self.C.addObject(**kwargs)
 
 
-    def _calcPathSpeed(self):
-        secs = []
-        for i in range(pathLen):
-            if i > pathLen / 2:
-                secs.append(speed / pathLen *3)
-            else:
-                secs.append(3 * speed / pathLen)
-        return secs
-
 
 ###################### Predefined stuff #################################
     
@@ -322,7 +314,6 @@ class RaiRobot():
         quat =utils.rotm2quat(rotM)
         target.setPosition(targetPos)
         target.setQuaternion(quat)
-        approachEnd = 0.7
         q = self.C.getJointState()
         if sendQ:
             self.addPathObjectives(
@@ -330,11 +321,12 @@ class RaiRobot():
                     {'type': ry.OT.eq, 'feature': ry.FS.scalarProductYZ, 'frames': [gripperFrame, targetFrame], 'target': [0], 'time': []},
                     {'type': ry.OT.eq, 'feature': ry.FS.scalarProductZZ, 'frames': [gripperFrame, targetFrame], 'target': [1], 'time': []},
                     #{'type': ry.OT.sos, 'feature': ry.FS.qItself, 'frames': [], 'target': self.q_home, 'time': [1.]},
-                    {'type': ry.OT.eq, 'feature': ry.FS.distance, 'frames': [gripperFrame, targetFrame], 'target': [0.2], 'time': [0, .8]},
-                    {'type': ry.OT.eq, 'feature': ry.FS.positionDiff, 'frames': [gripperFrame, targetFrame], 'time': [.8, 1.]},
-                    {'type': ry.OT.eq, 'feature': ry.FS.qItself, 'frames': [], 'order': 1,  'time': [1.]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.distance, 'frames': [gripperFrame, targetFrame], 'target': [-0.2], 'time': [.8]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.positionDiff, 'frames': [gripperFrame, targetFrame], 'time': [1.]},
+                    #{'type': ry.OT.eq, 'feature': ry.FS.qItself, 'frames': [], 'order': 1,  'time': [1.]},
                 ]
             )
+            
             q = self.optimizePath()
             self.movePath(q)
             return q

@@ -32,11 +32,23 @@ class MaskLoader():
         print(("Loading weights from ", config['model']['path']))
         self.model.load_weights(config['model']['path'], by_name=True)
         self.graph = tf.get_default_graph()
+
     def predict(self, depth_img):
         with self.graph.as_default():
             img = np.array([depth_img, depth_img, depth_img])
-            img = np.transpose(img, axes=[1, 2, 0])
-            res = self.model.detect([img], verbose=0)[0]
+            img = np.tranpose(img, axses=[1, 2, 0])
+            res = self.model.detect([img], verbose=1)[0]
+            pred = {
+                'rois': res['rois'].tolist(),
+                'class_ids': res['class_ids'].tolist(),
+                'scores': res['scores'].tolist(),
+                'masks': res['masks'].tolist()
+            }
+        return pred
+
+    def predictRgb(self, img):
+        with self.graph.as_default():
+            res = self.model.detect([img], verbose=1)[0]
             pred = {
                 'rois': res['rois'].tolist(),
                 'class_ids': res['class_ids'].tolist(),

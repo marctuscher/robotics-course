@@ -25,19 +25,30 @@ from practical.vision import findBallPosition, findBallInImage
 from practical import utils
 from practical.rcnn import RetinaNet
 #%%
+os.environ["ROS_MASTER_URI"] = "http://thecount.local:11311/"
+os.environ["ROS_IP"] = "129.69.216.204"
+#%%
 os.getcwd()
 
 model = RetinaNet('models/retinanet/retinanet_resnet152_level_1_v1.2_converted.h5')
 
 #%%
-cam = ry.Camera("test", "/camera/color/image_raw/", "/camera/depth/image_rect_raw/")
+cam = ry.Camera("test", "/camera/rgb/image_raw/", "/camera/depth/image_rect/")
 #%%
 img = cam.getRgb()
-model.predict(img, True)
+#%%
+plt.imshow(img)
 #%%
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 #%%
-d = cam.getDepth()
-plt.imshow(d)
+plt.imshow(img)
+
+#%%
+img2 = img.copy()
+#%%
+model.predict(img, True)
 
 
+
+
+#%%

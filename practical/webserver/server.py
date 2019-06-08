@@ -36,7 +36,12 @@ def gqcnn():
 @app.route('/fcgqcnn', methods=['POST'])
 def fcgqcnn():
     r = request.get_json()
-    img, d, s = rgbdSegmaskFromRequest(r)
+    if 'segmask' in r:
+        img, d, s = rgbdSegmaskFromRequest(r)
+    else:
+        img, d = rgbdFromRequest(r)
+        res = mask_net.predictRgb(img)
+        s = np.array(res['masks'])[:, :, 0]
     state = fcgqcnn_net.rgbd2state(img, d, segmask=s, intr=r['intr'])
     res = fcgqcnn_net.predict(state)
     return jsonify(res)
@@ -45,7 +50,15 @@ def fcgqcnn():
 def mask():
     r = request.get_json()
     d = dFromRequest(r)
+    plotImage(d)
     res = mask_net.predict(d)
+    return jsonify(res)
+
+@app.route('/maskRgb', methods=['POST'])
+def maskRgb():
+    r = request.get_json()
+    img = rgbFromRequest(r)
+    res = mask_net.predictRgb(img)
     return jsonify(res)
 
 if __name__ == '__main__':
