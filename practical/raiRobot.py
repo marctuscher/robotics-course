@@ -36,8 +36,8 @@ def syncAndReinitKomo(f):
         res = f(*args, **kwargs)
         self = args[0]
         self._sync()
-        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, False)
-        self.IK = self.C.komo_IK(True)
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, self.useSwift)
+        self.IK = self.C.komo_IK(self.useSwift)
         return res 
     return need_sync
 
@@ -65,15 +65,16 @@ class RaiRobot():
         self.camView = self.getCamView(False, frameAttached='pcl', name='headCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
         self.cam = None
         # add camera on baxters left hand -> lhc (left hand cam)
-        self.lhc = self.C.addFrame('lhc', 'left_hand_camera')
-        self.lhc.setRelativePose('t(-.0 .0 .0) d(-180 1 0 0) ')
-        self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
-        self.cam_lhc = None
-        self.IK = self.C.komo_IK(True)
+        #self.lhc = self.C.addFrame('lhc', 'left_hand_camera')
+        #self.lhc.setRelativePose('t(-.0 .0 .0) d(-180 1 0 0) ')
+        #self.camView_lhc = self.getCamView(False, frameAttached='lhc', name='leftHandCam', width=640, height=480, focalLength=580./480., orthoAbsHeight=-1., zRange=[.1, 50.], backgroundImageFile='')
+        #self.cam_lhc = None
+        self.useSwift = False
+        self.IK = self.C.komo_IK(self.useSwift)
         self.numPhases = 1
         self.stepsPerPhase = 30
         self.timePerPhase = 10
-        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, False)
+        self.path = self.C.komo_path(self.numPhases, self.stepsPerPhase, self.timePerPhase, self.useSwift)
         self.B.sync(self.C)
         self.pathObjectives = []
         self.ikObjectives = []
@@ -106,7 +107,7 @@ class RaiRobot():
 
     @syncBefore   
     def optimizeIk(self):
-        self.IK.optimize(True)
+        self.IK.optimize(False)
         q_curr = self.C.getJointState()
         self.C.setFrameState(self.IK.getConfiguration(0))
         q = self.C.getJointState()
@@ -294,14 +295,12 @@ class RaiRobot():
         if sendQ:
             self.addPathObjectives(
                 [
-                    #gazeAt([gripperFrame, targetFrame]), 
-                    scalarProductYZ([gripperFrame, targetFrame], 0), 
-                    scalarProductZZ([gripperFrame, targetFrame], 1), 
-                    #distance([gripperFrame, targetFrame], -0.1),
-                    #accumulatedCollisions(1),
-                    #qItself(self.q_home, 0.05),
-                    #positionDiff([targetFrame, gripperFrame], 0, 1)
-                    moveToPosition(targetPos, gripperFrame)
+                    {'type': ry.OT.eq, 'feature': ry.FS.scalarProductYZ, 'frames': [gripperFrame, targetFrame], 'target': [0], 'time': []},
+                    {'type': ry.OT.eq, 'feature': ry.FS.scalarProductZZ, 'frames': [gripperFrame, targetFrame], 'target': [1], 'time': []},
+                    #{'type': ry.OT.sos, 'feature': ry.FS.qItself, 'frames': [], 'target': self.q_home, 'time': [1.]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.distance, 'frames': [gripperFrame, targetFrame], 'target': [-0.2], 'time': [.8]},
+                    {'type': ry.OT.eq, 'feature': ry.FS.positionDiff, 'frames': [gripperFrame, targetFrame], 'time': [1.]},
+                    #{'type': ry.OT.eq, 'feature': ry.FS.qItself, 'frames': [], 'order': 1,  'time': [1.]},
                 ]
             )
             q = self.optimizePath()
