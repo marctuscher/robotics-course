@@ -131,11 +131,12 @@ class RaiRobot():
 
     @syncBefore   
     def optimizePath(self):
-        self.path.optimize(True)
+        self.path.optimize(False)
         q = []
         t = self.path.getT()
         for i in range(t):
-            self.C.setFrameState(self.path.getConfiguration(i))
+            config = self.path.getConfiguration(i)
+            self.C.setFrameState(config)
             q_tmp = self.C.getJointState()
             q_tmp[-1] = 0
             q_tmp[-2] = 0
