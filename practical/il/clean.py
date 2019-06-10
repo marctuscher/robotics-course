@@ -1,7 +1,7 @@
 #%%
-%reload_ext autoreload
-%autoreload 2
-%matplotlib inline
+#%reload_ext autoreload
+#%autoreload 2
+#%matplotlib inline
 #%%
 import gc
 import sys
@@ -26,19 +26,36 @@ B = C.operate('')
 B.sync(C)
 #%%
 q_home = C.getJointState()
-
 #%%
-ball = C.addObject(name="ball", shape=ry.ST.sphere, size=[.01], pos=[0.7,0.5,1], color=[0.,0.,1.])
+print(C.getFrameNames())
 #%%
-path = C.komo_path(1, 30, 10, False)
+ball = C.addObject(parent="base_footprint",name="ball", shape=ry.ST.sphere, size=[.01], pos=[0.2,0.5,1], color=[0.,0.,1.])
+#%%
+frames = C.getFrameState()
+C.setFrameState(frames)
+#%%
+path = C.komo_path(1, 5, 10, False)
 #%%
 path.addObjective(type=ry.OT.eq, feature=ry.FS.scalarProductYZ, frames=['baxterR', 'ball'], target=[0], time=[])
 path.addObjective(type=ry.OT.eq, feature=ry.FS.scalarProductZZ, frames=['baxterR', 'ball'], target=[1], time=[])
-path.addObjective(type=ry.OT.eq, feature=ry.FS.distance, frames=['baxterR', 'ball'], target=[-0.2], time=[0.8])
+#path.addObjective(type=ry.OT.eq, feature=ry.FS.distance, frames=['baxterR', 'ball'], target=[-0.2], time=[0.8])
 path.addObjective(type=ry.OT.eq, feature=ry.FS.positionDiff, frames=['baxterR', 'ball'], time=[1.0])
-path.addObjective(type=ry.OT.eq, feature=ry.FS.qItself, frames=[], order=1, time=[1.0])
+path.addObjective(type=ry.OT.sos, feature=ry.FS.qItself, frames=[], order=1, time=[1.0])
+#%%
+path.setConfigurations(C)
 #%%
 path.optimize(False)
+#%%
+frames = path.getConfiguration(3)
+#%%
+C.setFrameState(frames)
+#%%
+poses = []
+t = path.getT()
+for i in range(t):
+    frames = path.getConfiguration(i)
+    C.setFrameState(frames)
+    poses += [C.getJointState()]
 #%%
 def gatherDataSet(steps=10, pos = [0.7, 0.5, 1]):
     data = []
