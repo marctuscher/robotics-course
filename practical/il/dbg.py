@@ -25,27 +25,71 @@ def cleanFromGripperShit(data):
            traj_out.append(q_done)
         data_out.append(np.array(traj_out))
     return data_out
-data = cleanFromGripperShit(data)
+#data = cleanFromGripperShit(data)
 #%%fasdf
 import pbdlib as pbd
 #%%
-model = pbd.HMM(nb_states=7, nb_dim=30)
+model = pbd.HMM(nb_states=4, nb_dim=14)
 #%%
 model.init_hmm_kbins(data)
 #%%
-model.em(data, obs_fixed=True)
+model.em(data, obs_fixed=True, left_to_right=False)
 #%%
-q =  data[0][0][0:17]
+np.set_printoptions(precision=4)
+for i in range(100):
+    msg = model.predict(data[1][i][0:7], i)
+    print("pr: ", msg)
+    print("gt: ", data[1][i][7:])
+    print('\n')
+
 #%%
-q
+
 #%%
-model.sigma[0][0:2, 0:2]
+from practical.raiRobot import RaiRobot
+from practical.objectives import moveToPosition, gazeAt, scalarProductXZ, scalarProductZZ, distance
+from practical.vision import findBallPosition, findBallInImage, getGraspPosition, maskDepth
+from practical import utils
+from practical.dexnet import utils as dex_utils
+import libry as ry
+
 #%%
-model.sigma[0]
+robot =  RaiRobot('', 'rai-robotModels/baxter/baxter_new.g')
+
 #%%
-for i in range(10):
-    msg = model.predict(data[0][i][0:15], i)
-    print("pred: ",msg)
-    print("gt: ", data[0][i][15:])
+names = robot.C.getJointNames()
+#%%
+right_joints = [name for name in names if name.startswith('right')]
+#%%
+
+#%%
+np.set_printoptions(precision=4)
+#%%
+q_dot
+#%%
+q_new = q_dot + q
+#%%
+#robot.C.setJointState(q_new, right_joints)
+
+robot.goHome()
+#%%
+for i in range(100):
+    q = robot.C.getJointState(right_joints)
+    q_dot = model.predict(q, i)
+    q_new = q_dot * 0.01 + q
+    robot.C.setJointState(q_new, right_joints)
+
+#%%
+ik = robot.C.komo_IK(False)
+
+#%%
+ik.clearObjectives()
+q = robot.C.getJointState(right_joints)
+q_dot = model.predict(q, i)
+q_dot_new = np.zeros((17,))
+q_dot_new[[2, 4, 6, 8, 10, 12, 14]] = q_dot
+ik.addObjective(feature=ry.FS.qItself, type=ry.OT.eq, order=1, target=q_dot_new)
+ik.optimize(True)
+frames = ik.getConfiguration(0)
+robot.C.setFrameState(frames)
 
 #%%
