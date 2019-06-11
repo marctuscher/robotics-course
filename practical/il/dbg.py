@@ -82,14 +82,15 @@ for i in range(100):
 ik = robot.C.komo_IK(False)
 
 #%%
-ik.clearObjectives()
-q = robot.C.getJointState(right_joints)
-q_dot = model.predict(q, i)
-q_dot_new = np.zeros((17,))
-q_dot_new[[2, 4, 6, 8, 10, 12, 14]] = q_dot
-ik.addObjective(feature=ry.FS.qItself, type=ry.OT.eq, order=1, target=q_dot_new)
-ik.optimize(True)
-frames = ik.getConfiguration(0)
-robot.C.setFrameState(frames)
+for i in range(1000):
+    ik.clearObjectives()
+    q = robot.C.getJointState(right_joints)
+    q_dot = model.predict(q, i)
+    q_dot_new = np.zeros((17,))
+    q_dot_new[[1, 3, 5, 7, 9, 11, 13]] = q_dot
+    ik.addObjective(feature=ry.FS.qItself, type=ry.OT.eq, order=1, target=q_dot_new)
+    ik.optimize(True)
+    frames = ik.getConfiguration(0)
+    robot.C.setFrameState(frames)
 
 #%%
