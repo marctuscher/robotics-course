@@ -15,9 +15,8 @@ void minimal_use(){
   Var<floatA> _depth;
 
 #if 1 //using ros
-//  RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/camera/rgb/image_raw", "/camera/depth/image_rect");
-
-  RosCamera kin(_rgb, _depth, "cameraRosNodeMarc", "/kinect/rgb/image_rect_color", "/kinect/depth_registered/sw_registered/image_rect_raw", true);
+  RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/camera/rgb/image_raw", "/camera/depth/image_rect");
+  //  RosCamera kin(_rgb, _depth, "cameraRosNodeMarc", "/kinect/rgb/image_rect_color", "/kinect/depth_registered/sw_registered/image_rect_raw", true);
 #else //using a webcam
   OpencvCamera cam(_rgb);
 #endif
@@ -32,6 +31,31 @@ void minimal_use(){
       if(rgb.total()>0 && depth.total()>0){
         cv::imshow("rgb", rgb); //white=2meters
         cv::imshow("depth", 0.5*depth); //white=2meters
+        int key = cv::waitKey(1);
+        if((key&0xff)=='q') break;
+      }
+    }
+  }
+}
+
+//===========================================================================
+
+void wrist_camera(){
+  Var<byteA> _rgb;
+  Var<floatA> _depth;
+
+ RosCamera kin(_rgb, _depth, "cameraRosNodeMarc", "/cameras/right_hand_camera/image", "", true);
+
+  //looping images through opencv
+  for(uint i=0;i<1000;i++){
+    _rgb.waitForNextRevision();
+    {
+      byteA RGB = _rgb.get();
+      cv::Mat rgb = cv::Mat(RGB.d0, RGB.d1, CV_8UC4, RGB.p);
+      cv::cvtColor(rgb, rgb, cv::COLOR_BGRA2RGBA);
+
+      if(rgb.total()>0){
+        cv::imshow("rgb", rgb); //white=2meters
         int key = cv::waitKey(1);
         if((key&0xff)=='q') break;
       }
@@ -164,6 +188,7 @@ int main(int argc,char **argv){
   rai::initCmdLine(argc,argv);
 
   minimal_use();
+//  wrist_camera();
 //  get_objects_into_configuration();
 //  usingCameraSimulation();
 

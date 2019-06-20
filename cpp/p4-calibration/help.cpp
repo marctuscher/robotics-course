@@ -1,11 +1,13 @@
 #include "help.h"
 
-GetLargestObjects::GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hsvFilter, uint num){
+GetLargestObjects::GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hsvFilter, uint num, bool bgr){
   // blur
   cv::blur(rgb, rgb, cv::Size(5,5));
 
   // hsv filter
-  cv::cvtColor(rgb, hsv, cv::COLOR_BGR2HSV);
+  if(bgr) cv::cvtColor(rgb, hsv, cv::COLOR_BGR2HSV);
+  else cv::cvtColor(rgb, hsv, cv::COLOR_RGB2HSV);
+
   cv::inRange(hsv,
               cv::Scalar(hsvFilter(0,0), hsvFilter(0,1), hsvFilter(0,2)),
               cv::Scalar(hsvFilter(1,0), hsvFilter(1,1), hsvFilter(1,2)), mask);
@@ -17,7 +19,7 @@ GetLargestObjects::GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hs
   sizes.resize(contours.size());
   for(uint i=0; i<contours.size(); i++) sizes(i) = cv::contourArea(cv::Mat(contours[i]));
 
-  objCoords.resize(num, 3).setZero();
+  cameraCoords.resize(num, 3).setZero();
 
   if(sizes.N<num) num=sizes.N;
 
@@ -25,8 +27,6 @@ GetLargestObjects::GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hs
     uint largest = sizes.maxIndex();
     double size = sizes(largest);
     sizes(largest)=0.; //done
-
-
 
     // draw the contour interior into the mask
     mask = cv::Scalar(0);
@@ -56,7 +56,7 @@ GetLargestObjects::GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hs
         // mean
         //double objDepth = sum(depthValues)/double(depthValues.N);
 
-        objCoords[i] = {objX, objY, objDepth};
+        cameraCoords[i] = {objX, objY, objDepth};
 
         cv::drawContours( rgb, contours, largest, cv::Scalar(255,0,0), 2, 8);
         cv::drawContours( depth, contours, largest, cv::Scalar(0), 2, 8);

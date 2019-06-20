@@ -10,6 +10,8 @@
 
 #include <Operate/robotOperation.h>
 
+bool MOVE_ROBOT=true;
+
 void tracking(){
   // load a configuration
   rai::KinematicWorld C;
@@ -17,26 +19,43 @@ void tracking(){
   arr q_home = C.getJointState();
   arr Wmetric = diag(2., C.getJointStateDimension());
 
-  // add a frame for the camera
-  rai::Frame *cameraFrame = C.addFrame("camera", "head");
-  cameraFrame->Q.setText("d(-90 0 0 1) t(-.08 .205 .115) d(26 1 0 0) d(-1 0 1 0) d(6 0 0 1)");
-  cameraFrame->calc_X_from_parent();
+  // add a frame for the camera (only for display! Only Pinv is used below)
+  {
+    rai::Frame *cameraFrame = C.addFrame("camera", "head");
+    cameraFrame->setPosition({-0.0499056, 0.231561, 1.7645});
+    cameraFrame->setQuaternion({0.971032, 0.237993, -0.00607315, 0.0204557});
+    arr Fxypxy = {539.637, 540.941, 317.533, 260.024};
+  }
+  {
+    rai::Frame *cameraFrame = C.addFrame("camera2");
+    cameraFrame->setPosition({-0.0330757, 0.125005, 1.55487});
+    cameraFrame->setQuaternion({0.935411, 0.35328, -0.0133783, 0.00451155});
+    cameraFrame->setShape(rai::ST_ssBox, {.2, .03, .05, .01});
+    cameraFrame->setColor({1.,0,0});
+  }
 
-//  cameraFrame->setPosition({-0.0472772, 0.226517, 1.79207});
-//  cameraFrame->setQuaternion({0.969594, 0.24362, -0.00590741, 0.0223832});
-//  arr Fxypxy = {538.273, 544.277, 307.502, 249.954};
-//  Fxypxy /= 0.982094;
+  // add a frame for the camera
+//  arr Pinv = arr(3,4,{
+//  0.00185141, 6.4155e-05, -0.59182, -0.0499056,
+//   6.82597e-05, -0.00163821, 0.85137, 0.231561,
+//   3.98992e-05, -0.000854289, -0.665166, 1.7645});
+
+  arr Pinv = arr(3,4,
+  {0.00180045, 5.51994e-06, -0.569533, -0.0330757,
+   -1.82321e-06, -0.00133149, 1.00136, 0.125005,
+   5.08217e-05, -0.00117336, -0.439092, 1.55487});
 
   // add a frame for the object
   rai::Frame *objectFrame = C.addFrame("obj");
-  objectFrame->setShape(rai::ST_ssBox, {.1, .1, .1, .02});
+  objectFrame->setShape(rai::ST_ssBox, {.05, .05, .05, .02});
   objectFrame->setColor({.8, .8, .1});
+  objectFrame->setPosition({0., .7, 1.});
 
   // add a frame for the endeff reference
   rai::Frame *pointerFrame = C.addFrame("pointer", "baxterR");
   pointerFrame->setShape(rai::ST_ssBox, {.05, .05, .05, .01});
   pointerFrame->setColor({.8, .1, .1});
-  pointerFrame->setRelativePosition({0.,0.,-.05});
+  pointerFrame->setRelativePosition({0.,0.,-.0});
 
   // launch robot interface
   RobotOperation B(C);
@@ -47,16 +66,14 @@ void tracking(){
   Var<floatA> _depth;
   RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/camera/rgb/image_raw", "/camera/depth/image_rect");
 
-  // set the intrinsic camera parameters
-  double f = 1./tan(0.5*60.8*RAI_PI/180.);
-  f *= 320.;
-  arr Fxypxy = {f, f, 320., 240.};
-
   // set hsv filter parameters
   arr hsvFilter = rai::getParameter<arr>("hsvFilter").reshape(2,3);
 
+  //open right gripper
+  q_home(-2) = 0.;
   B.moveHard(q_home);
   rai::wait();
+  B.sync(C);
 
   // looping
   for(uint i=0;i<1000;i++){
@@ -105,7 +122,7 @@ void tracking(){
       }
     }
 
-    if(depthValues.N){
+    if(depthValues.N>200.){
       objX /= double(depthValues.N);
       objY /= double(depthValues.N);
 
@@ -114,22 +131,33 @@ void tracking(){
       // mean
       //double objDepth = sum(depthValues)/double(depthValues.N);
 
-      // image coordinates
-      arr objCoords = {objX, objY, objDepth};
+      if(objDepth>.2 && objDepth < 1.5){ //accept new position only when object is in reasonable range
+        // image coordinates
+        arr cameraCoords = {objX, objY, objDepth};
 
-      // camera coordinates
-      depthData2point(objCoords, Fxypxy); //transforms the point to camera xyz coordinates
+#if 0
+        // camera coordinates
+        depthData2point(objCoords, Fxypxy); //transforms the point to camera xyz coordinates
 
-      // world coordinates
-      cameraFrame->X.applyOnPoint(objCoords); //transforms into world coordinates
+        // world coordinates
+        cameraFrame->X.applyOnPoint(objCoords); //transforms into world coordinates
+#else
+        //direct affine projective transformation
+        cameraCoords(0) *= cameraCoords(2);
+        cameraCoords(1) *= cameraCoords(2);
+        cameraCoords.append(1.);
+        arr worldCoords = Pinv * cameraCoords;
+#endif
 
-      //cout <<"object coordinates: " <<objCoords <<endl;
+        //cout <<"object coordinates: " <<worldCoords <<endl;
 
-      objectFrame->setPosition(objCoords);
+        objectFrame->setPosition(worldCoords);
+        C.watch();
+      }
     }
 
     // tracking IK
-    {
+    if(MOVE_ROBOT){
       arr y, J, Phi, PhiJ;
 
       //1st task: track circle with right hand

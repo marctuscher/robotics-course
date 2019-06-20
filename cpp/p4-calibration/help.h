@@ -8,9 +8,9 @@ struct GetLargestObjects {
   cv::Mat hsv, mask;
   arr sizes;
 
-  arr objCoords;
+  arr cameraCoords;
 
-  GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hsvFilter, uint num=1);
+  GetLargestObjects(cv::Mat& rgb, cv::Mat& depth, const arr& hsvFilter, uint num=1, bool bgr=false);
 };
 
 void decomposeCameraProjectionMatrix(arr& K, arr& R, arr& t, const arr& P, bool verbose);
