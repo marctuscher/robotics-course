@@ -11,8 +11,7 @@ from gqcnn.grasping import FullyConvolutionalGraspingPolicyParallelJaw
 
 class GQCNNLoader():
 
-
-    def __init__(self, cfgFile="practical/cfg/gqcnn_pj_serv.yaml"):
+    def __init__(self, cfgFile="practical/cfg/gqcnn_pj_tuned.yaml"):
         self.cfg = YamlConfig(cfgFile)
         self.graspPolicy = CrossEntropyRobustGraspingPolicy(self.cfg['policy'])
 

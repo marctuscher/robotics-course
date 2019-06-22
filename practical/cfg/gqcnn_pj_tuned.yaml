@@ -1,7 +1,7 @@
 policy:
   # optimization params
-  num_seed_samples: 128
-  num_gmm_samples: 64
+  num_seed_samples: 4096
+  num_gmm_samples: 256
   num_iters: 3
   gmm_refit_p: 0.25
   gmm_component_frac: 0.4
@@ -36,7 +36,7 @@ policy:
     depth_sample_win_height: 1
     depth_sample_win_width: 1
     min_depth_offset: 0.015
-    max_depth_offset: 0.05
+    max_depth_offset: 0.08
 
   # metrics
   metric:

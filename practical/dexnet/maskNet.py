@@ -36,7 +36,7 @@ class MaskLoader():
     def predict(self, depth_img):
         with self.graph.as_default():
             img = np.array([depth_img, depth_img, depth_img])
-            img = np.tranpose(img, axses=[1, 2, 0])
+            img = np.transpose(img, axes=[1, 2, 0])
             res = self.model.detect([img], verbose=1)[0]
             pred = {
                 'rois': res['rois'].tolist(),
