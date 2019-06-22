@@ -19,9 +19,10 @@ virtCamIntrinsics = {'fx': 640 * fVirt, 'fy': 480 * fVirt, 'px': 320, 'py': 240,
 
 
 def maskDepth(d, lower, upper):
-    mask = np.logical_and(d >= lower, d <= upper)
-    d[~mask] = np.nan
-    return d
+    out_d = d.copy()
+    mask = np.logical_and(out_d >= lower, out_d <= upper)
+    out_d[~mask] = np.nan
+    return out_d, mask
 
     
 def findContoursInMask(mask):

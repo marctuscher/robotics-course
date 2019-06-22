@@ -20,14 +20,15 @@ class GQCNNLoader():
         cam_intr = CameraIntrinsics(frame=frame, fx=intr['fx'], fy=intr['fy'], cx=intr['cx'], cy=intr['cy'], height=intr['height'], width=intr['width'])
         color_im = ColorImage(img.astype(np.uint8), encoding=rgbEncoding, frame=frame)
         depth_im = DepthImage(d.astype(np.float32), frame=frame)
-        color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
-        depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
-        rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
+        mask_img = None
         if segmask is not None:
-            mask_img = BinaryImage(segmask.astype(np.uint8), frame='pcl')
-            rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
-        else:
-            rgbd_state = RgbdImageState(rgbd_im, cam_intr)
+            mask_img = BinaryImage(segmask.astype(np.uint8) * 255, frame='pcl')
+            valid_pxls = depth_im.invalid_pixel_mask().inverse()
+            mask_img = mask_img.mask_binary(valid_pxls)
+        depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
+        color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
+        rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
+        rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
         return rgbd_state
     
     def predict(self, rgbdState):
@@ -60,7 +61,7 @@ class FCGQCNNLoader():
         color_im = color_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
-        mask_img = BinaryImage(segmask.astype(np.uint8), frame='pcl')
+        mask_img = BinaryImage(segmask.astype(np.uint8) * 255, frame='pcl')
         rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
         return rgbd_state
     
