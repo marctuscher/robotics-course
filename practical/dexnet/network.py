@@ -61,6 +61,8 @@ class FCGQCNNLoader():
         depth_im = depth_im.inpaint(rescale_factor=self.cfg['inpaint_rescale_factor'])
         rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
         mask_img = BinaryImage(segmask.astype(np.uint8) * 255, frame='pcl')
+        valid_pxls = depth_im.invalid_pixel_mask().inverse()
+        mask_img = mask_img.mask_binary(valid_pxls)
         rgbd_state = RgbdImageState(rgbd_im, cam_intr, segmask=mask_img)
         return rgbd_state
     
