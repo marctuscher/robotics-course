@@ -131,5 +131,7 @@ def predictRgb(img, host='http://multitask.ddnss.de:5000', width=640, height=480
     for key in res_json.keys():
         if isinstance(res_json[key], list):
             res_json[key] = np.array(res_json[key], dtype=np.float32)
+            if key == "masks":
+                res_json[key] = np.transpose(res_json[key], axes=[2, 0, 1])
     return res_json
 
