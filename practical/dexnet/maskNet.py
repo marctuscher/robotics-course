@@ -3,6 +3,7 @@ from sd_maskrcnn import utils
 from sd_maskrcnn.config import MaskConfig
 import os
 import tensorflow as tf
+import skimage
 from mrcnn import model as modellib
 import numpy as np
 from keras.backend.tensorflow_backend import set_session, clear_session
@@ -32,12 +33,14 @@ class MaskLoader():
         print(("Loading weights from ", config['model']['path']))
         self.model.load_weights(config['model']['path'], by_name=True)
         self.graph = tf.get_default_graph()
+        print(self.model.keras_model.layers[0].dtype)
 
     def predict(self, depth_img):
+        img = ((depth_img / depth_img.max()) * 255).astype(np.uint8)
+        rgb = np.dstack((img, img, img))
         with self.graph.as_default():
-            img = np.array([depth_img, depth_img, depth_img])
-            img = np.transpose(img, axes=[1, 2, 0])
-            res = self.model.detect([img], verbose=1)[0]
+            res = self.model.detect([rgb], verbose=1)[0]
+            res["masks"] = res['masks'].transpose((2, 0, 1))
             pred = {
                 'rois': res['rois'].tolist(),
                 'class_ids': res['class_ids'].tolist(),
