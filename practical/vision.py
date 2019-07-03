@@ -50,8 +50,11 @@ def getGraspPosition(d, x, y, intrinsics=baxterCamIntrinsics):
     zc = -dp
     return [xc, yc, zc], int(x), int(y)
 
-def getGraspPosition_noIntr(d, x, y):
-    dp = calcDepth(d, int(y), int(x))
+def getGraspPosition_noIntr(d, x, y, depthVal=None):
+    if depthVal is None:
+        dp = calcDepth(d, int(y), int(x))
+    else:
+        dp = depthVal
     xc = dp * x
     yc = dp * y
     zc = dp
