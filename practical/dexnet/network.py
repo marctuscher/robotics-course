@@ -46,7 +46,8 @@ class DexnetLoader():
                 "approachAxis": [float(res.grasp.approach_axis[0]), float(res.grasp.approach_axis[1]), float(res.grasp.approach_axis[2])],
                 "axis": [res.grasp.axis[0], res.grasp.axis[0]],
                 "depth": float(res.grasp.depth),
-                "approachAngle": float(res.grasp.approach_angle)
+                "approachAngle": float(res.grasp.approach_angle),
+                "type": "suction"
             }
         else:
             pred = {
@@ -59,6 +60,7 @@ class DexnetLoader():
                 "width": res.grasp.width,
                 "depth": res.grasp.depth,
                 "approachAngle": res.grasp.approach_angle
+                "type": "pj"
             }
         return pred
 
