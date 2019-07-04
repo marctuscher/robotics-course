@@ -45,6 +45,7 @@ def arr2quat(q):
 def quat2arr(q):
     return quaternion.as_float_array(q)
 
+
 def quatMultiply(quat0, quat1):
     # deprecated: will be removed soon
     w0, x0, y0, z0 = quat0
