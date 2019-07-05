@@ -10,7 +10,11 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+                        "env": {
+                "ROS_MASTER_URI": "http://thecount.local:11311",
+                "ROS_IP": "129.69.216.155"
+            },
         },
         {
             "name": "g++ build and debug active file",

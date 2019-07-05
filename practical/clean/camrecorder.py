@@ -41,8 +41,7 @@ class ImageServ():
 
 
     def callback(self, data):
-        self.img = bridge.imgmsg_to_cv2(data, "rgb8")
-        cv2.imshow(self.topic,self.img)
+        self.img = bridge.imgmsg_to_cv2(data, "bgr8")
         
 
 
@@ -67,7 +66,7 @@ r = {
     "topic": t[1],
     "cam": s1, #rospy.Subscriber(t[1], sensor_msgs.msg.Image, callback) #ry.Camera(nodename, t, dummy_depth_topic, True),
     "out_dir" : out_dir,
-    "writer" : cv2.VideoWriter(out_dir, codec, 30.0, (640, 400))
+    "writer" : cv2.VideoWriter(out_dir, codec, 30.0, (1280, 800))
 }
 recorders.append(r)
 out_dir = output_dir + t[2].replace("/", "_") + ".mp4"
@@ -81,17 +80,16 @@ r = {
 recorders.append(r)
 
 while True:
-    #try:
-    rate.sleep()
-    for r in recorders:
-        f = r["cam"].img
-        if f is not None:
-            cv2.imshow('cnwidu',f)
-            r["writer"].write(f)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    #except KeyboardInterrupt:
-    #    break
+    try:
+        rate.sleep()
+        for r in recorders:
+            f = r["cam"].img
+            if f is not None:
+                r["writer"].write(f)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+    except KeyboardInterrupt:
+        break
 
 
 for r in recorders:

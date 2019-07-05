@@ -6,6 +6,7 @@ import sensor_msgs
 from cv_bridge import CvBridge, CvBridgeError
 import sys
 import numpy as np
+import geometry_msgs
 try:
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 except ValueError:
