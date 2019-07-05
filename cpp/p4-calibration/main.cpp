@@ -31,12 +31,13 @@ void collectData(){
   C.addFile("model.g");
   arr q_home = C.getJointState();
   arr Wmetric = diag(1., C.getJointStateDimension());
-
+  arr q_default = {-0.0437185, 0.0747816, 0.081301, 0.0602087, 0.356267, 1.12479, -1.35259, 1.09641, 1.20034, -0.101626, 0.670733, 0.591733, 0.0632767, 0.991719, -1.52823, 0, 0};
   // launch camera
   Var<byteA> _rgb;
   Var<floatA> _depth;
-#if 1
-  RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/camera/rgb/image_raw", "/camera/depth/image_rect");
+#if 0
+  RosCamera cam(_rgb, _depth, "cameraRosNodeMarcTu", "/realsense/color/image_raw", "/realsense/depth/image_rect_raw", true);
+  //RosCamera cam(_rgb, _depth, "cameraRosNodeMarcTu", "/camera/rgb/image_raw", "/camera/depth/image_rect_raw", true);
 //  RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/kinect/rgb/image_rect_color", "/kinect/depth_registered/sw_registered/image_rect_raw", true);
 #else
   //associate an opengl renderer with the camera frame
@@ -79,7 +80,8 @@ void collectData(){
 #if 1
   RobotOperation B(C);
   B.sync(C);
-  B.move(q_home, {5.});
+  cout <<"q_default" << B.getJointPositions() << endl;
+  B.move(q_default, {5.});
   rai::wait();
   B.sync(C);
 #endif
@@ -183,7 +185,7 @@ void collectData(){
 //===========================================================================
 
 void optimize(){
-  Graph data("realCalib3.data");
+  Graph data("z.data");
 //  Graph data("z.data");
 
   //-- load data
@@ -259,9 +261,9 @@ void optimize(){
 int main(int argc,char **argv){
   rai::initCmdLine(argc,argv);
 
-//  collectData();
+  collectData();
 
-  optimize();
+//  optimize();
 
   return 0;
 }

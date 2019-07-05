@@ -38,15 +38,21 @@ void spline_use(){
   //define a home and zero pose
   arr q_home = C.getJointState();
   arr q_zero = 0.*q_home;
+  arr q_home_cycle = {-0.04410195, -0.34936412, 0.65692727, -0.41417481, -0.19328158, 1.11098559, -1.19535453, 1.06496616, 1.31807299, -0.53650978, 0.35856801, 1.14550015, 0.96180595, 1.14665064, -0.3117816, 0.0 ,0.0};
 
   //launch the interface
   RobotOperation B(C);
   cout <<"joint names: " <<B.getJointNames() <<endl;
   B.sendToReal(true);
 
-  //spline motion of the reference
-  B.move({q_zero}, {10.});
-  B.wait();
+  
+  for (int i = 0; i < 40; i++){
+  B.move({q_home}, {4.});
+  rai::wait(4.);
+  B.move({q_home_cycle}, {4.});
+  rai::wait(4.);
+
+  }
 
   //output states
   for(;;){
@@ -91,6 +97,8 @@ int main(int argc,char **argv){
 
 //  minimal_use();
 
+putenv("ROS_MASTER_URI=http://thecount.local:11311"); 
+putenv("ROS_IP=129.69.216.200");
   spline_use();
 
   return 0;
