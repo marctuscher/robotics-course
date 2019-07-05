@@ -35,8 +35,9 @@ void collectData(){
   // launch camera
   Var<byteA> _rgb;
   Var<floatA> _depth;
-#if 1
+#if 0
   RosCamera cam(_rgb, _depth, "cameraRosNodeMarcTu", "/realsense/color/image_raw", "/realsense/depth/image_rect_raw", true);
+  //RosCamera cam(_rgb, _depth, "cameraRosNodeMarcTu", "/camera/rgb/image_raw", "/camera/depth/image_rect_raw", true);
 //  RosCamera cam(_rgb, _depth, "cameraRosNodeMarc", "/kinect/rgb/image_rect_color", "/kinect/depth_registered/sw_registered/image_rect_raw", true);
 #else
   //associate an opengl renderer with the camera frame
@@ -260,9 +261,9 @@ void optimize(){
 int main(int argc,char **argv){
   rai::initCmdLine(argc,argv);
 
-//  collectData();
+  collectData();
 
-  optimize();
+  //optimize();
 
   return 0;
 }

@@ -23,6 +23,10 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
+            "env": {
+                "ROS_MASTER_URI": "http://thecount.local:11111",
+                "ROS_IP": "129.69.216.172"
+            },
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
