@@ -59,7 +59,7 @@ class DexnetLoader():
                 "axis": [res.grasp.axis[0], res.grasp.axis[0]],
                 "width": res.grasp.width,
                 "depth": res.grasp.depth,
-                "approachAngle": res.grasp.approach_angle
+                "approachAngle": res.grasp.approach_angle,
                 "type": "pj"
             }
         return pred
