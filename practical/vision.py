@@ -5,9 +5,13 @@ try:
 except ValueError:
     pass  # do nothing!
 import cv2
+from visualization import Visualizer2D as vis
+from gqcnn.grasping.grasp import Grasp2D
+from autolab_core.points import Point
 import numpy as np
 import matplotlib.pyplot as plt
 import imutils
+from perception import ColorImage
 
 intrinsics = [538.273, 544.277, 307.502, 249.954]
 f = 320./np.tan(0.5 * 60.8 * np.pi/180.)
@@ -159,7 +163,70 @@ def temp_filtered_depth(self, cam, numImages=10, blur = 'bilateral', mode= 'medi
     return self.fil_depth[0,:,:]
 
 
-def plotCircleAroundCenter(img, x, y):
+def plotCircleAroundCenter(img, x, y, color=(255, 0, 0)):
     img2 = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
-    cv2.circle(img2,(int(x),int(y)),2,(255,0,0),3)
+    cv2.circle(img2,(int(x),int(y)),2,color,3)
     plt.imshow(img2)
+
+class Center():
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+def plotPjGrasp_older(img, grasp):
+    #center = Center(grasp["x"], grasp["y"])
+    center = Point(np.array([grasp["x"], grasp["x"]]))
+    color_im = ColorImage(img.astype(np.uint8), encoding="bgr8", frame="pcl")
+    g = Grasp2D(center, angle=grasp["angle"])
+    vis.figure()
+    vis.imshow(color_im)
+    vis.grasp(g, scale=4.0,jaw_width=2.0, show_center=True, show_axis=True, color=plt.cm.RdYlBu(.1))
+    vis.show()
+
+def plotPjGrasp(img, grasp):
+    xs = []; ys=[]
+    x1 = grasp["x"]
+    y1= grasp["y"]
+    xs.append(grasp["x"])
+    ys.append(grasp["y"])
+    x2 = x1 + 50
+    x3 = x1 - 50
+    m = np.tan(grasp["angle"])
+    y2 = m * 50 + y1
+    y3 = m * -50 + y1
+    xs.append(x2)
+    ys.append(y2)
+    xs.append(x3)
+    ys.append(y3)
+    plt.imshow(img)
+    plt.scatter([x1], [y1])
+    plt.plot(xs, ys) 
+
+def plotPjGrasp_old(img, grasp):
+    x = grasp["x"]; y=grasp["y"]
+    data = np.array([x, y])
+    plt.scatter(x,y)
+    axis=np.array([np.cos(grasp["angle"]), np.cos(grasp["angle"])])
+    width_px = 10
+    g1= data - (width_px/2) * axis
+    g2= data + (width_px/2) * axis
+    g1p = g1 - 2* 5
+    g2p = g2 + 2* 5
+    plt.plot([[g1[0], g2[0]], [g1[1], g2[1]]],linewidth=10)
+    # direction of jaw line
+    jaw_dir = 5 * np.array([axis[1], -axis[0]])
+
+    # length of arrow
+    alpha = 2*(5 - 2)
+    # plot first jaw
+    g1_line = np.c_[g1p, g1 - 2*2*axis].T
+    plt.arrow(g1p[0], g1p[1], alpha*axis[0], alpha*axis[1])
+    jaw_line1 = np.c_[g1 + jaw_dir, g1 - jaw_dir].T
+    plt.plot(jaw_line1[:,0], jaw_line1[:,1]) 
+    # plot second jaw
+    g2_line = np.c_[g2p, g2 + 10*axis].T
+    plt.arrow(g2p[0], g2p[1], -alpha*axis[0], -alpha*axis[1])
+    jaw_line2 = np.c_[g2 + jaw_dir, g2 - jaw_dir].T
+    plt.plot(jaw_line2[:,0], jaw_line2[:,1])
+    plt.imshow(img)

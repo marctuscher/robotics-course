@@ -26,7 +26,7 @@ dummy_depth_topic = "/camera/depth/image_rect_raw"
 rospy.init_node("recordeBig", disable_signals=True)
 recorders = []
 codec = cv2.VideoWriter_fourcc(*'mp4v')
-rate= rospy.Rate(30)
+rate= rospy.Rate(25)
 bridge = CvBridge()
 img0 = np.zeros((1))
 img1 = np.zeros((1))
@@ -57,7 +57,7 @@ r = {
     "topic": t[0],
     "cam": s0, #rospy.Subscriber(t[0], sensor_msgs.msg.Image, callback)#"cam": ry.Camera(nodename, t, dummy_depth_topic, True),
     "out_dir" : out_dir,
-    "writer" : cv2.VideoWriter(out_dir, codec, 30.0, (640, 480))
+    "writer" : cv2.VideoWriter(out_dir, codec, 25.0, (640, 480))
 }
 recorders.append(r)
 out_dir = output_dir + t[1].replace("/", "_") + ".mp4"
@@ -66,7 +66,7 @@ r = {
     "topic": t[1],
     "cam": s1, #rospy.Subscriber(t[1], sensor_msgs.msg.Image, callback) #ry.Camera(nodename, t, dummy_depth_topic, True),
     "out_dir" : out_dir,
-    "writer" : cv2.VideoWriter(out_dir, codec, 30.0, (1280, 800))
+    "writer" : cv2.VideoWriter(out_dir, codec, 25.0, (1280, 800))
 }
 recorders.append(r)
 out_dir = output_dir + t[2].replace("/", "_") + ".mp4"
@@ -75,7 +75,7 @@ r = {
     "topic": t[2],
     "cam": s2, #rospy.Subscriber(t[2], sensor_msgs.msg.Image, callback) #ry.Camera(nodename, t, dummy_depth_topic, True),
     "out_dir" : out_dir,
-    "writer" : cv2.VideoWriter(out_dir, codec, 30.0, (640, 400))
+    "writer" : cv2.VideoWriter(out_dir, codec, 25.0, (640, 400))
 }
 recorders.append(r)
 
